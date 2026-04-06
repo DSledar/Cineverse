@@ -1,1572 +1,2070 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" id="html-root">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CineVerse</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>CineVerse — Your Cinematic Destination</title>
+  <meta name="description" content="Watch the latest movies and series in high quality. Multi-language support.">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --red: #e11d48;
-      --red2: #be123c;
-      --gold: #f59e0b;
-      --dark: #080808;
-      --card: rgba(18,18,20,0.9);
-      --border: rgba(255,255,255,0.08);
-      --border2: rgba(255,255,255,0.14);
+      --cv-red: #e11d48;
+      --cv-red-dark: #9f1239;
+      --cv-gold: #f59e0b;
+      --cv-dark: #080b12;
+      --cv-card: #0e1320;
+      --cv-glass: rgba(255,255,255,0.05);
+      --cv-border: rgba(255,255,255,0.08);
+      --cv-text: #f1f5f9;
+      --cv-muted: rgba(255,255,255,0.4);
+      --cv-font: 'DM Sans', 'Noto Sans Arabic', sans-serif;
+      --cv-display: 'Bebas Neue', 'Noto Sans Arabic', cursive;
+      --nav-h: 68px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--dark);
-      color: #fff;
-      -webkit-font-smoothing: antialiased;
+      font-family: var(--cv-font);
+      background: var(--cv-dark);
+      color: var(--cv-text);
+      min-height: 100vh;
       overflow-x: hidden;
     }
-    .font-display { font-family: 'Cinzel', serif; }
 
-    /* ── CINEMATIC BACKGROUND ── */
+    body.rtl { direction: rtl; font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif; }
+
+    /* ── GRAIN OVERLAY ── */
     body::before {
       content: '';
-      position: fixed; inset: 0; z-index: -2;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(225,29,72,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(245,158,11,0.06) 0%, transparent 60%),
-        linear-gradient(180deg, #0a0a0c 0%, #060608 100%);
-    }
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: -1;
-      background-image:
-        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-    }
-    /* Film grain overlay */
-    #grain {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      opacity: 0.035;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    }
-
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(225,29,72,.4); border-radius: 999px; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    @keyframes shimmer { from{background-position:-200% 0} to{background-position:200% 0} }
-    @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-    .spin { animation: spin 1s linear infinite; }
-    .pulse-anim { animation: pulse 2s ease-in-out infinite; }
-    .fade-up { animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both; }
-    .fade-in { animation: fadeIn .3s ease both; }
-    .slide-down { animation: slideDown .25s ease both; }
-
-    /* ── FILM CARD ── */
-    .film-card { transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s; }
-    .film-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(225,29,72,.3); }
-    .film-card:hover .film-overlay { opacity: 1; }
-    .film-overlay { opacity: 0; transition: opacity .3s; }
-    .film-card img { transition: transform .5s cubic-bezier(.16,1,.3,1); }
-    .film-card:hover img { transform: scale(1.06); }
-
-    /* ── INPUTS ── */
-    input, textarea, select {
-      outline: none;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border2);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #fff;
-      width: 100%;
-      font-size: 14px;
-      font-family: 'DM Sans', sans-serif;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: rgba(225,29,72,.6);
-      box-shadow: 0 0 0 3px rgba(225,29,72,.12);
-    }
-    textarea { resize: vertical; min-height: 80px; }
-    select option { background: #111; color: #fff; }
-
-    /* ── MODAL ── */
-    .modal-bg {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.85);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      display: flex; align-items: center; justify-content: center; padding: 16px;
-    }
-    .modal {
-      background: #0f0f11;
-      border: 1px solid var(--border2);
-      border-radius: 20px;
-      width: 100%; max-width: 700px;
-      max-height: 92vh; overflow-y: auto;
-      padding: 32px; position: relative;
-      box-shadow: 0 40px 80px rgba(0,0,0,.8);
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; opacity: .5;
     }
 
     /* ── NAV ── */
-    .nav-link { color: rgba(255,255,255,.65); font-size: 14px; font-weight: 500; text-decoration: none; transition: color .15s; }
-    .nav-link:hover { color: #fff; }
-    .nav-link.active { color: var(--red); }
+    #mainNav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: var(--nav-h);
+      background: rgba(8,11,18,.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--cv-border);
+      transition: background .3s;
+    }
+    #mainNav .brand-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--cv-red);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(225,29,72,.35);
+      transition: transform .2s;
+    }
+    #mainNav .brand-icon:hover { transform: scale(1.1); }
+    #mainNav .brand-name {
+      font-family: var(--cv-display);
+      font-size: 1.5rem; letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .nav-link-cv {
+      font-size: .75rem; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--cv-muted) !important;
+      padding: .4rem .8rem !important; border-radius: 8px;
+      transition: color .2s, background .2s;
+    }
+    .nav-link-cv:hover, .nav-link-cv.active { color: #fff !important; background: rgba(255,255,255,.05); }
+    .nav-link-cv.active { color: var(--cv-red) !important; }
+
+    .btn-add-nav {
+      font-size: .7rem; font-weight: 800; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--cv-red);
+      padding: .35rem .9rem; border-radius: 50px;
+      background: rgba(225,29,72,.1); border: 1px solid rgba(225,29,72,.3);
+      transition: all .2s; white-space: nowrap;
+    }
+    .btn-add-nav:hover { background: var(--cv-red); color: #fff; }
+
+    .lang-btn {
+      font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+      padding: .35rem .8rem; border-radius: 50px;
+      background: rgba(255,255,255,.05); border: 1px solid var(--cv-border);
+      color: var(--cv-text); transition: all .2s;
+    }
+    .lang-btn:hover { background: rgba(255,255,255,.1); }
+
+    .user-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 2px solid var(--cv-border); overflow: hidden;
+      transition: border-color .2s; cursor: pointer;
+    }
+    .user-avatar:hover { border-color: var(--cv-red); }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── HERO ── */
+    #heroSection {
+      position: relative; min-height: 90vh;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover;
+      opacity: .35; transform: scale(1.05);
+      transition: transform 1s ease, opacity .8s;
+    }
+    .hero-grad {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, var(--cv-dark) 30%, transparent 100%),
+                  linear-gradient(0deg, var(--cv-dark) 0%, transparent 60%);
+    }
+    .hero-content { position: relative; z-index: 2; padding-bottom: 5rem; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .7rem; font-weight: 800; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--cv-red);
+      padding: .3rem .9rem; border-radius: 50px;
+      background: rgba(225,29,72,.15); border: 1px solid rgba(225,29,72,.3);
+    }
+    .hero-title {
+      font-family: var(--cv-display);
+      font-size: clamp(3rem, 9vw, 7rem);
+      line-height: .95; letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+    .hero-meta span {
+      font-size: .8rem; font-weight: 600; color: var(--cv-muted);
+    }
+    .hero-meta .rating { color: var(--cv-gold); font-weight: 800; }
+    .hero-desc { color: rgba(255,255,255,.6); max-width: 520px; line-height: 1.7; }
+
+    /* ── BUTTONS ── */
+    .btn-cv-primary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .8rem 2rem; border-radius: 50px;
+      background: var(--cv-red); color: #fff;
+      font-weight: 700; font-size: .9rem;
+      border: none; cursor: pointer; transition: all .2s;
+      box-shadow: 0 8px 24px rgba(225,29,72,.35);
+      text-decoration: none;
+    }
+    .btn-cv-primary:hover { transform: scale(1.04); box-shadow: 0 12px 30px rgba(225,29,72,.5); color: #fff; }
+
+    .btn-cv-secondary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .8rem 2rem; border-radius: 50px;
+      background: rgba(255,255,255,.08); color: #fff;
+      font-weight: 700; font-size: .9rem;
+      border: 1px solid rgba(255,255,255,.15);
+      cursor: pointer; transition: all .2s; text-decoration: none;
+    }
+    .btn-cv-secondary:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+    /* ── SECTION HEADERS ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-family: var(--cv-display);
+      font-size: 1.8rem; letter-spacing: .06em; text-transform: uppercase;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .section-title .bar {
+      width: 4px; height: 28px; border-radius: 4px;
+      box-shadow: 0 0 14px currentColor;
+    }
+    .section-title .bar.red { background: var(--cv-red); color: var(--cv-red); }
+    .section-title .bar.gold { background: var(--cv-gold); color: var(--cv-gold); }
+
+    /* ── FILM CARDS ── */
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 1.2rem;
+    }
+    @media (max-width: 576px) {
+      .film-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+    }
+    @media (min-width: 1200px) {
+      .film-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+
+    .film-card {
+      position: relative; border-radius: 16px; overflow: hidden;
+      aspect-ratio: 2/3; cursor: pointer;
+      background: var(--cv-card);
+      border: 1px solid var(--cv-border);
+      transition: transform .35s cubic-bezier(.17,.67,.52,1.3),
+                  border-color .3s, box-shadow .3s;
+    }
+    .film-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(225,29,72,.4);
+      box-shadow: 0 24px 48px rgba(0,0,0,.6), 0 0 0 1px rgba(225,29,72,.2);
+    }
+    .film-card img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .6s ease;
+    }
+    .film-card:hover img { transform: scale(1.08); }
+    .film-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.2) 50%, transparent 100%);
+      opacity: .85; transition: opacity .3s;
+    }
+    .film-card:hover .film-card-overlay { opacity: 1; }
+    .film-card-body {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 1rem .85rem .85rem;
+      transform: translateY(4px);
+      transition: transform .3s;
+    }
+    .film-card:hover .film-card-body { transform: translateY(0); }
+    .film-type-badge {
+      font-size: .6rem; font-weight: 900; letter-spacing: .18em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 4px;
+      background: var(--cv-red); color: #fff;
+    }
+    .film-card-title {
+      font-family: var(--cv-display); font-size: 1rem;
+      line-height: 1.1; letter-spacing: .03em;
+      text-transform: uppercase; margin: .3rem 0 .2rem;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .film-card-actions {
+      display: flex; gap: .4rem; margin-top: .6rem;
+      opacity: 0; transform: translateY(6px);
+      transition: opacity .25s, transform .25s;
+    }
+    .film-card:hover .film-card-actions { opacity: 1; transform: translateY(0); }
+    .btn-card-watch {
+      flex: 1; padding: .45rem .5rem; border-radius: 10px;
+      background: #fff; color: #000;
+      font-size: .65rem; font-weight: 900; letter-spacing: .1em;
+      text-transform: uppercase; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .3rem;
+      transition: background .2s, color .2s;
+    }
+    .btn-card-watch:hover { background: var(--cv-red); color: #fff; }
+    .btn-card-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.1);
+      color: #fff; font-size: .8rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .2s; flex-shrink: 0;
+    }
+    .btn-card-icon.danger { background: rgba(225,29,72,.2); color: var(--cv-red); border-color: rgba(225,29,72,.3); }
+    .btn-card-icon.danger:hover { background: var(--cv-red); color: #fff; }
+    .btn-card-icon:hover { background: rgba(255,255,255,.2); }
+
+    /* ── GLASS PANEL ── */
+    .glass { background: var(--cv-glass); border: 1px solid var(--cv-border); backdrop-filter: blur(12px); }
+    .glass-heavy { background: rgba(14,19,32,.95); border: 1px solid var(--cv-border); backdrop-filter: blur(24px); }
+
+    /* ── PAGES ── */
+    .page { display: none; }
+    .page.active { display: block; }
+    main { padding-top: var(--nav-h); min-height: 70vh; }
+
+    /* ── FILM DETAIL ── */
+    .detail-hero {
+      position: relative; height: 65vh; min-height: 400px;
+      display: flex; align-items: flex-end; overflow: hidden;
+    }
+    .detail-hero .hero-bg img { opacity: .25; }
+    .detail-poster {
+      width: 160px; flex-shrink: 0; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--cv-border); box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    @media (max-width: 767px) { .detail-poster { display: none; } }
+
+    /* ── EPISODES ── */
+    .episode-btn {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .85rem 1rem; border-radius: 14px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--cv-border);
+      color: var(--cv-text); cursor: pointer; transition: all .2s; text-align: left;
+      width: 100%; text-decoration: none;
+    }
+    .episode-btn:hover, .episode-btn.active { background: rgba(225,29,72,.15); border-color: rgba(225,29,72,.4); color: #fff; }
+    .episode-num {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: rgba(225,29,72,.12); color: var(--cv-red);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .9rem; transition: all .2s;
+    }
+    .episode-btn:hover .episode-num, .episode-btn.active .episode-num {
+      background: var(--cv-red); color: #fff;
+    }
+
+    /* ── META TABLE ── */
+    .meta-table { border-radius: 16px; overflow: hidden; }
+    .meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .75rem 1.25rem; border-bottom: 1px solid var(--cv-border);
+      font-size: .85rem;
+    }
+    .meta-row:last-child { border-bottom: none; }
+    .meta-label { color: var(--cv-muted); }
+    .meta-val { font-weight: 700; }
+
+    /* ── GENRE PILL ── */
+    .genre-pill {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+      padding: .25rem .75rem; border-radius: 50px;
+      background: rgba(255,255,255,.07); border: 1px solid var(--cv-border);
+      color: var(--cv-muted);
+    }
+
+    /* ── COMMENTS ── */
+    .comment-item { display: flex; gap: 1rem; }
+    .comment-avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      overflow: hidden; background: var(--cv-card);
+    }
+    .comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .comment-body { flex: 1; }
+    .comment-meta { display: flex; align-items: center; gap: .5rem; margin-bottom: .25rem; }
+    .comment-name { font-weight: 700; font-size: .9rem; }
+    .comment-time { font-size: .7rem; color: var(--cv-muted); }
+
+    textarea.cv-input, input.cv-input, select.cv-input {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--cv-border);
+      border-radius: 12px;
+      color: var(--cv-text);
+      padding: .75rem 1rem;
+      width: 100%;
+      font-family: var(--cv-font);
+      transition: border-color .2s;
+      font-size: .9rem;
+    }
+    textarea.cv-input:focus, input.cv-input:focus, select.cv-input:focus {
+      outline: none; border-color: var(--cv-red);
+      background: rgba(255,255,255,.07);
+      box-shadow: 0 0 0 3px rgba(225,29,72,.12);
+    }
+    textarea.cv-input { resize: vertical; min-height: 80px; }
+    select.cv-input option { background: #111827; color: #fff; }
+
+    /* ── WATCH PAGE ── */
+    .watch-player {
+      border-radius: 20px; overflow: hidden;
+      background: #000; aspect-ratio: 16/9;
+      border: 1px solid var(--cv-border);
+      box-shadow: 0 40px 80px rgba(0,0,0,.8);
+    }
+    .watch-player iframe, .watch-player video {
+      width: 100%; height: 100%; display: block;
+    }
+
+    /* ── MODAL ── */
+    .cv-modal-backdrop {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,.8); backdrop-filter: blur(12px);
+      display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .cv-modal-backdrop.open { display: flex; }
+    .cv-modal {
+      width: 100%; max-width: 780px; max-height: 92vh;
+      overflow-y: auto; border-radius: 28px; padding: 2.5rem;
+    }
+    @media (max-width: 576px) { .cv-modal { padding: 1.5rem; border-radius: 20px; } }
+    .modal-title {
+      font-family: var(--cv-display); font-size: 2rem;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .modal-divider { height: 3px; width: 48px; background: var(--cv-red); border-radius: 4px; }
+
+    /* ── MANAGE PAGE ── */
+    .manage-card {
+      display: flex; gap: 1rem; padding: 1.25rem;
+      border-radius: 20px; border: 1px solid var(--cv-border);
+      background: var(--cv-card); transition: border-color .2s;
+      position: relative;
+    }
+    .manage-card:hover { border-color: rgba(255,255,255,.15); }
+    .manage-thumb {
+      width: 80px; aspect-ratio: 2/3; border-radius: 12px;
+      object-fit: cover; flex-shrink: 0;
+    }
+
+    /* ── ADMIN PAGE ── */
+    .stat-card {
+      padding: 1.75rem; border-radius: 20px;
+      background: var(--cv-card); border: 1px solid var(--cv-border);
+    }
+    .stat-label { font-size: .7rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--cv-muted); }
+    .stat-value { font-family: var(--cv-display); font-size: 3rem; line-height: 1.1; margin-top: .25rem; }
+
+    .cv-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .cv-table th {
+      font-size: .65rem; font-weight: 800; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--cv-muted);
+      padding: .75rem 1.25rem; border-bottom: 1px solid var(--cv-border);
+    }
+    .cv-table td {
+      padding: .9rem 1.25rem; border-bottom: 1px solid var(--cv-border);
+      font-size: .875rem; vertical-align: middle;
+    }
+    .cv-table tr:last-child td { border-bottom: none; }
+    .cv-table tr:hover td { background: rgba(255,255,255,.02); }
+
+    .role-badge {
+      font-size: .65rem; font-weight: 900; letter-spacing: .12em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 50px;
+    }
+    .role-badge.admin { background: rgba(245,158,11,.15); color: var(--cv-gold); }
+    .role-badge.dobber { background: rgba(225,29,72,.15); color: var(--cv-red); }
+    .role-badge.viewer { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); }
 
     /* ── TOAST ── */
-    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: none; pointer-events: none; }
-    #toast.show { display: block; animation: fadeUp .3s ease both; }
-
-    /* ── TABS ── */
-    .tab-btn { padding: 8px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all .2s; border: 1px solid transparent; }
-    .tab-btn.active { background: var(--red); color: #fff; box-shadow: 0 4px 20px rgba(225,29,72,.35); }
-    .tab-btn.inactive { background: rgba(255,255,255,.05); color: rgba(255,255,255,.5); border-color: var(--border); }
-    .tab-btn.inactive:hover { color: #fff; background: rgba(255,255,255,.08); }
-
-    /* ── BTN ── */
-    .btn { cursor: pointer; transition: all .15s; }
-    .btn:active { transform: scale(.96); }
-
-    /* ── LINE CLAMP ── */
-    .line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .line-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-    .scrollbar-hide::-webkit-scrollbar{display:none}
-    .scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}
-
-    /* ── STAR RATING ── */
-    .star-btn { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; }
-    .star-active { background: var(--gold); color: #000; box-shadow: 0 0 12px rgba(245,158,11,.4); }
-    .star-inactive { background: rgba(255,255,255,.05); color: rgba(255,255,255,.35); border: 1px solid var(--border); }
-    .star-inactive:hover { background: rgba(245,158,11,.15); color: var(--gold); }
+    #toastContainer {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+      pointer-events: none;
+    }
+    .cv-toast {
+      padding: .75rem 1.5rem; border-radius: 50px;
+      font-weight: 700; font-size: .875rem;
+      display: flex; align-items: center; gap: .5rem;
+      white-space: nowrap; pointer-events: auto;
+      animation: toastIn .3s ease forwards;
+    }
+    .cv-toast.success { background: #059669; color: #fff; }
+    .cv-toast.error { background: var(--cv-red); color: #fff; }
+    .cv-toast.info { background: rgba(255,255,255,.1); color: #fff; border: 1px solid var(--cv-border); backdrop-filter: blur(12px); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(16px); } }
 
     /* ── AD BANNER ── */
     .ad-banner {
-      background: linear-gradient(135deg, rgba(15,15,18,0.95), rgba(20,20,25,0.95));
-      border: 1px dashed rgba(255,255,255,.1);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center; flex-direction: column;
-      color: rgba(255,255,255,.2); font-size: 12px; font-weight: 500; letter-spacing: .05em;
-      text-transform: uppercase; gap: 4px; position: relative; overflow: hidden;
+      border-radius: 16px; border: 1px dashed var(--cv-border);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; color: var(--cv-muted); gap: .5rem;
     }
-    .ad-banner::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.02), transparent);
-      animation: shimmer 3s ease infinite;
-      background-size: 200% 100%;
+    .ad-banner span { font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: rgba(0,0,0,.5); border-top: 1px solid var(--cv-border);
+      padding: 4rem 0 2rem;
+    }
+    .footer-title { font-family: var(--cv-display); font-size: 1.1rem; letter-spacing: .15em; text-transform: uppercase; }
+    .footer-link {
+      font-size: .85rem; color: var(--cv-muted); text-decoration: none;
+      transition: color .2s; display: block; margin-bottom: .35rem;
+    }
+    .footer-link:hover { color: var(--cv-red); }
+
+    /* ── PROFILE ── */
+    .profile-avatar {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid var(--cv-red); padding: 3px; margin: 0 auto;
+      overflow: hidden;
+    }
+    .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn .5s ease forwards; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(225,29,72,.5); }
+
+    /* ── SPINNER ── */
+    .cv-spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,.1);
+      border-top-color: var(--cv-red);
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── IMAGE UPLOAD ── */
+    .img-upload-area {
+      border: 2px dashed var(--cv-border); border-radius: 16px;
+      padding: 1.5rem; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .img-upload-area:hover { border-color: var(--cv-red); background: rgba(225,29,72,.05); }
+    .img-preview {
+      width: 100%; max-height: 200px; object-fit: cover;
+      border-radius: 12px; margin-top: .75rem;
     }
 
-    /* ── ROLE BADGE ── */
-    .role-admin { background: rgba(225,29,72,.15); color: #fb7185; border: 1px solid rgba(225,29,72,.3); }
-    .role-dobber { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
-    .role-viewer { background: rgba(255,255,255,.06); color: rgba(255,255,255,.5); border: 1px solid var(--border); }
-
-    /* ── EPISODE CARD ── */
-    .ep-card { transition: all .15s; }
-    .ep-card:hover { background: rgba(255,255,255,.08) !important; }
-    .ep-card.current { background: rgba(225,29,72,.1) !important; border-color: rgba(225,29,72,.4) !important; }
-
-    /* ── WATCH PAGE ── */
-    #watch-page-root { min-height: 100vh; background: #000; }
-
-    /* ── RTL SUPPORT ── */
-    html[dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
-    html[dir="rtl"] .mr-auto { margin-right: 0; margin-left: auto; }
-
-    /* ── GLASS CARD ── */
-    .glass { background: rgba(15,15,18,0.7); backdrop-filter: blur(20px); border: 1px solid var(--border); }
-
-    /* ── HERO GRADIENT ── */
-    .hero-grad {
-      background: linear-gradient(to right, rgba(0,0,0,.95) 0%, rgba(0,0,0,.6) 50%, transparent 100%),
-                  linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,.4) 30%, transparent 70%);
+    /* ── CONFIG BANNER ── */
+    #configBanner {
+      background: #92400e; color: #fff; text-align: center;
+      padding: .5rem 1rem; font-size: .75rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
     }
+
+    /* ── SEARCH ── */
+    .search-wrapper { position: relative; }
+    .search-wrapper .bi { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--cv-muted); pointer-events: none; }
+    body.rtl .search-wrapper .bi { left: auto; right: 1rem; }
+    .search-wrapper input { padding-left: 2.75rem; }
+    body.rtl .search-wrapper input { padding-left: 1rem; padding-right: 2.75rem; }
+
+    /* ── MOBILE NAV ── */
+    .mobile-nav-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(8,11,18,.97); backdrop-filter: blur(20px);
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; gap: 2rem;
+      padding-top: var(--nav-h);
+    }
+    .mobile-nav-overlay.open { display: flex; }
+    .mobile-nav-link {
+      font-family: var(--cv-display); font-size: 2.5rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(255,255,255,.6); text-decoration: none;
+      transition: color .2s;
+    }
+    .mobile-nav-link:hover { color: var(--cv-red); }
+
+    /* RTL adjustments */
+    body.rtl .hero-grad {
+      background: linear-gradient(270deg, var(--cv-dark) 30%, transparent 100%),
+                  linear-gradient(0deg, var(--cv-dark) 0%, transparent 60%);
+    }
+    body.rtl .section-title { flex-direction: row-reverse; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      min-height: 50vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      gap: 1.5rem;
+    }
+    .empty-icon {
+      width: 96px; height: 96px; border-radius: 28px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--cv-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; color: rgba(255,255,255,.15);
+    }
+
+    /* ── SEASON TABS ── */
+    .season-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .season-tab {
+      padding: .35rem 1rem; border-radius: 50px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--cv-border);
+      color: var(--cv-muted); font-size: .8rem; font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .season-tab.active { background: var(--cv-red); border-color: var(--cv-red); color: #fff; }
+
+    /* image upload tab */
+    .upload-tabs { display: flex; gap: 0; margin-bottom: 1rem; }
+    .upload-tab {
+      flex: 1; padding: .5rem; text-align: center; font-size: .78rem; font-weight: 700;
+      border: 1px solid var(--cv-border); cursor: pointer; transition: all .2s;
+      color: var(--cv-muted);
+    }
+    .upload-tab:first-child { border-radius: 10px 0 0 10px; }
+    .upload-tab:last-child { border-radius: 0 10px 10px 0; }
+    .upload-tab.active { background: var(--cv-red); border-color: var(--cv-red); color: #fff; }
   </style>
 </head>
 <body>
-<div id="grain"></div>
 
-<!-- ====================================================== -->
-<!-- APP ROOT                                               -->
-<!-- ====================================================== -->
-<div id="app" style="position:relative;z-index:1"></div>
-
-<!-- Toast -->
-<div id="toast">
-  <div id="toast-inner" class="px-6 py-3 rounded-full text-sm font-semibold shadow-2xl"></div>
+<!-- CONFIG BANNER -->
+<div id="configBanner" style="display:none">
+  Firebase Configuration Required — Please update firebase-applet-config.json
 </div>
 
-<!-- Modal container (outside app root so it always overlays) -->
-<div id="modal-root"></div>
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
 
+<!-- MOBILE NAV OVERLAY -->
+<div class="mobile-nav-overlay" id="mobileNav">
+  <a class="mobile-nav-link" onclick="navigate('home');toggleMobileNav()">Home / سەرەکی</a>
+  <a class="mobile-nav-link" id="mobManageLink" onclick="navigate('manage');toggleMobileNav()" style="display:none">Manage</a>
+  <a class="mobile-nav-link" id="mobAdminLink" style="color:rgba(245,158,11,.7)" onclick="navigate('admin');toggleMobileNav()" style="display:none">Admin</a>
+  <a class="mobile-nav-link" onclick="navigate('profile');toggleMobileNav()">Profile</a>
+</div>
+
+<!-- NAVBAR -->
+<nav id="mainNav">
+  <div class="container-fluid px-3 px-md-4 h-100">
+    <div class="d-flex align-items-center justify-content-between h-100 gap-3">
+      <!-- LEFT: brand + desktop links -->
+      <div class="d-flex align-items-center gap-4">
+        <button class="btn p-0 border-0" onclick="navigate('home')" style="background:none">
+          <div class="d-flex align-items-center gap-2">
+            <div class="brand-icon"><i class="bi bi-film text-white fs-5"></i></div>
+            <span class="brand-name d-none d-sm-block" id="appNameNav">CineVerse</span>
+          </div>
+        </button>
+        <div class="d-none d-md-flex align-items-center gap-1">
+          <button class="nav-link-cv btn border-0 active" id="navHome" onclick="navigate('home')" data-key="home">Home</button>
+          <button class="nav-link-cv btn border-0" id="navManage" onclick="navigate('manage')" data-key="manage" style="display:none!important">Manage</button>
+          <button class="nav-link-cv btn border-0" id="navAdmin" onclick="navigate('admin')" data-key="admin" style="display:none!important; color:var(--cv-gold)!important">Admin</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: actions -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Search -->
+        <div class="search-wrapper d-none d-lg-block">
+          <i class="bi bi-search fs-6"></i>
+          <input type="text" class="cv-input" id="searchInput" placeholder="Search..." style="width:220px;padding:.4rem 1rem .4rem 2.5rem;border-radius:50px;font-size:.82rem" oninput="handleSearch(this.value)" data-key-placeholder="searchPlaceholder">
+        </div>
+
+        <!-- Add Film Button (dobbers only) -->
+        <button class="btn-add-nav btn border-0 d-none d-sm-flex align-items-center gap-1" id="navAddBtn" onclick="openFilmModal(null)" style="display:none!important">
+          <i class="bi bi-plus-lg"></i> <span data-key="addNew">Add New</span>
+        </button>
+
+        <!-- Lang Toggle -->
+        <button class="lang-btn btn border-0" onclick="toggleLang()" id="langBtn">کوردی</button>
+
+        <!-- User -->
+        <div id="userArea">
+          <button class="btn-cv-primary" style="padding:.45rem 1.2rem;font-size:.8rem" onclick="signIn()">
+            <i class="bi bi-google"></i> <span data-key="signIn">Sign In</span>
+          </button>
+        </div>
+
+        <!-- Mobile menu -->
+        <button class="btn border-0 text-white d-md-none p-2" onclick="toggleMobileNav()">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+  <!-- LOADER -->
+  <div id="pageLoader" class="d-flex align-items-center justify-content-center" style="height:80vh">
+    <div class="cv-spinner"></div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="page" id="pageHome">
+    <!-- Hero -->
+    <div id="heroSection" style="display:none">
+      <div class="hero-bg">
+        <img id="heroBg" src="" alt="" referrerpolicy="no-referrer">
+        <div class="hero-grad"></div>
+      </div>
+      <div class="container-lg hero-content w-100">
+        <div class="row">
+          <div class="col-12 col-md-8 col-lg-6">
+            <div class="hero-badge mb-3">
+              <i class="bi bi-star-fill"></i> <span data-key="featured" id="heroFeaturedBadge">Featured</span>
+            </div>
+            <div class="hero-meta mb-3">
+              <span class="rating" id="heroRating">
+                <i class="bi bi-star-fill"></i> 8.5
+              </span>
+              <span id="heroYear">2024</span>
+              <span id="heroType" class="text-uppercase"></span>
+            </div>
+            <h1 class="hero-title mb-3" id="heroTitle">Film Title</h1>
+            <p class="hero-desc mb-4" id="heroDesc">Description...</p>
+            <div class="d-flex flex-wrap gap-3">
+              <button class="btn-cv-primary" id="heroWatchBtn" onclick="">
+                <i class="bi bi-play-fill"></i> <span data-key="watchNow">Watch Now</span>
+              </button>
+              <button class="btn-cv-secondary" id="heroDetailsBtn" onclick="">
+                <i class="bi bi-info-circle"></i> <span data-key="details">Details</span>
+              </button>
+              <button class="btn-cv-secondary" id="heroAddBtn" onclick="openFilmModal(null)" style="display:none;border-color:rgba(225,29,72,.3);color:var(--cv-red)">
+                <i class="bi bi-plus-lg"></i> <span data-key="addFilm">Add Film</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="empty-icon"><i class="bi bi-film"></i></div>
+      <div>
+        <h2 class="mb-2" style="font-family:var(--cv-display);font-size:2rem;letter-spacing:.06em;text-transform:uppercase" data-key="noContent">Nothing here yet</h2>
+        <p style="color:var(--cv-muted)" data-key="addFirst">Add your first film</p>
+      </div>
+      <button class="btn-cv-primary" id="emptyAddBtn" onclick="openFilmModal(null)" style="display:none">
+        <i class="bi bi-plus-lg"></i> <span data-key="addNew">Add New</span>
+      </button>
+    </div>
+
+    <!-- Search Results -->
+    <div id="searchResults" style="display:none">
+      <div class="container-lg py-5">
+        <div class="section-header">
+          <div class="section-title"><span class="bar red"></span> <span data-key="searchResults">Search Results</span></div>
+        </div>
+        <div class="film-grid" id="searchGrid"></div>
+      </div>
+    </div>
+
+    <!-- Movies Section -->
+    <div class="container-lg py-4" id="moviesSection" style="display:none">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="bar red"></span>
+          <span data-key="latestMovies">Latest Movies</span>
+        </div>
+        <button class="btn-card-icon" id="addMovieBtn" onclick="openFilmModal(null)" style="display:none;width:auto;padding:.4rem 1rem;border-radius:50px;gap:.4rem" title="Add">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div class="film-grid" id="moviesGrid"></div>
+    </div>
+
+    <!-- Ad Banner -->
+    <div class="container-lg py-3">
+      <div class="ad-banner py-5" style="min-height:90px">
+        <i class="bi bi-layout-text-window fs-4"></i>
+        <span data-key="adPlaceholder">Your Ad Here — 728×90</span>
+      </div>
+    </div>
+
+    <!-- Series Section -->
+    <div class="container-lg py-4" id="seriesSection" style="display:none">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="bar gold"></span>
+          <span data-key="latestSeries">Latest Series</span>
+        </div>
+        <button class="btn-card-icon" id="addSeriesBtn" onclick="openFilmModal(null)" style="display:none;width:auto;padding:.4rem 1rem;border-radius:50px;gap:.4rem" title="Add">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div class="film-grid" id="seriesGrid"></div>
+    </div>
+
+    <div class="pb-5"></div>
+  </div>
+
+  <!-- FILM DETAIL PAGE -->
+  <div class="page" id="pageFilm">
+    <div class="detail-hero" id="detailHero">
+      <div class="hero-bg">
+        <img id="detailBg" src="" alt="" referrerpolicy="no-referrer">
+        <div class="hero-grad"></div>
+      </div>
+      <div class="container-lg w-100" style="position:relative;z-index:2;padding-bottom:3rem">
+        <div class="d-flex align-items-end gap-4">
+          <div class="detail-poster">
+            <img id="detailPoster" src="" alt="" style="width:100%;aspect-ratio:2/3;object-fit:cover">
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <span id="detailTypeBadge" class="film-type-badge"></span>
+              <span id="detailRating" style="color:var(--cv-gold);font-weight:800;font-size:.9rem"><i class="bi bi-star-fill"></i> 8.5</span>
+              <span id="detailYear" style="color:var(--cv-muted);font-size:.9rem"></span>
+            </div>
+            <h1 class="hero-title mb-3" id="detailTitle" style="font-size:clamp(2rem,6vw,4.5rem)"></h1>
+            <div class="d-flex flex-wrap gap-2 mb-4" id="detailGenres"></div>
+            <div class="d-flex flex-wrap gap-3">
+              <button class="btn-cv-primary" id="detailWatchBtn"><i class="bi bi-play-fill"></i> <span data-key="watchNow">Watch Now</span></button>
+              <button class="btn-cv-secondary" onclick="navigate('home')"><i class="bi bi-arrow-left"></i> <span data-key="back">Back</span></button>
+              <button class="btn-cv-secondary" id="detailEditBtn" onclick="" style="display:none"><i class="bi bi-pencil"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-lg py-5">
+      <div class="row g-5">
+        <div class="col-lg-8">
+          <h3 class="mb-3" style="font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)" data-key="synopsis">Synopsis</h3>
+          <p id="detailDesc" style="color:rgba(255,255,255,.7);line-height:1.8;font-size:1rem"></p>
+
+          <!-- Episodes -->
+          <div id="episodesSection" style="display:none;margin-top:3rem">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 style="font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)" data-key="episodes">Episodes</h3>
+              <div class="season-tabs" id="seasonTabs"></div>
+            </div>
+            <div class="row g-2" id="episodesGrid"></div>
+          </div>
+
+          <!-- Comments -->
+          <div style="margin-top:3rem">
+            <h3 class="mb-4" style="font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)">
+              <span data-key="comments">Comments</span> (<span id="commentCount">0</span>)
+            </h3>
+            <div id="commentForm" style="display:none">
+              <div class="d-flex gap-3 mb-4">
+                <div class="comment-avatar flex-shrink-0"><img id="commentUserPhoto" src="" alt=""></div>
+                <div class="flex-grow-1">
+                  <textarea class="cv-input mb-2" id="commentInput" rows="3" data-key-placeholder="addComment" placeholder="Add a comment..."></textarea>
+                  <div class="text-end">
+                    <button class="btn-cv-primary" onclick="postComment()" style="padding:.55rem 1.5rem;font-size:.85rem">
+                      <i class="bi bi-send"></i> <span data-key="post">Post</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="signInToComment" class="glass p-4 text-center rounded-4 mb-4" style="display:none">
+              <p style="color:var(--cv-muted);margin-bottom:.75rem" data-key="signInToComment">Sign in to comment</p>
+              <button class="btn-cv-primary" onclick="signIn()" style="padding:.5rem 1.5rem;font-size:.85rem"><i class="bi bi-google"></i> Sign In</button>
+            </div>
+            <div id="commentsList" class="d-flex flex-column gap-4"></div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <!-- Meta info -->
+          <div class="glass rounded-4 mb-4 meta-table">
+            <h3 class="px-4 pt-4 pb-2" style="font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)" data-key="details">Details</h3>
+            <div class="meta-row"><span class="meta-label" data-key="releaseYear">Year</span><span class="meta-val" id="metaYear"></span></div>
+            <div class="meta-row"><span class="meta-label" data-key="type">Type</span><span class="meta-val text-uppercase" id="metaType"></span></div>
+            <div class="meta-row"><span class="meta-label" data-key="rating">Rating</span><span class="meta-val" style="color:var(--cv-gold)" id="metaRating"></span></div>
+            <div class="meta-row" id="metaEpsRow" style="display:none"><span class="meta-label" data-key="episodes">Episodes</span><span class="meta-val" id="metaEpsCount"></span></div>
+          </div>
+          <div class="ad-banner py-5" style="min-height:250px">
+            <i class="bi bi-layout-sidebar fs-3"></i>
+            <span data-key="adSidebar">Your Ad Here — 300×250</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATCH PAGE -->
+  <div class="page" id="pageWatch">
+    <div class="container-lg py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <button class="btn-cv-secondary" id="watchBackBtn" style="padding:.5rem 1.2rem;font-size:.85rem">
+          <i class="bi bi-arrow-left"></i> <span data-key="backToDetails">Back to Details</span>
+        </button>
+        <div class="text-end">
+          <div style="font-family:var(--cv-display);font-size:1.2rem;letter-spacing:.08em;text-transform:uppercase" id="watchTitle"></div>
+          <div style="color:var(--cv-red);font-size:.8rem;font-weight:700" id="watchEpLabel"></div>
+        </div>
+      </div>
+
+      <div class="watch-player mb-4" id="watchPlayer"></div>
+
+      <!-- Episode selector for series -->
+      <div id="watchEpisodes" style="display:none">
+        <h3 class="mb-3" style="font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)" data-key="episodes">Episodes</h3>
+        <div class="d-flex gap-3 overflow-auto pb-2" id="watchEpList" style="scrollbar-width:thin"></div>
+      </div>
+
+      <div class="ad-banner py-4 mt-4" style="min-height:90px">
+        <i class="bi bi-layout-text-window fs-4"></i>
+        <span data-key="adPlaceholder">Your Ad Here — 728×90</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="pageProfile">
+    <div class="container" style="max-width:600px;padding-top:3rem;padding-bottom:5rem">
+      <div class="text-center mb-5">
+        <div class="profile-avatar mb-3">
+          <img id="profilePhoto" src="" alt="">
+        </div>
+        <h1 style="font-family:var(--cv-display);font-size:2rem;letter-spacing:.08em;text-transform:uppercase" id="profileName"></h1>
+        <p style="color:var(--cv-muted)" id="profileEmail"></p>
+        <span class="role-badge mt-2 d-inline-block" id="profileRoleBadge"></span>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button class="btn-cv-secondary" onclick="signOut()" style="gap:.5rem">
+          <i class="bi bi-box-arrow-right"></i> <span data-key="signOut">Sign Out</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE PAGE -->
+  <div class="page" id="pageManage">
+    <div class="container-lg py-5">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-4 mb-5">
+        <div>
+          <h1 style="font-family:var(--cv-display);font-size:2.5rem;letter-spacing:.08em;text-transform:uppercase" data-key="contentMgmt">Content Management</h1>
+          <p style="color:var(--cv-muted);margin-top:.25rem">Add, edit or remove movies and series from the platform.</p>
+        </div>
+        <button class="btn-cv-primary flex-shrink-0" onclick="openFilmModal(null)">
+          <i class="bi bi-plus-lg"></i> <span data-key="addNew">Add New</span>
+        </button>
+      </div>
+      <div class="row g-3" id="manageGrid"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div class="page" id="pageAdmin">
+    <div class="container-lg py-5">
+      <div class="d-flex align-items-center gap-3 mb-5">
+        <i class="bi bi-shield-check" style="font-size:2rem;color:var(--cv-gold)"></i>
+        <h1 style="font-family:var(--cv-display);font-size:2.5rem;letter-spacing:.08em;text-transform:uppercase" data-key="adminPanel">Admin Panel</h1>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-label" data-key="totalFilms">Total Films</div>
+            <div class="stat-value" id="statFilms">0</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-label" data-key="users">Users</div>
+            <div class="stat-value" id="statUsers">0</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-label">Movies</div>
+            <div class="stat-value" id="statMovies">0</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card">
+            <div class="stat-label">Series</div>
+            <div class="stat-value" id="statSeries">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="glass rounded-4 overflow-hidden">
+        <div class="p-4 border-bottom" style="border-color:var(--cv-border)!important">
+          <h2 style="font-family:var(--cv-display);font-size:1.4rem;letter-spacing:.08em;text-transform:uppercase" data-key="manageUsers">Manage Users</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="cv-table">
+            <thead>
+              <tr>
+                <th data-key="nameLabel">Name</th>
+                <th data-key="emailLabel">Email</th>
+                <th data-key="roleLabel">Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Films management in admin -->
+      <div class="mt-5 glass rounded-4 overflow-hidden">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center" style="border-color:var(--cv-border)!important">
+          <h2 style="font-family:var(--cv-display);font-size:1.4rem;letter-spacing:.08em;text-transform:uppercase">All Films</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="cv-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Year</th>
+                <th>Rating</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminFilmsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FILM MODAL -->
+<div class="cv-modal-backdrop" id="filmModalBackdrop">
+  <div class="cv-modal glass-heavy fade-in" id="filmModal">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+      <div>
+        <h2 class="modal-title" id="modalTitle">Add Film</h2>
+        <div class="modal-divider mt-2"></div>
+      </div>
+      <button class="btn border-0 text-white p-2" onclick="closeFilmModal()" style="border-radius:12px;background:rgba(255,255,255,.05)">
+        <i class="bi bi-x-lg fs-5"></i>
+      </button>
+    </div>
+
+    <!-- TYPE TABS -->
+    <div class="d-flex gap-2 mb-4">
+      <button class="btn flex-fill py-2 rounded-3 active" id="typeMovieBtn" onclick="setFilmType('movie')"
+        style="background:rgba(225,29,72,.15);border:1px solid rgba(225,29,72,.4);color:var(--cv-red);font-weight:700;font-size:.85rem;transition:all .2s">
+        <i class="bi bi-film me-1"></i> Movie
+      </button>
+      <button class="btn flex-fill py-2 rounded-3" id="typeSeriesBtn" onclick="setFilmType('series')"
+        style="background:rgba(255,255,255,.05);border:1px solid var(--cv-border);color:var(--cv-muted);font-weight:700;font-size:.85rem;transition:all .2s">
+        <i class="bi bi-tv me-1"></i> Series
+      </button>
+    </div>
+
+    <!-- FORM -->
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="titleRequired">Title *</label>
+        <input type="text" class="cv-input" id="filmTitle" placeholder="Enter film title...">
+      </div>
+      <div class="col-12">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="descRequired">Description *</label>
+        <textarea class="cv-input" id="filmDesc" rows="3" placeholder="Enter description..."></textarea>
+      </div>
+
+      <!-- THUMBNAIL section -->
+      <div class="col-12">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="thumbRequired">Thumbnail *</label>
+        <div class="upload-tabs">
+          <div class="upload-tab active" onclick="setThumbMode('url')" id="thumbUrlTab">🔗 URL</div>
+          <div class="upload-tab" onclick="setThumbMode('upload')" id="thumbUploadTab">📁 Upload Image</div>
+        </div>
+        <div id="thumbUrlSection">
+          <input type="url" class="cv-input" id="filmThumbnailUrl" placeholder="https://example.com/poster.jpg" oninput="previewThumb(this.value)">
+        </div>
+        <div id="thumbUploadSection" style="display:none">
+          <div class="img-upload-area" onclick="document.getElementById('thumbFileInput').click()">
+            <i class="bi bi-cloud-upload fs-3 mb-2" style="color:var(--cv-muted)"></i>
+            <p style="color:var(--cv-muted);margin:0;font-size:.85rem">Click to upload image</p>
+            <p style="color:rgba(255,255,255,.25);font-size:.72rem;margin-top:.25rem">PNG, JPG, WEBP up to 5MB</p>
+            <input type="file" id="thumbFileInput" accept="image/*" style="display:none" onchange="handleThumbUpload(this)">
+          </div>
+        </div>
+        <div id="thumbPreviewWrap" style="display:none;margin-top:.75rem">
+          <img id="thumbPreview" src="" alt="Preview" class="img-preview">
+        </div>
+      </div>
+
+      <!-- VIDEO URL (movies only) -->
+      <div class="col-12" id="filmVideoUrlSection">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="videoRequired">Video URL *</label>
+        <input type="url" class="cv-input" id="filmVideoUrl" placeholder="YouTube, Vimeo, or direct .mp4 URL">
+        <small style="color:var(--cv-muted);font-size:.72rem;margin-top:.3rem;display:block">Supports YouTube, Vimeo, DailyMotion, direct MP4/M3U8</small>
+      </div>
+
+      <div class="col-md-4">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="yearLabel">Year</label>
+        <input type="number" class="cv-input" id="filmYear" value="2024" min="1900" max="2030">
+      </div>
+      <div class="col-md-4">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="rating">Rating (0-10)</label>
+        <input type="number" class="cv-input" id="filmRating" value="8.0" step="0.1" min="0" max="10">
+      </div>
+      <div class="col-md-4">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)" data-key="genres">Genres</label>
+        <input type="text" class="cv-input" id="filmGenres" placeholder="Action, Drama, ...">
+      </div>
+
+      <!-- Director / Cast (optional) -->
+      <div class="col-md-6">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)">Director</label>
+        <input type="text" class="cv-input" id="filmDirector" placeholder="Director name">
+      </div>
+      <div class="col-md-6">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)">Cast</label>
+        <input type="text" class="cv-input" id="filmCast" placeholder="Actor 1, Actor 2, ...">
+      </div>
+      <div class="col-md-6">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)">Language</label>
+        <input type="text" class="cv-input" id="filmLanguage" placeholder="English, Kurdish, ...">
+      </div>
+      <div class="col-md-6">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)">Duration (minutes)</label>
+        <input type="number" class="cv-input" id="filmDuration" placeholder="120" min="1">
+      </div>
+      <div class="col-12">
+        <label class="d-block mb-1" style="font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cv-muted)">Trailer URL (optional)</label>
+        <input type="url" class="cv-input" id="filmTrailer" placeholder="YouTube trailer URL">
+      </div>
+    </div>
+
+    <!-- EPISODES (series only) -->
+    <div id="episodesFormSection" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--cv-border)">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 style="font-size:.8rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted)" data-key="episodes">Episodes</h3>
+        <button class="btn border-0" onclick="addEpisode()" style="color:var(--cv-red);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:.3rem">
+          <i class="bi bi-plus-lg"></i> <span data-key="addEpisode">Add Episode</span>
+        </button>
+      </div>
+      <div id="episodesFormList" class="d-flex flex-column gap-3"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="d-flex justify-content-end gap-3 mt-4 pt-4" style="border-top:1px solid var(--cv-border)">
+      <button class="btn-cv-secondary" onclick="closeFilmModal()" style="padding:.6rem 1.5rem;font-size:.85rem" data-key="cancel">Cancel</button>
+      <button class="btn-cv-primary" onclick="saveFilm()" id="saveFilmBtn" style="padding:.6rem 2rem;font-size:.85rem" data-key="save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container-lg">
+    <div class="row g-5 mb-5">
+      <div class="col-12 col-md-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="brand-icon"><i class="bi bi-film text-white fs-5"></i></div>
+          <span class="brand-name" id="footerBrandName">CineVerse</span>
+        </div>
+        <p style="color:var(--cv-muted);font-size:.875rem;line-height:1.7">Your professional cinematic destination. Watch the latest movies and series in high quality with multi-language support.</p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#" style="color:var(--cv-muted);font-size:1.2rem;transition:color .2s" class="footer-link d-inline"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" style="color:var(--cv-muted);font-size:1.2rem;transition:color .2s" class="footer-link d-inline"><i class="bi bi-instagram"></i></a>
+          <a href="#" style="color:var(--cv-muted);font-size:1.2rem;transition:color .2s" class="footer-link d-inline"><i class="bi bi-youtube"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <h5 style="font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted);margin-bottom:1rem">Navigate</h5>
+        <a class="footer-link" onclick="navigate('home')">Home</a>
+        <a class="footer-link" href="#">Movies</a>
+        <a class="footer-link" href="#">Series</a>
+        <a class="footer-link" href="#">New Releases</a>
+      </div>
+      <div class="col-6 col-md-2">
+        <h5 style="font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted);margin-bottom:1rem">Legal</h5>
+        <a class="footer-link" href="#">Privacy Policy</a>
+        <a class="footer-link" href="#">Terms of Service</a>
+        <a class="footer-link" href="#">Cookie Policy</a>
+        <a class="footer-link" href="#">DMCA</a>
+      </div>
+      <div class="col-12 col-md-4">
+        <h5 style="font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--cv-muted);margin-bottom:1rem">Newsletter</h5>
+        <p style="color:var(--cv-muted);font-size:.85rem;margin-bottom:1rem">Get notified about new releases and updates.</p>
+        <div class="d-flex gap-2">
+          <input type="email" class="cv-input flex-grow-1" placeholder="your@email.com" style="border-radius:50px;padding:.55rem 1.25rem;font-size:.85rem">
+          <button class="btn-cv-primary flex-shrink-0" style="padding:.55rem 1.2rem;border-radius:50px"><i class="bi bi-send-fill"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="text-center pt-4" style="border-top:1px solid var(--cv-border);color:var(--cv-muted);font-size:.8rem">
+      &copy; <span id="footerYear"></span> CineVerse. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
 <script type="module">
-// ============================================================
-// FIREBASE SETUP  ← Replace the config below with your own
-// ============================================================
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import {
-  getAuth, GoogleAuthProvider, signInWithPopup,
-  signOut as fbSignOut, onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import {
-  getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, limit, serverTimestamp, setDoc,
-  getDoc, getDocs
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js';
+  import { getFirestore, collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
+    onSnapshot, query, orderBy, limit, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
 
-// ╔══════════════════════════════════════════════════╗
-// ║   YOUR FIREBASE CONFIG — REPLACE THIS BLOCK     ║
-// ╚══════════════════════════════════════════════════╝
-const firebaseConfig = {
-  projectId:         "gen-lang-client-0276878387",
-  appId:             "1:1014452232375:web:1fb9230c7e4d3866ffad32",
-  apiKey:            "AIzaSyCx6zwv21LIcofgP3zecHe9y1Zg1kX4gsg",
-  authDomain:        "gen-lang-client-0276878387.firebaseapp.com",
-  storageBucket:     "gen-lang-client-0276878387.firebasestorage.app",
-  messagingSenderId: "1014452232375",
-};
-// ╚══════════════════════════════════════════════════╝
-
-const fbApp = initializeApp(firebaseConfig);
-const auth  = getAuth(fbApp);
-const db    = getFirestore(fbApp, 'ai-studio-687e7168-12bc-4ce9-a7af-516929e8fe81');
-const googleProvider = new GoogleAuthProvider();
-
-// ============================================================
-// TRANSLATIONS
-// ============================================================
-const LANG = {
-  en: {
-    appName:'CineVerse', home:'Home', movies:'Movies', series:'Series',
-    manage:'Manage', admin:'Admin', profile:'Profile',
-    signIn:'Sign In', signOut:'Sign Out', watchNow:'Watch Now',
-    moreInfo:'More Info', back:'Back', backToDetails:'Back to Details',
-    noFilms:'No Films Found', addFirst:'Add your first film',
-    synopsis:'Synopsis', episodes:'Episodes', comments:'Comments',
-    addComment:'Add a comment...', post:'Post', rateThis:'Rate this',
-    favorites:'Favorites', watched:'Watched', watchLater:'Watch Later',
-    contentMgmt:'Content Management', addNew:'Add New', users:'Users',
-    deleteConfirm:'Delete this film permanently?',
-    updated:'Updated!', added:'Added!', deleted:'Deleted!', failed:'Failed',
-    signInToComment:'Sign in to comment', details:'Details',
-    releaseYear:'Year', type:'Type', rating:'Rating',
-    titleLabel:'Title', descLabel:'Description', thumbnail:'Thumbnail URL',
-    videoUrl:'Video URL', yearLabel:'Year', genresLabel:'Genres (comma-separated)',
-    save:'Save', update:'Update', cancel:'Cancel',
-    addEpisode:'Add Episode', noVideo:'No video available',
-    accessDenied:'Access Denied', adminPanel:'Admin Panel',
-    userMgmt:'User Management', stats:'Statistics', totalFilms:'Total Films',
-    roleLabel:'Role', emailLabel:'Email', nameLabel:'Name',
-    recentlyAdded:'Recently Added', allMovies:'All Movies', allSeries:'All Series',
-    browseFilms:'Browse Films', advertisement:'Advertisement',
-    fillAll:'Please fill all required fields', linkCopied:'Link copied!',
-    yourRating:'Your rating', noContent:'Nothing here yet',
-    epTitle:'Episode Title', epUrl:'Episode Video URL',
-    titleRequired:'Title *', descRequired:'Description *',
-    thumbRequired:'Thumbnail URL *', videoRequired:'Video URL *',
-    saveChanges:'Save Changes', episodesSection:'Episodes',
-    dobber:'Editor', viewer:'Viewer', roleAdmin:'Admin',
-    changeRole:'Change Role', saveRole:'Save',
-    searchPlaceholder:'Search films...', noResults:'No results',
-    episodeOf:'Episode', of:'of', nowWatching:'Now Watching',
-    yourLists:'Your Lists', manageUsers:'Manage Users',
-    filmCount:'Films', userCount:'Users', addedBy:'Added by',
-    adPlaceholder:'Your Ad Here — 728×90',
-    adSidebar:'Your Ad Here — 300×250',
-    adMobile:'Your Ad Here — 320×50',
-    episode:'Episode', series:'Series', movie:'Movie',
-    genres:'Genres',
-  },
-  ku: {
-    appName:'سینێڤێرس', home:'سەرەکی', movies:'فیلمەکان', series:'زنجیرەکان',
-    manage:'بەڕێوەبردن', admin:'ئەدمین', profile:'پرۆفایل',
-    signIn:'چوونەژوورەوە', signOut:'چوونەدەرەوە', watchNow:'ئێستا ببینە',
-    moreInfo:'زیاتر بزانە', back:'گەڕانەوە', backToDetails:'گەڕانەوە بۆ وردەکاری',
-    noFilms:'هیچ فیلمێک نەدۆزرایەوە', addFirst:'یەکەم فیلمەکەت زیاد بکە',
-    synopsis:'کورتەبیر', episodes:'ئێپیزۆدەکان', comments:'کۆمێنتەکان',
-    addComment:'کۆمێنتێک بنووسە...', post:'بنێرە', rateThis:'هەڵسەنگاندن',
-    favorites:'دڵخوازەکان', watched:'بینراوەکان', watchLater:'دواتر ببینە',
-    contentMgmt:'بەڕێوەبردنی ناوەڕۆک', addNew:'زیادکردنی نوێ', users:'بەکارهێنەران',
-    deleteConfirm:'دڵنیایت لە سڕینەوەی ئەم فیلمە؟',
-    updated:'نوێکراوەتەوە!', added:'زیادکرا!', deleted:'سڕایەوە!', failed:'شکستی هێنا',
-    signInToComment:'بۆ کۆمێنت داخل بوو', details:'وردەکاریەکان',
-    releaseYear:'ساڵ', type:'جۆر', rating:'هەڵسەنگاندن',
-    titleLabel:'ناونیشان', descLabel:'وەسف', thumbnail:'بەستەری وێنە',
-    videoUrl:'بەستەری ڤیدیۆ', yearLabel:'ساڵ', genresLabel:'جۆرەکان (بە کۆما)',
-    save:'پاشەکەوت', update:'نوێکردنەوە', cancel:'پاشگەز',
-    addEpisode:'زیادکردنی ئێپیزۆد', noVideo:'ڤیدیۆیەک نییە',
-    accessDenied:'مۆڵەت نییە', adminPanel:'پانێلی ئەدمین',
-    userMgmt:'بەڕێوەبردنی بەکارهێنەران', stats:'ئامارەکان',
-    totalFilms:'کۆی فیلمەکان', roleLabel:'ڕۆڵ', emailLabel:'ئیمەیل',
-    nameLabel:'ناو', recentlyAdded:'دواتازەترین', allMovies:'هەموو فیلمەکان',
-    allSeries:'هەموو زنجیرەکان', browseFilms:'گەڕان لە فیلمەکان',
-    advertisement:'ڕیکلام', fillAll:'تکایە هەموو خانەکان پڕ بکەرەوە',
-    linkCopied:'بەستەر کۆپی کرا!', yourRating:'هەڵسەنگاندنت',
-    noContent:'هیچ ناوەڕۆکێک نییە', epTitle:'ناوی ئێپیزۆد', epUrl:'بەستەری ڤیدیۆی ئێپیزۆد',
-    titleRequired:'ناونیشان *', descRequired:'وەسف *',
-    thumbRequired:'بەستەری وێنە *', videoRequired:'بەستەری ڤیدیۆ *',
-    saveChanges:'پاشەکەوتکردنی گۆڕانکاری', episodesSection:'ئێپیزۆدەکان',
-    dobber:'دووبلاتۆر', viewer:'تەماشەکەر', roleAdmin:'ئەدمین',
-    changeRole:'گۆڕینی ڕۆڵ', saveRole:'پاشەکەوت',
-    searchPlaceholder:'گەڕان لە فیلمەکان...', noResults:'ئەنجامێک نەدۆزرایەوە',
-    episodeOf:'ئێپیزۆد', of:'لە', nowWatching:'ئێستا تەماشادەکەیت',
-    yourLists:'لیستەکانت', manageUsers:'بەڕێوەبردنی بەکارهێنەران',
-    filmCount:'فیلم', userCount:'بەکارهێنەر', addedBy:'زیادکراوە لەلایەن',
-    adPlaceholder:'ڕیکلامەکەت ئێرەیە — 728×90',
-    adSidebar:'ڕیکلامەکەت ئێرەیە — 300×250',
-    adMobile:'ڕیکلامەکەت ئێرەیە — 320×50',
-    episode:'ئێپیزۆد', series:'زنجیرە', movie:'فیلم',
-    genres:'جۆرەکان',
-  }
-};
-
-let currentLang = localStorage.getItem('cv_lang') || 'en';
-function t(k) { return LANG[currentLang][k] || LANG.en[k] || k; }
-function setLang(l) {
-  currentLang = l;
-  localStorage.setItem('cv_lang', l);
-  document.getElementById('html-root').lang = l === 'ku' ? 'ckb' : 'en';
-  document.getElementById('html-root').dir  = l === 'ku' ? 'rtl' : 'ltr';
-  clearListeners(); render();
-}
-window.setLang = setLang;
-
-// ============================================================
-// APP STATE
-// ============================================================
-let currentUser    = null;
-let currentProfile = null;
-let activeListeners = [];
-const filmCache     = new Map(); // id → film data (avoids JSON escaping in onclick)
-
-const ADMIN_EMAIL = 'abdulrahmanawl90@gmail.com';
-function isAdmin()     { return currentProfile?.role === 'admin'  || currentUser?.email === ADMIN_EMAIL; }
-function isDobber()    { return ['admin','dobber'].includes(currentProfile?.role) || currentUser?.email === ADMIN_EMAIL; }
-// "dobber" = editor/dubber who can add/edit but not delete or manage users
-
-// ============================================================
-// UTILITIES
-// ============================================================
-function clearListeners() { activeListeners.forEach(u => u()); activeListeners = []; }
-
-function showToast(msg, type = 'success') {
-  const t  = document.getElementById('toast');
-  const ti = document.getElementById('toast-inner');
-  const colors = {
-    success: 'background:linear-gradient(135deg,#059669,#047857);color:#fff',
-    error:   'background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff',
-    info:    'background:rgba(30,30,35,.95);border:1px solid rgba(255,255,255,.1);color:#fff',
+  // ── FIREBASE CONFIG (same as original) ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyCOq-h8IPakpUSi22rMHSgNSrrPtafjMWc",
+    authDomain: "cineverse-61fab.firebaseapp.com",
+    databaseURL: "https://cineverse-61fab-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "cineverse-61fab",
+    storageBucket: "cineverse-61fab.firebasestorage.app",
+    messagingSenderId: "937731122165",
+    appId: "1:937731122165:web:3567d97dd45e74e169b6bc"
   };
-  ti.setAttribute('style', `${colors[type]||colors.info};padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.5)`);
-  ti.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._to);
-  t._to = setTimeout(() => t.classList.remove('show'), 3200);
-}
+  const ADMIN_EMAIL = 'abdulrahmanawl90@gmail.com';
 
-function timeAgo(ts) {
-  if (!ts) return '';
-  const d    = ts.toDate ? ts.toDate() : new Date(ts);
-  const secs = Math.floor((Date.now() - d) / 1000);
-  if (secs < 60)    return currentLang === 'ku' ? 'ئێستا' : 'just now';
-  if (secs < 3600)  return currentLang === 'ku' ? `${Math.floor(secs/60)}خ` : `${Math.floor(secs/60)}m ago`;
-  if (secs < 86400) return currentLang === 'ku' ? `${Math.floor(secs/3600)}س` : `${Math.floor(secs/3600)}h ago`;
-  return currentLang === 'ku' ? `${Math.floor(secs/86400)}ر` : `${Math.floor(secs/86400)}d ago`;
-}
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s ?? '';
-  return d.innerHTML;
-}
+  // ── STATE ──
+  let currentUser = null, userProfile = null;
+  let films = [], allUsers = [];
+  let currentPage = 'home', pageParams = {};
+  let currentLang = localStorage.getItem('cv_lang') || 'en';
+  let editingFilm = null;
+  let thumbMode = 'url';
+  let filmType = 'movie';
+  let thumbBase64 = null;
 
-/* ── VIDEO URL → EMBED ── */
-function getEmbedInfo(url) {
-  if (!url || !url.trim()) return null;
-  const u = url.trim();
-  // YouTube (watch, shorts, youtu.be, embed)
-  const ytID = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if (ytID) return { type: 'iframe', src: `https://www.youtube.com/embed/${ytID[1]}?autoplay=1&rel=0&modestbranding=1` };
-  // Vimeo
-  const vm = u.match(/(?:vimeo\.com\/)(\d+)/);
-  if (vm) return { type: 'iframe', src: `https://player.vimeo.com/video/${vm[1]}?autoplay=1` };
-  // Dailymotion
-  const dm = u.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
-  if (dm) return { type: 'iframe', src: `https://www.dailymotion.com/embed/video/${dm[1]}?autoplay=1` };
-  // Direct video file
-  if (/\.(mp4|webm|ogg|m3u8)(\?|$)/i.test(u)) return { type: 'video', src: u };
-  // Generic iframe fallback
-  return { type: 'iframe', src: u };
-}
+  const LANG = {
+    en: {
+      appName:'CineVerse', home:'Home', movies:'Movies', series:'Series',
+      manage:'Manage', admin:'Admin', profile:'Profile',
+      signIn:'Sign In', signOut:'Sign Out', watchNow:'Watch Now',
+      moreInfo:'More Info', back:'Back', backToDetails:'Back to Details',
+      noFilms:'No Films Found', addFirst:'Add your first film',
+      synopsis:'Synopsis', episodes:'Episodes', comments:'Comments',
+      addComment:'Add a comment...', post:'Post',
+      favorites:'Favorites', watched:'Watched', watchLater:'Watch Later',
+      contentMgmt:'Content Management', addNew:'Add New', users:'Users',
+      deleteConfirm:'Delete this film permanently?',
+      updated:'Updated!', added:'Added!', deleted:'Deleted!', failed:'Failed',
+      signInToComment:'Sign in to comment', details:'Details',
+      releaseYear:'Year', type:'Type', rating:'Rating',
+      titleLabel:'Title', descLabel:'Description', thumbnail:'Thumbnail',
+      videoUrl:'Video URL', yearLabel:'Year', genresLabel:'Genres',
+      save:'Save', update:'Update', cancel:'Cancel',
+      addEpisode:'Add Episode', noVideo:'No video available',
+      accessDenied:'Access Denied', adminPanel:'Admin Panel',
+      manageUsers:'Manage Users', stats:'Statistics', totalFilms:'Total Films',
+      roleLabel:'Role', emailLabel:'Email', nameLabel:'Name',
+      latestMovies:'Latest Movies', latestSeries:'Latest Series',
+      adPlaceholder:'Your Ad Here — 728×90', adSidebar:'Your Ad Here — 300×250',
+      fillAll:'Please fill all required fields', linkCopied:'Link copied!',
+      noContent:'Nothing here yet', addFilm:'Add Film',
+      epTitle:'Episode Title', epUrl:'Episode Video URL',
+      titleRequired:'Title *', descRequired:'Description *',
+      thumbRequired:'Thumbnail *', videoRequired:'Video URL *',
+      dobber:'Editor', viewer:'Viewer', roleAdmin:'Admin',
+      searchPlaceholder:'Search films...', noResults:'No results',
+      episode:'Episode', featured:'Featured', searchResults:'Search Results',
+    },
+    ku: {
+      appName:'سینێڤێرس', home:'سەرەکی', movies:'فیلمەکان', series:'زنجیرەکان',
+      manage:'بەڕێوەبردن', admin:'ئەدمین', profile:'پرۆفایل',
+      signIn:'چوونەژوورەوە', signOut:'چوونەدەرەوە', watchNow:'ئێستا ببینە',
+      moreInfo:'زیاتر بزانە', back:'گەڕانەوە', backToDetails:'گەڕانەوە بۆ وردەکاری',
+      noFilms:'هیچ فیلمێک نەدۆزرایەوە', addFirst:'یەکەم فیلمەکەت زیاد بکە',
+      synopsis:'کورتەبیر', episodes:'ئێپیزۆدەکان', comments:'کۆمێنتەکان',
+      addComment:'کۆمێنتێک بنووسە...', post:'بنێرە',
+      contentMgmt:'بەڕێوەبردنی ناوەڕۆک', addNew:'زیادکردنی نوێ', users:'بەکارهێنەران',
+      deleteConfirm:'دڵنیایت لە سڕینەوەی ئەم فیلمە؟',
+      updated:'نوێکراوەتەوە!', added:'زیادکرا!', deleted:'سڕایەوە!',
+      signInToComment:'بۆ کۆمێنت داخل بوو', details:'وردەکاریەکان',
+      releaseYear:'ساڵ', type:'جۆر', rating:'هەڵسەنگاندن',
+      titleLabel:'ناونیشان', descLabel:'وەسف', thumbnail:'وێنە',
+      save:'پاشەکەوت', update:'نوێکردنەوە', cancel:'پاشگەز',
+      addEpisode:'زیادکردنی ئێپیزۆد', noVideo:'ڤیدیۆیەک نییە',
+      accessDenied:'مۆڵەت نییە', adminPanel:'پانێلی ئەدمین',
+      manageUsers:'بەڕێوەبردنی بەکارهێنەران', totalFilms:'کۆی فیلمەکان',
+      roleLabel:'ڕۆڵ', emailLabel:'ئیمەیل', nameLabel:'ناو',
+      latestMovies:'دواتازەترین فیلمەکان', latestSeries:'دواتازەترین زنجیرەکان',
+      adPlaceholder:'ڕیکلامەکەت ئێرەیە — 728×90', adSidebar:'ڕیکلامەکەت ئێرەیە — 300×250',
+      fillAll:'تکایە هەموو خانەکان پڕ بکەرەوە',
+      noContent:'هیچ ناوەڕۆکێک نییە', addFilm:'فیلم زیاد بکە',
+      epTitle:'ناوی ئێپیزۆد', epUrl:'بەستەری ڤیدیۆی ئێپیزۆد',
+      titleRequired:'ناونیشان *', descRequired:'وەسف *',
+      thumbRequired:'وێنە *', videoRequired:'بەستەری ڤیدیۆ *',
+      searchPlaceholder:'گەڕان لە فیلمەکان...', noResults:'ئەنجامێک نەدۆزرایەوە',
+      episode:'ئێپیزۆد', featured:'تایبەت', searchResults:'ئەنجامەکان',
+      episodes:'ئێپیزۆدەکان', comments:'کۆمێنتەکان',
+    }
+  };
 
-// ============================================================
-// AUTH
-// ============================================================
-window.signInWithGoogle = async () => {
-  try { await signInWithPopup(auth, googleProvider); }
-  catch(e) {
-    if      (e.code === 'auth/popup-blocked')       showToast('Popup blocked — allow popups', 'error');
-    else if (e.code === 'auth/unauthorized-domain') showToast('Domain not authorized in Firebase', 'error');
-    else showToast((e.message || 'Sign in failed'), 'error');
-  }
-};
-window.signOutUser = async () => {
-  await fbSignOut(auth);
-  navigate('home');
-  showToast(t('signOut'), 'info');
-};
+  const t = k => (LANG[currentLang][k] || k);
+  const isAdmin = () => currentUser?.email === ADMIN_EMAIL || userProfile?.role === 'admin';
+  const isDobber = () => isAdmin() || ['admin','dobber'].includes(userProfile?.role || '');
 
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-  if (user) {
+  // ── UTILS ──
+  const getEmbedInfo = url => {
+    if (!url?.trim()) return null;
+    const u = url.trim();
+    const yt = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (yt) return { type:'iframe', src:`https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0` };
+    const vm = u.match(/vimeo\.com\/(\d+)/);
+    if (vm) return { type:'iframe', src:`https://player.vimeo.com/video/${vm[1]}?autoplay=1` };
+    const dm = u.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+    if (dm) return { type:'iframe', src:`https://www.dailymotion.com/embed/video/${dm[1]}?autoplay=1` };
+    if (/\.(mp4|webm|ogg|m3u8)(\?|$)/i.test(u)) return { type:'video', src:u };
+    return { type:'iframe', src:u };
+  };
+
+  const timeAgo = ts => {
+    if (!ts) return '';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const s = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (s < 60) return currentLang === 'ku' ? 'ئێستا' : 'just now';
+    if (s < 3600) return currentLang === 'ku' ? `${Math.floor(s/60)}خ` : `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return currentLang === 'ku' ? `${Math.floor(s/3600)}س` : `${Math.floor(s/3600)}h ago`;
+    return currentLang === 'ku' ? `${Math.floor(s/86400)}ر` : `${Math.floor(s/86400)}d ago`;
+  };
+
+  // ── EXPOSE GLOBALS ──
+  window.navigate = navigate;
+  window.signIn = signIn;
+  window.signOut = signOut;
+  window.openFilmModal = openFilmModal;
+  window.closeFilmModal = closeFilmModal;
+  window.saveFilm = saveFilm;
+  window.deleteFilm = deleteFilm;
+  window.postComment = postComment;
+  window.toggleLang = toggleLang;
+  window.toggleMobileNav = toggleMobileNav;
+  window.setFilmType = setFilmType;
+  window.setThumbMode = setThumbMode;
+  window.previewThumb = previewThumb;
+  window.handleThumbUpload = handleThumbUpload;
+  window.addEpisode = addEpisode;
+  window.removeEpisode = removeEpisode;
+  window.handleSearch = handleSearch;
+  window.changeUserRole = changeUserRole;
+  window.watchEpisode = watchEpisode;
+
+  // ── AUTH ──
+  async function signIn() {
     try {
-      const ref  = doc(db, 'users', user.uid);
+      await signInWithPopup(auth, googleProvider);
+      showToast(t('signIn'), 'success');
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  async function signOut() {
+    await fbSignOut(auth);
+    navigate('home');
+    showToast(t('signOut'), 'info');
+  }
+
+  onAuthStateChanged(auth, async u => {
+    currentUser = u;
+    if (u) {
+      const ref = doc(db, 'users', u.uid);
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        currentProfile = snap.data();
+        const data = snap.data();
+        if (u.email === ADMIN_EMAIL && data.role !== 'admin') {
+          await updateDoc(ref, { role: 'admin' });
+          data.role = 'admin';
+        }
+        userProfile = data;
       } else {
-        currentProfile = { uid: user.uid, email: user.email, displayName: user.displayName, photoURL: user.photoURL, role: 'viewer', createdAt: serverTimestamp() };
-        await setDoc(ref, currentProfile);
+        const newProf = {
+          uid: u.uid, email: u.email||'', displayName: u.displayName||'',
+          photoURL: u.photoURL||'', role: u.email === ADMIN_EMAIL ? 'admin' : 'viewer',
+          createdAt: serverTimestamp()
+        };
+        await setDoc(ref, newProf);
+        userProfile = newProf;
       }
-    } catch(e) { console.warn('Profile error:', e); }
-  } else { currentProfile = null; }
-  clearListeners();
-  render();
-});
+      renderUserArea();
+    } else {
+      userProfile = null;
+      renderUserArea();
+    }
+    updateNavVisibility();
+  });
 
-// ============================================================
-// ROUTER
-// ============================================================
-let routeState = { page: 'home', params: {} };
-
-function navigate(page, params = {}) {
-  clearListeners();
-  routeState = { page, params };
-  history.pushState({ page, params }, '', '#' + buildHash(page, params));
-  render();
-}
-function buildHash(page, params) {
-  if (page === 'home')    return '/';
-  if (page === 'film')    return `/film/${params.id}`;
-  if (page === 'watch')   return `/watch/${params.id}${params.ep !== undefined ? '?ep='+params.ep : ''}`;
-  if (page === 'profile') return '/profile';
-  if (page === 'manage')  return '/manage';
-  if (page === 'admin')   return '/admin';
-  return '/';
-}
-function parseHash() {
-  const raw   = location.hash.replace('#','') || '/';
-  const [path,qs] = raw.split('?');
-  const parts = path.split('/').filter(Boolean);
-  const params = Object.fromEntries((qs||'').split('&').filter(Boolean).map(p => p.split('=')));
-  if (!parts[0] || parts[0]==='') return {page:'home',params};
-  if (parts[0]==='film')    return {page:'film',  params:{id:parts[1],...params}};
-  if (parts[0]==='watch')   return {page:'watch', params:{id:parts[1],...params}};
-  if (parts[0]==='profile') return {page:'profile',params};
-  if (parts[0]==='manage')  return {page:'manage', params};
-  if (parts[0]==='admin')   return {page:'admin',  params};
-  return {page:'home',params};
-}
-window.addEventListener('popstate', (e) => { clearListeners(); routeState = e.state || parseHash(); render(); });
-window.addEventListener('hashchange', () => { clearListeners(); routeState = parseHash(); render(); });
-
-// ============================================================
-// RENDER ENGINE
-// ============================================================
-function render() {
-  const app = document.getElementById('app');
-  const { page, params } = routeState;
-  const pages = { home: renderHome, film: renderFilmDetail, watch: renderWatch, profile: renderProfile, manage: renderManage, admin: renderAdmin };
-  const pageHTML = (pages[page] || renderHome)(params);
-  app.innerHTML = renderNav() + `<main class="pt-16 min-h-screen">${pageHTML}</main>` + renderFooter();
-  attachNavEvents();
-  const attachFns = { home: attachHomeEvents, film: attachFilmDetailEvents, watch: attachWatchEvents, profile: attachProfileEvents, manage: attachManageEvents, admin: attachAdminEvents };
-  attachFns[page]?.(params);
-  // Apply lang dir
-  document.getElementById('html-root').dir  = currentLang === 'ku' ? 'rtl' : 'ltr';
-  document.getElementById('html-root').lang = currentLang === 'ku' ? 'ckb' : 'en';
-}
-
-// ============================================================
-// ICONS
-// ============================================================
-const I = {
-  play:   `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M8 5v14l11-7z"/></svg>`,
-  star:   `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-  heart:  (f) => `<svg viewBox="0 0 24 24" fill="${f?'currentColor':'none'}" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
-  clock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-  info:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-  share:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  msg:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  trash:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
-  edit:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  plus:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
-  x:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-  back:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><polyline points="15 18 9 12 15 6"/></svg>`,
-  check:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><polyline points="20 6 9 17 4 12"/></svg>`,
-  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  list:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
-  film:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>`,
-  tv:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>`,
-  user:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  menu:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
-  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
-  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  send:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
-  load:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full spin"><circle cx="12" cy="12" r="10" stroke-opacity=".2"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>`,
-  lang:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
-  wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
-  ad:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M8 15l2-5 2 5"/><path d="M9.5 12h3"/><path d="M16 15v-5"/></svg>`,
-};
-
-function svg(name, cls='w-5 h-5') { return `<span class="${cls} inline-block">${I[name]||''}</span>`; }
-
-// ============================================================
-// AD BANNER COMPONENT
-// ============================================================
-function adBanner(size='leaderboard') {
-  const dims = { leaderboard:'728×90', rectangle:'300×250', mobile:'320×50' };
-  const h    = { leaderboard:90, rectangle:250, mobile:50 };
-  const key  = size === 'leaderboard' ? 'adPlaceholder' : size === 'rectangle' ? 'adSidebar' : 'adMobile';
-  return `
-  <!-- ═══ AD BANNER SLOT: ${size.toUpperCase()} — Replace with your ad code ═══ -->
-  <div class="ad-banner w-full" style="min-height:${h[size]}px;max-width:${size==='rectangle'?'300px':size==='mobile'?'320px':'100%'}">
-    ${svg('ad','w-5 h-5')}
-    <span>${t(key)}</span>
-    <span style="font-size:10px;opacity:.6">${dims[size]}</span>
-  </div>
-  <!-- ═══ END AD BANNER SLOT ═══ -->`;
-}
-
-// ============================================================
-// NAV
-// ============================================================
-function renderNav() {
-  const user = currentUser;
-  const page = routeState.page;
-  return `
-  <nav class="fixed top-0 left-0 right-0 z-50" style="background:rgba(8,8,10,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)">
-    <!-- Top leaderboard ad -->
-    <div class="hidden lg:flex items-center justify-center py-1.5 border-b" style="border-color:var(--border);background:rgba(0,0,0,.3)">
-      <!-- ═══ AD SLOT: Top Leaderboard 728×90 ═══ -->
-      <div class="ad-banner" style="height:32px;width:100%;max-width:728px;font-size:11px">
-        ${svg('ad','w-4 h-4')} <span>${t('advertisement')} — 728×90</span>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-14">
-        <!-- Logo -->
-        <div class="flex items-center gap-8">
-          <button onclick="navigate('home')" class="flex items-center gap-2.5 btn group">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--red);box-shadow:0 0 20px rgba(225,29,72,.4)">
-              <span class="w-4 h-4 text-white inline-block">${I.film}</span>
-            </div>
-            <span class="font-display text-lg tracking-widest uppercase text-white" style="letter-spacing:.12em">${t('appName')}</span>
-          </button>
-          <!-- Desktop nav links -->
-          <div class="hidden md:flex items-center gap-6">
-            <button onclick="navigate('home')" class="nav-link btn ${page==='home'?'active':''}">${t('home')}</button>
-            <button onclick="navigate('home',{filter:'movie'})" class="nav-link btn">${t('movies')}</button>
-            <button onclick="navigate('home',{filter:'series'})" class="nav-link btn">${t('series')}</button>
-            ${isDobber() ? `<button onclick="navigate('manage')" class="nav-link btn flex items-center gap-1.5 ${page==='manage'?'active':''}">${svg('wrench','w-4 h-4')} ${t('manage')}</button>` : ''}
-            ${isAdmin() ? `<button onclick="navigate('admin')"  class="nav-link btn flex items-center gap-1.5 ${page==='admin'?'active':''}  " style="${page==='admin'?'color:#f59e0b':''}">${svg('shield','w-4 h-4')} ${t('admin')}</button>` : ''}
-          </div>
-        </div>
-        <!-- Right controls -->
-        <div class="flex items-center gap-3">
-          <!-- Language Toggle -->
-          <button onclick="setLang(currentLang==='en'?'ku':'en')" class="btn flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:rgba(255,255,255,.7)">
-            ${svg('lang','w-3.5 h-3.5')}
-            <span>${currentLang === 'en' ? 'کوردی' : 'EN'}</span>
-          </button>
-          ${user ? `
-          <button onclick="navigate('profile')" class="btn flex items-center gap-2 group">
-            <div class="w-8 h-8 rounded-full overflow-hidden border-2" style="border-color:${page==='profile'?'var(--red)':'rgba(255,255,255,.15)'}">
-              ${user.photoURL ? `<img src="${esc(user.photoURL)}" class="w-full h-full object-cover" />` : `<div class="w-full h-full flex items-center justify-center" style="background:#1a1a1f">${svg('user','w-4 h-4 text-gray-500')}</div>`}
-            </div>
-            <span class="hidden lg:block text-sm font-medium" style="color:rgba(255,255,255,.75)">${esc(user.displayName?.split(' ')[0]||'')}</span>
-          </button>
-          <button onclick="signOutUser()" class="btn p-2 rounded-full" style="color:rgba(255,255,255,.4)" title="${t('signOut')}">
-            ${svg('logout','w-4 h-4')}
-          </button>` : `
-          <button onclick="signInWithGoogle()" class="btn px-5 py-2 rounded-full text-sm font-bold text-white" style="background:var(--red);box-shadow:0 4px 20px rgba(225,29,72,.3)">${t('signIn')}</button>`}
-          <!-- Mobile menu -->
-          <button id="mob-btn" class="md:hidden btn p-2 rounded-full" style="color:rgba(255,255,255,.6)">
-            ${svg('menu','w-5 h-5')}
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Mobile dropdown -->
-    <div id="mob-nav" class="md:hidden overflow-hidden" style="max-height:0;transition:max-height .3s ease;background:rgba(8,8,10,.97);border-top:1px solid var(--border)">
-      <div class="flex flex-col gap-1 px-4 py-4">
-        <button onclick="navigate('home');closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:rgba(255,255,255,.8)">${t('home')}</button>
-        <button onclick="navigate('home',{filter:'movie'});closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:rgba(255,255,255,.8)">${t('movies')}</button>
-        <button onclick="navigate('home',{filter:'series'});closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:rgba(255,255,255,.8)">${t('series')}</button>
-        ${user ? `<button onclick="navigate('profile');closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:rgba(255,255,255,.8)">${t('profile')}</button>` : ''}
-        ${isDobber() ? `<button onclick="navigate('manage');closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:var(--red)">${t('manage')}</button>` : ''}
-        ${isAdmin()  ? `<button onclick="navigate('admin');closeMob()"  class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:var(--gold)">${t('admin')}</button>` : ''}
-        <hr style="border-color:var(--border);margin:4px 0"/>
-        <button onclick="setLang(currentLang==='en'?'ku':'en');closeMob()" class="text-left px-3 py-2.5 rounded-xl text-sm font-medium btn" style="color:rgba(255,255,255,.5)">${currentLang === 'en' ? '🌐 کوردی' : '🌐 English'}</button>
-      </div>
-    </div>
-  </nav>`;
-}
-
-function attachNavEvents() {
-  const btn  = document.getElementById('mob-btn');
-  const mob  = document.getElementById('mob-nav');
-  if (btn && mob) {
-    btn.addEventListener('click', () => {
-      mob.style.maxHeight = mob.style.maxHeight === '0px' || !mob.style.maxHeight ? '400px' : '0px';
-    });
+  function renderUserArea() {
+    const area = document.getElementById('userArea');
+    if (currentUser) {
+      area.innerHTML = `
+        <button onclick="navigate('profile')" class="user-avatar">
+          <img src="${currentUser.photoURL||''}" alt="" referrerpolicy="no-referrer">
+        </button>`;
+    } else {
+      area.innerHTML = `<button class="btn-cv-primary" onclick="signIn()" style="padding:.45rem 1.2rem;font-size:.8rem">
+        <i class="bi bi-google"></i> ${t('signIn')}</button>`;
+    }
   }
-}
-window.closeMob = () => {
-  const mob = document.getElementById('mob-nav');
-  if (mob) mob.style.maxHeight = '0px';
-};
 
-// ============================================================
-// FOOTER
-// ============================================================
-function renderFooter() {
-  return `
-  <footer style="background:rgba(0,0,0,.7);border-top:1px solid var(--border)" class="py-12 mt-16">
-    <!-- Footer ad -->
-    <div class="max-w-7xl mx-auto px-4 mb-10">
-      ${adBanner('leaderboard')}
-    </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-      <div class="col-span-2">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-6 h-6 rounded flex items-center justify-center" style="background:var(--red)">${svg('film','w-3 h-3 text-white')}</div>
-          <span class="font-display text-base tracking-widest uppercase">${t('appName')}</span>
-        </div>
-        <p style="color:rgba(255,255,255,.35);font-size:13px;line-height:1.7">Your ultimate destination for movies and series. Watch, rate, and share.</p>
-        <p style="color:rgba(255,255,255,.15);font-size:12px;margin-top:8px">ماڵپەڕی فیلم و زنجیرەکانت</p>
-      </div>
-      <div>
-        <h4 class="font-bold mb-4 text-sm" style="color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase">${t('home')}</h4>
-        <ul class="space-y-2">
-          ${[['home',t('home')],['home',t('movies')],['profile',t('profile')]].map(([p,l]) => `<li><button onclick="navigate('${p}')" class="btn text-sm" style="color:rgba(255,255,255,.35)">${l}</button></li>`).join('')}
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-bold mb-4 text-sm" style="color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase">Legal</h4>
-        <ul class="space-y-2 text-sm" style="color:rgba(255,255,255,.35)">
-          <li>Privacy Policy</li>
-          <li>Terms of Service</li>
-        </ul>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 pt-6" style="border-top:1px solid var(--border);color:rgba(255,255,255,.2);font-size:12px;text-align:center">
-      &copy; ${new Date().getFullYear()} ${t('appName')}. All rights reserved.
-    </div>
-  </footer>`;
-}
+  function updateNavVisibility() {
+    const d = isDobber(), a = isAdmin();
+    const show = (el, v) => { if(el) el.style.display = v ? '' : 'none'; };
+    const elems = {
+      navManage: document.getElementById('navManage'),
+      navAdmin: document.getElementById('navAdmin'),
+      navAddBtn: document.getElementById('navAddBtn'),
+      mobManageLink: document.getElementById('mobManageLink'),
+      mobAdminLink: document.getElementById('mobAdminLink'),
+      heroAddBtn: document.getElementById('heroAddBtn'),
+      emptyAddBtn: document.getElementById('emptyAddBtn'),
+      detailEditBtn: document.getElementById('detailEditBtn'),
+    };
+    // Use !important workaround for bootstrap
+    if (elems.navManage) elems.navManage.style.cssText = d ? '' : 'display:none!important';
+    if (elems.navAdmin) elems.navAdmin.style.cssText = a ? '' : 'display:none!important';
+    if (elems.navAddBtn) elems.navAddBtn.style.cssText = d ? '' : 'display:none!important';
+    show(elems.mobManageLink, d);
+    show(elems.mobAdminLink, a);
+    show(elems.heroAddBtn, d);
+    show(elems.emptyAddBtn, d);
+    // Show/hide add buttons in sections
+    const addMovieBtn = document.getElementById('addMovieBtn');
+    const addSeriesBtn = document.getElementById('addSeriesBtn');
+    if (addMovieBtn) addMovieBtn.style.cssText = d ? '' : 'display:none!important';
+    if (addSeriesBtn) addSeriesBtn.style.cssText = d ? '' : 'display:none!important';
+  }
 
-// ============================================================
-// HOME PAGE
-// ============================================================
-function renderHome() {
-  return `<div id="home-root" class="fade-up">
-    <div id="hero-section" class="relative overflow-hidden" style="height:90vh;min-height:500px">
-      <div class="w-full h-full flex items-center justify-center">${svg('load','w-12 h-12 text-rose-600')}</div>
-    </div>
-    <!-- Mobile ad -->
-    <div class="lg:hidden px-4 pt-4">${adBanner('mobile')}</div>
-    <div id="film-rows" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14 pb-16 pt-10"></div>
-  </div>`;
-}
+  // ── FILMS LISTENER ──
+  const q = query(collection(db, 'films'), orderBy('createdAt','desc'), limit(200));
+  onSnapshot(q, snap => {
+    films = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    document.getElementById('pageLoader').style.display = 'none';
+    renderCurrentPage();
+    updateNavVisibility();
+  }, err => console.error('Films error:', err));
 
-function attachHomeEvents(params) {
-  const filter = params?.filter || null;
-  const q = query(collection(db, 'films'), limit(80));
-  const unsub = onSnapshot(q, (snap) => {
-    let films = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    films.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-    if (filter) films = films.filter(f => f.type === filter);
-    films.forEach(f => filmCache.set(f.id, f));
+  // ── NAVIGATION ──
+  function navigate(page, params = {}) {
+    currentPage = page; pageParams = params;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('mobileNav').classList.remove('open');
+    window.scrollTo(0, 0);
 
-    const hero     = document.getElementById('hero-section');
-    const filmRows = document.getElementById('film-rows');
-    if (!hero || !filmRows) return;
+    // update nav active state
+    document.querySelectorAll('.nav-link-cv').forEach(l => l.classList.remove('active'));
+    const navEl = document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1));
+    if (navEl) navEl.classList.add('active');
 
-    if (!films.length) {
-      hero.innerHTML = `<div class="flex flex-col items-center justify-center h-full space-y-6 text-center px-4">
-        <div class="w-24 h-24 rounded-3xl flex items-center justify-center" style="background:rgba(255,255,255,.04);border:1px solid var(--border2)">${svg('film','w-10 h-10 text-gray-600')}</div>
-        <div><h2 class="font-display text-3xl tracking-widest uppercase">${t('noFilms')}</h2><p style="color:rgba(255,255,255,.35);margin-top:8px">${isDobber() ? t('addFirst') : t('noContent')}</p></div>
-        ${isDobber() ? `<button onclick="navigate('manage')" class="btn px-8 py-3 rounded-full font-bold text-white" style="background:var(--red)">${t('manage')}</button>` : ''}
-      </div>`;
-      filmRows.innerHTML = '';
+    renderCurrentPage();
+  }
+
+  function renderCurrentPage() {
+    const pg = document.getElementById('page' + currentPage.charAt(0).toUpperCase() + currentPage.slice(1));
+    if (pg) pg.classList.add('active');
+
+    switch(currentPage) {
+      case 'home': renderHome(); break;
+      case 'film': renderFilmDetail(); break;
+      case 'watch': renderWatch(); break;
+      case 'profile': renderProfile(); break;
+      case 'manage': renderManage(); break;
+      case 'admin': renderAdmin(); break;
+    }
+    applyTranslations();
+  }
+
+  // ── HOME ──
+  function renderHome() {
+    const movies = films.filter(f => f.type === 'movie');
+    const series = films.filter(f => f.type === 'series');
+    const featured = films[0];
+
+    // hero
+    const hero = document.getElementById('heroSection');
+    const empty = document.getElementById('emptyState');
+    const sr = document.getElementById('searchResults');
+
+    if (films.length === 0) {
+      hero.style.display = 'none';
+      empty.style.display = 'flex';
+      sr.style.display = 'none';
+      document.getElementById('moviesSection').style.display = 'none';
+      document.getElementById('seriesSection').style.display = 'none';
       return;
     }
+    empty.style.display = 'none';
 
-    const h = films[0];
-    hero.innerHTML = `
-      <div class="absolute inset-0">
-        <img src="${esc(h.thumbnailUrl)}" alt="${esc(h.title)}" class="w-full h-full object-cover" style="opacity:.45" onerror="this.style.display='none'" />
-        <div class="hero-grad absolute inset-0"></div>
-        <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(8,8,10,1) 0%,transparent 35%)"></div>
-      </div>
-      <div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-16">
-        <div class="max-w-2xl space-y-4 fade-up">
-          <div class="flex items-center gap-3 flex-wrap">
-            <span class="px-2 py-1 rounded text-xs font-bold uppercase tracking-widest" style="background:var(--red);color:#fff">${esc(h.type)}</span>
-            <div class="flex items-center gap-1" style="color:var(--gold)">${svg('star','w-3.5 h-3.5')}<span class="text-sm font-bold">${h.rating||''}</span></div>
-            <span style="color:rgba(255,255,255,.4);font-size:14px">${h.year||''}</span>
+    if (featured) {
+      hero.style.display = 'flex';
+      document.getElementById('heroBg').src = featured.thumbnailUrl || '';
+      document.getElementById('heroTitle').textContent = featured.title;
+      document.getElementById('heroDesc').textContent = featured.description;
+      document.getElementById('heroRating').innerHTML = `<i class="bi bi-star-fill"></i> ${featured.rating}`;
+      document.getElementById('heroYear').textContent = featured.year;
+      document.getElementById('heroType').textContent = featured.type;
+      document.getElementById('heroWatchBtn').onclick = () => navigate('watch', { id: featured.id });
+      document.getElementById('heroDetailsBtn').onclick = () => navigate('film', { id: featured.id });
+    }
+
+    // movies grid
+    const ms = document.getElementById('moviesSection');
+    const mg = document.getElementById('moviesGrid');
+    if (movies.length > 0) { ms.style.display=''; mg.innerHTML = movies.map(f => filmCardHTML(f)).join(''); }
+    else ms.style.display = 'none';
+
+    // series grid
+    const ss = document.getElementById('seriesSection');
+    const sg = document.getElementById('seriesGrid');
+    if (series.length > 0) { ss.style.display=''; sg.innerHTML = series.map(f => filmCardHTML(f)).join(''); }
+    else ss.style.display = 'none';
+  }
+
+  function filmCardHTML(f) {
+    const admin = isAdmin(), dobber = isDobber();
+    const adminBtns = (dobber || admin) ? `
+      <button class="btn-card-icon" onclick="event.stopPropagation();openFilmModal(${JSON.stringify(f.id)})" title="Edit">
+        <i class="bi bi-pencil"></i>
+      </button>
+      ${admin ? `<button class="btn-card-icon danger" onclick="event.stopPropagation();deleteFilm('${f.id}')" title="Delete">
+        <i class="bi bi-trash3"></i>
+      </button>` : ''}
+    ` : '';
+    return `
+      <div class="film-card" onclick="navigate('film',{id:'${f.id}'})">
+        <img src="${f.thumbnailUrl||''}" alt="${f.title}" loading="lazy" referrerpolicy="no-referrer">
+        <div class="film-card-overlay"></div>
+        <div class="film-card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="film-type-badge">${f.type}</span>
+            <span style="color:var(--cv-gold);font-size:.7rem;font-weight:800"><i class="bi bi-star-fill"></i> ${f.rating||''}</span>
           </div>
-          <h1 class="font-display uppercase leading-none" style="font-size:clamp(2.5rem,6vw,5rem);letter-spacing:.05em">${esc(h.title)}</h1>
-          <p class="line-clamp-3" style="color:rgba(255,255,255,.6);font-size:16px;line-height:1.7;max-width:500px">${esc(h.description)}</p>
-          <div class="flex items-center gap-3 pt-2 flex-wrap">
-            <button onclick="navigate('watch',{id:'${h.id}'})" class="btn flex items-center gap-2 px-7 py-3 rounded-full font-bold" style="background:#fff;color:#000">
-              ${svg('play','w-5 h-5')} ${t('watchNow')}
+          <div class="film-card-title">${f.title}</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-bottom:.2rem">${f.year||''}</div>
+          <div class="film-card-actions">
+            <button class="btn-card-watch" onclick="event.stopPropagation();navigate('watch',{id:'${f.id}'})">
+              <i class="bi bi-play-fill"></i> ${t('watchNow')}
             </button>
-            <button onclick="navigate('film',{id:'${h.id}'})" class="btn flex items-center gap-2 px-7 py-3 rounded-full font-bold" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px)">
-              ${svg('info','w-5 h-5')} ${t('moreInfo')}
-            </button>
+            ${adminBtns}
           </div>
         </div>
       </div>`;
+  }
 
-    const rows = [
-      [t('recentlyAdded'), films.slice(0,10)],
-      [t('allMovies'),  films.filter(f=>f.type==='movie')],
-      [t('allSeries'),  films.filter(f=>f.type==='series')],
-    ].filter(([,arr])=>arr.length);
-
-    filmRows.innerHTML = rows.map(([title, arr], ri) =>
-      `<section class="space-y-5 fade-up" style="animation-delay:${ri*0.08}s">
-        <h2 class="font-display text-xl tracking-widest uppercase" style="letter-spacing:.1em">${title}</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          ${arr.map(film => renderFilmCard(film)).join('')}
-        </div>
-        ${ri === 1 ? `<div class="py-2">${adBanner('leaderboard')}</div>` : ''}
-      </section>`
-    ).join('');
-  }, (e) => {
-    const hero = document.getElementById('hero-section');
-    if (hero) hero.innerHTML = `<div class="flex items-center justify-center h-full"><p style="color:#f87171">${e.message}</p></div>`;
-  });
-  activeListeners.push(unsub);
-}
-
-function renderFilmCard(film) {
-  const roleBadge = film.type === 'series'
-    ? `<span class="text-xs px-1.5 py-0.5 rounded font-bold uppercase" style="background:rgba(139,92,246,.2);color:#a78bfa">${t('series')}</span>`
-    : `<span class="text-xs px-1.5 py-0.5 rounded font-bold uppercase" style="background:rgba(59,130,246,.2);color:#93c5fd">${t('movie')}</span>`;
-  return `
-  <div class="film-card group relative rounded-2xl overflow-hidden cursor-pointer" style="aspect-ratio:2/3;background:rgba(20,20,25,.8);border:1px solid var(--border)" onclick="navigate('film',{id:'${film.id}'})">
-    <img src="${esc(film.thumbnailUrl)}" alt="${esc(film.title)}" class="w-full h-full object-cover" onerror="this.style.display='none'" loading="lazy" />
-    <div class="film-overlay absolute inset-0 flex flex-col justify-end p-3 gap-2" style="background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.3) 50%,transparent 100%)">
-      <div class="flex items-center justify-between">
-        ${roleBadge}
-        <div class="flex items-center gap-1" style="color:var(--gold)">${svg('star','w-3 h-3')}<span style="font-size:11px;font-weight:700">${film.rating||''}</span></div>
-      </div>
-      <h3 class="font-bold text-sm line-clamp-1">${esc(film.title)}</h3>
-      <button onclick="event.stopPropagation();navigate('watch',{id:'${film.id}'})" class="btn w-full py-1.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1" style="background:var(--red)">
-        ${svg('play','w-3.5 h-3.5')} ${t('watchNow')}
-      </button>
-    </div>
-  </div>`;
-}
-
-// ============================================================
-// FILM DETAIL PAGE
-// ============================================================
-function renderFilmDetail() {
-  return `<div id="film-detail-root" class="fade-up"><div class="flex items-center justify-center" style="min-height:60vh">${svg('load','w-12 h-12 text-rose-600')}</div></div>`;
-}
-
-function attachFilmDetailEvents(params) {
-  const id = params.id;
-  if (!id) { navigate('home'); return; }
-  let film=null, comments=[], userRating=null, isFav=false, isWatched=false, isLater=false;
-
-  function rerender() {
+  // ── FILM DETAIL ──
+  function renderFilmDetail() {
+    const film = films.find(f => f.id === pageParams.id);
     if (!film) return;
-    const root = document.getElementById('film-detail-root');
-    if (root) root.innerHTML = renderFilmDetailContent(film, comments, userRating, isFav, isWatched, isLater);
-  }
 
-  activeListeners.push(onSnapshot(doc(db,'films',id), (s) => {
-    if (!s.exists()) { navigate('home'); return; }
-    film = {id:s.id,...s.data()}; filmCache.set(id, film); rerender();
-  }));
-  activeListeners.push(onSnapshot(query(collection(db,'films',id,'comments')), (s) => {
-    comments = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    rerender();
-  }, ()=>{}));
+    document.getElementById('detailBg').src = film.thumbnailUrl || '';
+    document.getElementById('detailPoster').src = film.thumbnailUrl || '';
+    document.getElementById('detailTitle').textContent = film.title;
+    document.getElementById('detailDesc').textContent = film.description;
+    document.getElementById('detailTypeBadge').textContent = film.type;
+    document.getElementById('detailRating').innerHTML = `<i class="bi bi-star-fill"></i> ${film.rating}`;
+    document.getElementById('detailYear').textContent = film.year;
+    document.getElementById('detailWatchBtn').onclick = () => navigate('watch', { id: film.id });
+    document.getElementById('detailEditBtn').onclick = () => openFilmModal(film.id);
+    document.getElementById('detailEditBtn').style.display = isDobber() ? '' : 'none';
 
-  if (currentUser) {
-    const uid = currentUser.uid;
-    activeListeners.push(onSnapshot(doc(db,'films',id,'ratings',uid), (s) => { userRating = s.exists()?s.data().rating:null; rerender(); }, ()=>{}));
-    activeListeners.push(onSnapshot(doc(db,'users',uid,'favorites',id), (s) => { isFav=s.exists(); rerender(); }, ()=>{}));
-    activeListeners.push(onSnapshot(doc(db,'users',uid,'watched',id), (s) => { isWatched=s.exists(); rerender(); }, ()=>{}));
-    activeListeners.push(onSnapshot(doc(db,'users',uid,'watchLater',id), (s) => { isLater=s.exists(); rerender(); }, ()=>{}));
-  }
-}
+    // genres
+    const genres = film.genres || [];
+    document.getElementById('detailGenres').innerHTML = genres.map(g => `<span class="genre-pill">${g}</span>`).join('');
 
-function renderFilmDetailContent(film, comments, userRating, isFav, isWatched, isLater) {
-  const uid = currentUser?.uid;
-  const genres = (film.genres||[]).map(g=>`<span class="px-2 py-1 rounded-full text-xs" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.6)">${esc(g)}</span>`).join('');
-  return `
-  <!-- Backdrop -->
-  <div class="relative w-full overflow-hidden" style="height:65vh;min-height:400px">
-    <div class="absolute inset-0">
-      <img src="${esc(film.thumbnailUrl)}" alt="" class="w-full h-full object-cover" style="opacity:.3;filter:blur(2px);transform:scale(1.05)" onerror="this.style.display='none'" />
-      <div class="hero-grad absolute inset-0"></div>
-      <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(8,8,10,1) 0%,transparent 40%)"></div>
-    </div>
-    <div class="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-end pb-12">
-      <div class="flex flex-col sm:flex-row items-start sm:items-end gap-6 w-full">
-        <!-- Poster -->
-        <div class="hidden sm:block rounded-2xl overflow-hidden shadow-2xl flex-shrink-0" style="width:160px;aspect-ratio:2/3;border:1px solid var(--border2)">
-          <img src="${esc(film.thumbnailUrl)}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
-        </div>
-        <!-- Info -->
-        <div class="flex-1 space-y-4 fade-up">
-          <div class="flex flex-wrap gap-2">
-            <span class="px-2 py-1 rounded text-xs font-bold uppercase" style="background:var(--red)">${esc(film.type)}</span>
-            <div class="flex items-center gap-1" style="color:var(--gold)">${svg('star','w-4 h-4')}<span class="font-bold text-sm">${film.rating||''}</span></div>
-            <span style="color:rgba(255,255,255,.4);font-size:13px">${film.year||''}</span>
-            ${genres}
-          </div>
-          <h1 class="font-display uppercase" style="font-size:clamp(2rem,5vw,4rem);line-height:1;letter-spacing:.05em">${esc(film.title)}</h1>
-          <div class="flex flex-wrap gap-3">
-            <button onclick="navigate('watch',{id:'${film.id}'})" class="btn flex items-center gap-2 px-7 py-3 rounded-full font-bold" style="background:var(--red);box-shadow:0 6px 24px rgba(225,29,72,.35)">
-              ${svg('play','w-5 h-5')} ${t('watchNow')}
-            </button>
-            ${uid ? `
-            <button onclick="toggleList('favorites','${film.id}')" class="btn p-3 rounded-full border" style="${isFav?'background:rgba(225,29,72,.15);border-color:var(--red);color:var(--red)':'background:rgba(255,255,255,.05);border-color:var(--border2);color:rgba(255,255,255,.7)'}">
-              ${svg('heart('+isFav+')','w-5 h-5')}${`<span class="w-5 h-5 inline-block">${I.heart(isFav)}</span>`}
-            </button>
-            <button onclick="toggleList('watchLater','${film.id}')" class="btn p-3 rounded-full border" style="${isLater?'background:rgba(59,130,246,.15);border-color:#3b82f6;color:#60a5fa':'background:rgba(255,255,255,.05);border-color:var(--border2);color:rgba(255,255,255,.7)'}">
-              <span class="w-5 h-5 inline-block">${I.clock}</span>
-            </button>` : ''}
-            <button onclick="navigator.clipboard?.writeText(location.href);showToast(t('linkCopied'),'info')" class="btn p-3 rounded-full border" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:rgba(255,255,255,.7)">
-              <span class="w-5 h-5 inline-block">${I.share}</span>
-            </button>
-            ${isDobber() ? `<button onclick="openFilmModal('${film.id}')" class="btn p-3 rounded-full border" style="background:rgba(255,255,255,.05);border-color:var(--border2);color:rgba(255,255,255,.7)" title="${t('edit')}">${svg('edit','w-5 h-5')}</button>` : ''}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    // extra meta
+    document.getElementById('metaYear').textContent = film.year;
+    document.getElementById('metaType').textContent = film.type;
+    document.getElementById('metaRating').innerHTML = `${film.rating}/10 <i class="bi bi-star-fill" style="font-size:.75rem"></i>`;
 
-  <!-- Content grid -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12 pb-20">
-    <div class="lg:col-span-2 space-y-12">
-      <!-- Synopsis -->
-      <section>
-        <h2 class="font-display text-xl tracking-widest uppercase mb-4" style="letter-spacing:.08em">${t('synopsis')}</h2>
-        <p style="color:rgba(255,255,255,.65);line-height:1.8;font-size:16px">${esc(film.description)}</p>
-      </section>
-
-      <!-- Episodes -->
-      ${film.type==='series'&&film.episodes?.length ? `
-      <section>
-        <h2 class="font-display text-xl tracking-widest uppercase mb-5" style="letter-spacing:.08em">${t('episodes')}</h2>
-        <div class="space-y-3">
-          ${film.episodes.map((ep,idx)=>`
-          <button onclick="navigate('watch',{id:'${film.id}',ep:${idx}})" class="ep-card w-full flex items-center gap-4 p-4 rounded-2xl text-left btn" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-display font-bold" style="background:rgba(225,29,72,.15);color:var(--red);font-size:14px">${idx+1}</div>
-            <div class="flex-1"><h4 class="font-semibold text-sm">${esc(ep.title)}</h4></div>
-            <span class="w-5 h-5 inline-block" style="color:rgba(255,255,255,.3)">${I.play}</span>
-          </button>`).join('')}
-        </div>
-      </section>` : ''}
-
-      <!-- Comments -->
-      <section id="comments-section">
-        <h2 class="font-display text-xl tracking-widest uppercase mb-6" style="letter-spacing:.08em">${t('comments')} (${comments.length})</h2>
-        ${uid ? `
-        <div class="flex gap-4 mb-8">
-          <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style="border:1px solid var(--border2)">
-            ${currentUser.photoURL ? `<img src="${esc(currentUser.photoURL)}" class="w-full h-full object-cover" />` : `<div class="w-full h-full flex items-center justify-center" style="background:#1a1a1f">${svg('user','w-4 h-4 text-gray-500')}</div>`}
-          </div>
-          <div class="flex-1 space-y-2">
-            <textarea id="comment-input" placeholder="${t('addComment')}" style="min-height:90px;font-size:14px"></textarea>
-            <div class="flex justify-end">
-              <button onclick="postComment('${film.id}')" class="btn flex items-center gap-2 px-5 py-2 rounded-full font-bold text-sm text-white" style="background:var(--red)">${svg('send','w-4 h-4')} ${t('post')}</button>
-            </div>
-          </div>
-        </div>` : `
-        <div class="mb-8 p-5 rounded-2xl text-center" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">
-          <p style="color:rgba(255,255,255,.4);margin-bottom:12px;font-size:14px">${t('signInToComment')}</p>
-          <button onclick="signInWithGoogle()" class="btn font-bold text-sm" style="color:var(--red)">${t('signIn')}</button>
-        </div>`}
-        <div class="space-y-6">
-          ${comments.map(c=>renderComment(c,film.id)).join('')}
-        </div>
-      </section>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="space-y-8">
-      <!-- Rating -->
-      ${uid ? `
-      <div class="rounded-2xl p-6" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">
-        <h3 class="font-display text-base tracking-widest uppercase mb-4" style="letter-spacing:.08em">${t('rateThis')} ${esc(film.type)}</h3>
-        <div class="grid grid-cols-5 gap-2">
-          ${[1,2,3,4,5,6,7,8,9,10].map(n=>`
-          <button onclick="rateFilm('${film.id}',${n})" class="star-btn ${userRating&&userRating>=n?'star-active':'star-inactive'}">${n}</button>`).join('')}
-        </div>
-        ${userRating?`<p class="text-center text-xs font-bold mt-3" style="color:var(--gold)">${t('yourRating')}: ${userRating}/10</p>`:''}
-      </div>` : ''}
-
-      <!-- Details -->
-      <div class="rounded-2xl p-6" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">
-        <h3 class="font-display text-base tracking-widest uppercase mb-4" style="letter-spacing:.08em">${t('details')}</h3>
-        <div class="space-y-3">
-          ${[[t('releaseYear'),film.year],[t('type'),film.type],[t('rating'),(film.rating||'')+'/10']].map(([k,v])=>`
-          <div class="flex justify-between py-2" style="border-bottom:1px solid var(--border)">
-            <span style="color:rgba(255,255,255,.35);font-size:13px">${k}</span>
-            <span class="font-semibold capitalize text-sm">${esc(String(v))}</span>
-          </div>`).join('')}
-        </div>
-      </div>
-
-      <!-- Sidebar Ad -->
-      <div class="rounded-2xl overflow-hidden">${adBanner('rectangle')}</div>
-    </div>
-  </div>`;
-}
-
-function renderComment(c, filmId) {
-  const canDel = currentUser && (currentUser.uid===c.userId || isAdmin());
-  return `<div class="flex gap-4 group">
-    <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0" style="border:1px solid var(--border)">
-      ${c.userPhoto?`<img src="${esc(c.userPhoto)}" class="w-full h-full object-cover" />`:`<div class="w-full h-full flex items-center justify-center" style="background:#1a1a1f">${svg('user','w-3.5 h-3.5 text-gray-500')}</div>`}
-    </div>
-    <div class="flex-1">
-      <div class="flex items-center justify-between mb-1">
-        <div class="flex items-center gap-2">
-          <span class="font-semibold text-sm">${esc(c.userName)}</span>
-          <span style="color:rgba(255,255,255,.25);font-size:12px">${timeAgo(c.createdAt)}</span>
-        </div>
-        ${canDel?`<button onclick="deleteComment('${filmId}','${c.id}')" class="btn p-1.5 rounded-lg opacity-0 group-hover:opacity-100" style="color:rgba(255,255,255,.3);transition:opacity .15s">${svg('trash','w-4 h-4')}</button>`:''}
-      </div>
-      <p style="color:rgba(255,255,255,.65);font-size:14px;line-height:1.6">${esc(c.text)}</p>
-    </div>
-  </div>`;
-}
-
-window.postComment = async (filmId) => {
-  const inp = document.getElementById('comment-input');
-  if (!inp||!inp.value.trim()||!currentUser) return;
-  const text = inp.value.trim(); inp.value='';
-  try {
-    await addDoc(collection(db,'films',filmId,'comments'),{
-      filmId, userId:currentUser.uid, userName:currentUser.displayName||'Anonymous',
-      userPhoto:currentUser.photoURL||null, text, createdAt:serverTimestamp()
-    });
-  } catch(e) { showToast(t('failed'),'error'); }
-};
-window.deleteComment = async (filmId,cId) => {
-  try { await deleteDoc(doc(db,'films',filmId,'comments',cId)); }
-  catch(e) { showToast(t('failed'),'error'); }
-};
-window.rateFilm = async (filmId, rating) => {
-  if (!currentUser) { signInWithGoogle(); return; }
-  try {
-    await setDoc(doc(db,'films',filmId,'ratings',currentUser.uid),{
-      filmId, userId:currentUser.uid, rating, createdAt:serverTimestamp()
-    });
-    showToast(`${t('yourRating')}: ${rating}/10`,'success');
-  } catch(e) { showToast(t('failed'),'error'); }
-};
-window.toggleList = async (listType, filmId) => {
-  if (!currentUser) { signInWithGoogle(); return; }
-  const ref = doc(db,'users',currentUser.uid,listType,filmId);
-  try {
-    const s = await getDoc(ref);
-    if (s.exists()) { await deleteDoc(ref); showToast(t('deleted'),'info'); }
-    else            { await setDoc(ref,{filmId,createdAt:serverTimestamp()}); showToast(t('added'),'success'); }
-  } catch(e) { showToast(t('failed'),'error'); }
-};
-
-// ============================================================
-// WATCH PAGE  ← Fixed video embedding
-// ============================================================
-function renderWatch() {
-  return `<div id="watch-page-root" class="fade-in"><div class="flex items-center justify-center" style="min-height:100vh">${svg('load','w-12 h-12 text-rose-600')}</div></div>`;
-}
-
-function attachWatchEvents(params) {
-  const id    = params.id;
-  const epIdx = parseInt(params.ep || '0');
-  if (!id) { navigate('home'); return; }
-
-  const unsub = onSnapshot(doc(db,'films',id), (snap) => {
-    if (!snap.exists()) { navigate('home'); return; }
-    const film = {id:snap.id,...snap.data()};
-    filmCache.set(id, film);
-    const root = document.getElementById('watch-page-root');
-    if (root) root.innerHTML = renderWatchContent(film, epIdx);
-  });
-  activeListeners.push(unsub);
-}
-
-function renderWatchContent(film, epIdx) {
-  const rawUrl    = film.type==='series'&&film.episodes ? film.episodes[epIdx]?.videoUrl : film.videoUrl;
-  const title     = film.type==='series'&&film.episodes ? `${film.title} — ${film.episodes[epIdx]?.title||''}` : film.title;
-  const embedInfo = getEmbedInfo(rawUrl);
-
-  let playerHTML = '';
-  if (!embedInfo) {
-    playerHTML = `<div class="flex flex-col items-center justify-center h-full space-y-4 text-center p-8">
-      <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:rgba(225,29,72,.1);color:var(--red)">${svg('x','w-8 h-8')}</div>
-      <h2 class="font-display text-2xl uppercase tracking-widest">${t('noVideo')}</h2>
-      <button onclick="navigate('film',{id:'${film.id}'})" class="btn font-bold" style="color:var(--red)">${t('backToDetails')}</button>
-    </div>`;
-  } else if (embedInfo.type === 'iframe') {
-    playerHTML = `<iframe
-      src="${esc(embedInfo.src)}"
-      style="width:100%;height:100%;min-height:56vw;max-height:80vh;display:block"
-      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-      allowfullscreen
-      frameborder="0"
-    ></iframe>`;
-  } else {
-    playerHTML = `<video
-      src="${esc(embedInfo.src)}"
-      controls autoplay playsinline
-      style="width:100%;max-height:80vh;display:block;background:#000"
-    ></video>`;
-  }
-
-  const episodeList = film.type==='series'&&film.episodes?.length ? `
-  <div style="background:rgba(0,0,0,.6);border-top:1px solid var(--border);padding:20px">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="font-display text-sm tracking-widest uppercase" style="letter-spacing:.1em">${t('episodes')} — ${epIdx+1} ${t('of')} ${film.episodes.length}</h3>
-      </div>
-      <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        ${film.episodes.map((ep,idx)=>`
-        <button onclick="navigate('watch',{id:'${film.id}',ep:${idx}})" class="ep-card flex-shrink-0 p-4 rounded-2xl text-left btn ${epIdx===idx?'current':''}" style="min-width:180px;border:1px solid var(--border)">
-          <div class="flex items-center justify-between mb-1.5">
-            <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em">${t('episode')} ${idx+1}</span>
-            ${epIdx===idx?`<div class="w-2 h-2 rounded-full pulse-anim" style="background:var(--red)"></div>`:''}
-          </div>
-          <h4 class="font-semibold text-sm line-clamp-1">${esc(ep.title)}</h4>
-        </button>`).join('')}
-      </div>
-    </div>
-  </div>` : '';
-
-  return `
-  <!-- Watch Header -->
-  <div class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3" style="background:linear-gradient(to bottom,rgba(0,0,0,.9),transparent)">
-    <div class="flex items-center gap-3">
-      <button onclick="navigate('film',{id:'${film.id}'})" class="btn p-2 rounded-full" style="background:rgba(255,255,255,.1);color:#fff">${svg('back','w-5 h-5')}</button>
-      <div>
-        <h1 class="font-semibold text-sm line-clamp-1">${esc(title)}</h1>
-        <div class="flex items-center gap-2" style="font-size:11px;color:rgba(255,255,255,.4)">
-          <span class="uppercase font-bold tracking-widest" style="color:var(--red)">${esc(film.type)}</span>
-          ${film.type==='series'?`<span>${t('episodeOf')} ${epIdx+1}</span>`:''}
-        </div>
-      </div>
-    </div>
-    <button onclick="navigator.clipboard?.writeText(location.href);showToast(t('linkCopied'),'info')" class="btn p-2 rounded-full" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)">
-      ${svg('share','w-4 h-4')}
-    </button>
-  </div>
-
-  <!-- Player -->
-  <div style="background:#000;padding-top:56px;min-height:50vh;display:flex;align-items:center;justify-content:center">
-    ${playerHTML}
-  </div>
-
-  <!-- Episode List -->
-  ${episodeList}
-
-  <!-- Mobile ad below player -->
-  <div class="lg:hidden p-4">${adBanner('mobile')}</div>
-  `;
-}
-
-// ============================================================
-// PROFILE PAGE
-// ============================================================
-function renderProfile() {
-  if (!currentUser) return `
-  <div class="max-w-md mx-auto px-4 py-24 text-center space-y-5 fade-up">
-    <div class="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">${svg('user','w-9 h-9 text-gray-600')}</div>
-    <h1 class="font-display text-3xl uppercase tracking-widest">Sign In</h1>
-    <p style="color:rgba(255,255,255,.4)">Sign in to track your favorites and watch history.</p>
-    <button onclick="signInWithGoogle()" class="btn px-8 py-3 rounded-full font-bold text-white" style="background:var(--red)">${t('signIn')} with Google</button>
-  </div>`;
-  return `<div id="profile-root" class="fade-up"><div class="flex items-center justify-center" style="min-height:60vh">${svg('load','w-12 h-12 text-rose-600')}</div></div>`;
-}
-
-function attachProfileEvents() {
-  if (!currentUser) return;
-  let favFilms=[], watchedFilms=[], laterFilms=[];
-  let activeTab = 'favorites';
-
-  function rerender() {
-    const root = document.getElementById('profile-root');
-    if (!root) return;
-    const list = activeTab==='favorites'?favFilms:activeTab==='watched'?watchedFilms:laterFilms;
-    root.innerHTML = renderProfileContent(list, activeTab);
-    root.querySelectorAll('.ptab').forEach(b=>b.addEventListener('click',()=>{activeTab=b.dataset.t;rerender();}));
-  }
-
-  async function fetchList(col, setter) {
-    try {
-      const snap = await getDocs(collection(db,'users',currentUser.uid,col));
-      const ids  = snap.docs.map(d=>d.id);
-      const films = await Promise.all(ids.map(async id=>{
-        if (filmCache.has(id)) return filmCache.get(id);
-        try { const s=await getDoc(doc(db,'films',id)); return s.exists()?{id:s.id,...s.data()}:null; } catch{return null;}
-      }));
-      setter(films.filter(Boolean));
-      rerender();
-    } catch(e) { rerender(); }
-  }
-
-  fetchList('favorites',f=>{favFilms=f;});
-  fetchList('watched',f=>{watchedFilms=f;});
-  fetchList('watchLater',f=>{laterFilms=f;});
-  rerender();
-}
-
-function renderProfileContent(films, activeTab) {
-  const user = currentUser;
-  const roleKey  = currentProfile?.role || 'viewer';
-  const roleCls  = roleKey==='admin'?'role-admin':roleKey==='dobber'?'role-dobber':'role-viewer';
-  const roleText = roleKey==='admin'?t('roleAdmin'):roleKey==='dobber'?t('dobber'):t('viewer');
-  const tabs = ['favorites','watched','watchLater'];
-  const tabLabels = {favorites:t('favorites'),watched:t('watched'),watchLater:t('watchLater')};
-  const tabIcons  = {favorites:`<span class="w-4 h-4 inline-block">${I.heart(true)}</span>`,watched:`<span class="w-4 h-4 inline-block">${I.check}</span>`,watchLater:`<span class="w-4 h-4 inline-block">${I.clock}</span>`};
-  return `
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Profile card -->
-    <div class="rounded-3xl p-8 flex flex-col sm:flex-row items-center gap-6 mb-10 fade-up" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">
-      <div class="w-24 h-24 rounded-3xl overflow-hidden flex-shrink-0" style="border:3px solid rgba(225,29,72,.3)">
-        ${user.photoURL?`<img src="${esc(user.photoURL)}" class="w-full h-full object-cover" />` : `<div class="w-full h-full flex items-center justify-center" style="background:#1a1a1f">${svg('user','w-10 h-10 text-gray-500')}</div>`}
-      </div>
-      <div class="flex-1 text-center sm:text-start space-y-2">
-        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-          <h1 class="font-display text-3xl uppercase tracking-widest">${esc(user.displayName||'')}</h1>
-          <span class="px-2 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${roleCls}">${roleText}</span>
-        </div>
-        <p style="color:rgba(255,255,255,.35);font-size:14px">${esc(user.email)}</p>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex flex-wrap gap-3 mb-8">
-      ${tabs.map(tab=>`
-      <button class="ptab tab-btn ${activeTab===tab?'active':'inactive'} flex items-center gap-2" data-t="${tab}">
-        ${tabIcons[tab]} ${tabLabels[tab]}
-      </button>`).join('')}
-    </div>
-
-    <!-- Film grid or empty -->
-    ${!films.length ? `
-    <div class="py-20 text-center space-y-4">
-      <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">${svg('film','w-7 h-7 text-gray-600')}</div>
-      <p style="color:rgba(255,255,255,.35)">${t('noContent')}</p>
-      <button onclick="navigate('home')" class="btn font-bold text-sm" style="color:var(--red)">${t('browseFilms')}</button>
-    </div>` :
-    `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      ${films.map(f=>renderFilmCard(f)).join('')}
-    </div>`}
-  </div>`;
-}
-
-// ============================================================
-// MANAGE PAGE  (Dobber/Editor role)
-// ============================================================
-function renderManage() {
-  if (!isDobber()) return `
-  <div class="p-16 text-center fade-up">
-    <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6" style="background:rgba(225,29,72,.1);color:var(--red)">${svg('shield','w-8 h-8')}</div>
-    <h1 class="font-display text-3xl uppercase tracking-widest mb-3">${t('accessDenied')}</h1>
-    <p style="color:rgba(255,255,255,.4)">You need editor or admin privileges.</p>
-  </div>`;
-  return `<div id="manage-root" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8 fade-up">
-    <div class="flex items-center justify-between flex-wrap gap-4">
-      <div>
-        <h1 class="font-display text-3xl uppercase tracking-widest" style="letter-spacing:.08em">${t('contentMgmt')}</h1>
-        <p style="color:rgba(255,255,255,.35);font-size:14px;margin-top:4px">Add, edit${isAdmin()?', and delete':''} films and series.</p>
-      </div>
-      <button onclick="openFilmModal(null)" class="btn flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-white" style="background:var(--red)">
-        ${svg('plus','w-5 h-5')} ${t('addNew')}
-      </button>
-    </div>
-    <div id="manage-film-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="col-span-full flex items-center justify-center py-12">${svg('load','w-8 h-8 text-rose-600')}</div>
-    </div>
-  </div>`;
-}
-
-function attachManageEvents() {
-  if (!isDobber()) return;
-  const q   = query(collection(db,'films'), limit(200));
-  const unsub = onSnapshot(q, (snap) => {
-    const films = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    films.forEach(f=>filmCache.set(f.id,f));
-    const list = document.getElementById('manage-film-list');
-    if (!list) return;
-    if (!films.length) { list.innerHTML=`<div class="col-span-full text-center py-12" style="color:rgba(255,255,255,.35)">${t('noContent')}</div>`; return; }
-    list.innerHTML = films.map(film=>`
-    <div class="flex rounded-2xl overflow-hidden group" style="background:rgba(255,255,255,.03);border:1px solid var(--border);transition:border-color .2s" onmouseover="this.style.borderColor='rgba(255,255,255,.15)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div class="w-20 flex-shrink-0" style="aspect-ratio:2/3">
-        <img src="${esc(film.thumbnailUrl)}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
-      </div>
-      <div class="flex-1 p-4 flex flex-col justify-between min-w-0">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-xs font-bold uppercase tracking-widest" style="color:${film.type==='movie'?'#60a5fa':'#a78bfa'}">${esc(film.type)}</span>
-          </div>
-          <h3 class="font-bold text-sm line-clamp-1">${esc(film.title)}</h3>
-          <p class="text-xs line-clamp-2 mt-1" style="color:rgba(255,255,255,.35)">${esc(film.description)}</p>
-        </div>
-        <div class="flex items-center gap-2 mt-3">
-          <button onclick="openFilmModal('${film.id}')" class="btn p-2 rounded-lg" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.6)" title="${t('edit')}">${svg('edit','w-4 h-4')}</button>
-          ${isAdmin() ? `<button onclick="deleteFilm('${film.id}')" class="btn p-2 rounded-lg" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.4)" title="${t('deleted')}">${svg('trash','w-4 h-4')}</button>` : ''}
-          <button onclick="navigate('film',{id:'${film.id}'})" class="btn p-2 rounded-lg" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.4)">${svg('info','w-4 h-4')}</button>
-        </div>
-      </div>
-    </div>`).join('');
-  }, () => {
-    const list = document.getElementById('manage-film-list');
-    if (list) list.innerHTML=`<div class="col-span-full text-center py-12" style="color:#f87171">Failed to load. Check Firestore rules.</div>`;
-  });
-  activeListeners.push(unsub);
-}
-
-window.deleteFilm = async (id) => {
-  if (!isAdmin()) { showToast(t('accessDenied'),'error'); return; }
-  // Custom confirm dialog
-  const confirmed = await showConfirmDialog(t('deleteConfirm'));
-  if (!confirmed) return;
-  try {
-    await deleteDoc(doc(db,'films',id));
-    filmCache.delete(id);
-    showToast(t('deleted'),'success');
-  } catch(e) {
-    showToast(t('failed')+': '+e.message,'error');
-  }
-};
-
-// Custom confirm dialog (replaces browser confirm which can be blocked)
-function showConfirmDialog(msg) {
-  return new Promise(resolve => {
-    const mr = document.getElementById('modal-root');
-    mr.innerHTML = `
-    <div class="modal-bg" id="confirm-overlay">
-      <div class="rounded-2xl p-8 text-center space-y-5 fade-in" style="background:#0f0f11;border:1px solid var(--border2);max-width:380px;width:100%">
-        <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center" style="background:rgba(225,29,72,.1);color:var(--red)">${svg('trash','w-7 h-7')}</div>
-        <p class="font-semibold" style="color:rgba(255,255,255,.85)">${esc(msg)}</p>
-        <div class="flex gap-3 justify-center">
-          <button id="conf-no"  class="btn px-6 py-2.5 rounded-full font-bold text-sm" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.6)">${t('cancel')}</button>
-          <button id="conf-yes" class="btn px-6 py-2.5 rounded-full font-bold text-sm text-white" style="background:var(--red)">${t('deleted')}</button>
-        </div>
-      </div>
-    </div>`;
-    document.getElementById('conf-yes').onclick = () => { mr.innerHTML=''; resolve(true); };
-    document.getElementById('conf-no').onclick  = () => { mr.innerHTML=''; resolve(false); };
-  });
-}
-
-// ============================================================
-// ADMIN PAGE
-// ============================================================
-function renderAdmin() {
-  if (!isAdmin()) return `
-  <div class="p-16 text-center fade-up">
-    <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-6" style="background:rgba(245,158,11,.1);color:var(--gold)">${svg('shield','w-8 h-8')}</div>
-    <h1 class="font-display text-3xl uppercase tracking-widest mb-3">${t('accessDenied')}</h1>
-  </div>`;
-  return `<div id="admin-root" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-up">
-    <div class="flex items-center gap-3 mb-8">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(245,158,11,.15);color:var(--gold)">${svg('shield','w-5 h-5')}</div>
-      <div>
-        <h1 class="font-display text-3xl uppercase tracking-widest" style="letter-spacing:.08em">${t('adminPanel')}</h1>
-        <p style="color:rgba(255,255,255,.35);font-size:13px">${t('userMgmt')} & ${t('stats')}</p>
-      </div>
-    </div>
-    <!-- Stats -->
-    <div id="admin-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-      ${['','','',''].map(()=>`<div class="rounded-2xl p-6 space-y-2 pulse-anim" style="background:rgba(255,255,255,.03);border:1px solid var(--border)"><div class="h-6 w-1/2 rounded" style="background:rgba(255,255,255,.06)"></div><div class="h-9 w-3/4 rounded" style="background:rgba(255,255,255,.06)"></div></div>`).join('')}
-    </div>
-    <!-- Users table -->
-    <div class="rounded-2xl overflow-hidden" style="border:1px solid var(--border)">
-      <div class="p-5" style="background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">
-        <h2 class="font-display text-lg uppercase tracking-widest" style="letter-spacing:.08em">${t('users')}</h2>
-      </div>
-      <div id="admin-users" class="p-4">
-        <div class="flex items-center justify-center py-8">${svg('load','w-8 h-8 text-amber-500')}</div>
-      </div>
-    </div>
-  </div>`;
-}
-
-async function attachAdminEvents() {
-  if (!isAdmin()) return;
-
-  // Load stats
-  try {
-    const filmsSnap = await getDocs(collection(db,'films'));
-    const usersSnap = await getDocs(collection(db,'users'));
-    const totalFilms = filmsSnap.size;
-    const totalUsers = usersSnap.size;
-    const movies  = filmsSnap.docs.filter(d=>d.data().type==='movie').length;
-    const series  = filmsSnap.docs.filter(d=>d.data().type==='series').length;
-    const statsEl = document.getElementById('admin-stats');
-    if (statsEl) {
-      const card = (label, val, color) => `
-      <div class="rounded-2xl p-6 space-y-2" style="background:rgba(255,255,255,.03);border:1px solid var(--border)">
-        <p style="color:rgba(255,255,255,.35);font-size:13px;text-transform:uppercase;letter-spacing:.06em">${label}</p>
-        <p class="font-display text-4xl" style="color:${color}">${val}</p>
-      </div>`;
-      statsEl.innerHTML =
-        card(t('totalFilms'), totalFilms, '#fff') +
-        card(t('movie'),      movies,     '#60a5fa') +
-        card(t('series'),     series,     '#a78bfa') +
-        card(t('users'),      totalUsers, 'var(--gold)');
-    }
-
-    // Load users
-    const usersEl = document.getElementById('admin-users');
-    if (usersEl) {
-      const users = usersSnap.docs.map(d=>({id:d.id,...d.data()}));
-      if (!users.length) { usersEl.innerHTML=`<p class="text-center py-8" style="color:rgba(255,255,255,.35)">${t('noContent')}</p>`; return; }
-      usersEl.innerHTML = `<div class="overflow-x-auto">
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
-            ${[t('nameLabel'),t('emailLabel'),t('roleLabel'),''].map(h=>`<th style="text-align:start;padding:10px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.3)">${h}</th>`).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${users.map(u=>{
-            const rk = u.role||'viewer';
-            const rc = rk==='admin'?'role-admin':rk==='dobber'?'role-dobber':'role-viewer';
-            const rl = rk==='admin'?t('roleAdmin'):rk==='dobber'?t('dobber'):t('viewer');
-            return `<tr style="border-bottom:1px solid var(--border)" class="group">
-              <td style="padding:12px 14px">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0" style="border:1px solid var(--border)">
-                    ${u.photoURL?`<img src="${esc(u.photoURL)}" class="w-full h-full object-cover" />`:`<div class="w-full h-full flex items-center justify-center" style="background:#1a1a1f">${svg('user','w-4 h-4 text-gray-500')}</div>`}
-                  </div>
-                  <span class="font-semibold text-sm">${esc(u.displayName||'—')}</span>
-                </div>
-              </td>
-              <td style="padding:12px 14px;color:rgba(255,255,255,.4);font-size:13px">${esc(u.email||'')}</td>
-              <td style="padding:12px 14px">
-                <span class="px-2 py-1 rounded-full text-xs font-bold uppercase ${rc}">${rl}</span>
-              </td>
-              <td style="padding:12px 14px">
-                <select onchange="changeUserRole('${u.id}',this.value)" class="text-xs py-1.5 px-2 rounded-lg" style="width:auto">
-                  ${['viewer','dobber','admin'].map(r=>`<option value="${r}" ${rk===r?'selected':''}>${r==='admin'?t('roleAdmin'):r==='dobber'?t('dobber'):t('viewer')}</option>`).join('')}
-                </select>
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table></div>`;
-    }
-  } catch(e) {
-    const statsEl = document.getElementById('admin-stats');
-    if (statsEl) statsEl.innerHTML=`<p style="color:#f87171;font-size:14px">Failed to load: ${esc(e.message)}</p>`;
-  }
-}
-
-window.changeUserRole = async (uid, role) => {
-  if (!isAdmin()) return;
-  try {
-    await updateDoc(doc(db,'users',uid), { role });
-    showToast(`Role updated → ${role}`,'success');
-  } catch(e) { showToast(t('failed'),'error'); }
-};
-
-// ============================================================
-// FILM MODAL  (Add / Edit)
-// ============================================================
-let episodeCounter = 0;
-
-window.openFilmModal = (filmId) => {
-  const film = filmId ? filmCache.get(filmId) : null;
-  const isEdit = !!film;
-  const f = film || { title:'',description:'',thumbnailUrl:'',videoUrl:'',type:'movie',year:new Date().getFullYear(),rating:8.0,genres:[],episodes:[] };
-  episodeCounter = (f.episodes||[]).length;
-
-  const mr = document.getElementById('modal-root');
-  mr.innerHTML = `
-  <div class="modal-bg" onclick="if(event.target===this)closeModal()">
-    <div class="modal fade-in">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="font-display text-2xl uppercase tracking-widest" style="letter-spacing:.06em">${isEdit?t('update'):t('addNew')}</h2>
-        <button onclick="closeModal()" class="btn p-2 rounded-full" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.5)">${svg('x','w-5 h-5')}</button>
-      </div>
-      <div class="space-y-5">
-        <!-- Title + Type -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('titleRequired')}</label>
-            <input id="f-title" type="text" value="${esc(f.title)}" placeholder="${t('titleLabel')}" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('type')}</label>
-            <select id="f-type" onchange="updateTypeField()">
-              <option value="movie"  ${f.type==='movie' ?'selected':''}>Movie / فیلم</option>
-              <option value="series" ${f.type==='series'?'selected':''}>Series / زنجیرە</option>
-            </select>
-          </div>
-        </div>
-        <!-- Description -->
-        <div class="space-y-1.5">
-          <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('descRequired')}</label>
-          <textarea id="f-desc" placeholder="${t('descLabel')}">${esc(f.description)}</textarea>
-        </div>
-        <!-- Thumbnail + Video URL -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('thumbRequired')}</label>
-            <input id="f-thumb" type="url" value="${esc(f.thumbnailUrl)}" placeholder="https://..." />
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('videoRequired')}</label>
-            <input id="f-video" type="url" value="${esc(f.videoUrl)}" placeholder="YouTube / direct URL" />
-          </div>
-        </div>
-        <!-- Year + Rating + Genres -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('yearLabel')}</label>
-            <input id="f-year" type="number" value="${f.year}" min="1900" max="2099" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('rating')}</label>
-            <input id="f-rating" type="number" step="0.1" min="0" max="10" value="${f.rating}" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.4)">${t('genresLabel')}</label>
-            <input id="f-genres" type="text" value="${esc(Array.isArray(f.genres)?f.genres.join(', '):f.genres||'')}" placeholder="Action, Drama" />
-          </div>
-        </div>
-        <!-- Episodes (series only) -->
-        <div id="episodes-section" style="display:${f.type==='series'?'block':'none'}">
-          <div style="border-top:1px solid var(--border);padding-top:20px">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-display text-base uppercase tracking-widest" style="letter-spacing:.06em">${t('episodesSection')}</h3>
-              <button onclick="addEpisodeField()" class="btn flex items-center gap-1.5 text-sm font-bold" style="color:var(--red)">${svg('plus','w-4 h-4')} ${t('addEpisode')}</button>
-            </div>
-            <div id="episodes-list" class="space-y-3">
-              ${(f.episodes||[]).map((ep,idx)=>renderEpisodeField(ep,idx)).join('')}
-            </div>
-          </div>
-        </div>
-        <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4" style="border-top:1px solid var(--border)">
-          <button onclick="closeModal()" class="btn px-5 py-2.5 rounded-full font-bold text-sm" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)">${t('cancel')}</button>
-          <button onclick="saveFilm('${isEdit?film.id:''}')" class="btn flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm text-white" style="background:var(--red)">
-            ${svg('check','w-4 h-4')} ${isEdit?t('update'):t('save')}
+    // episodes
+    const epSec = document.getElementById('episodesSection');
+    const epGrid = document.getElementById('episodesGrid');
+    const metaEpsRow = document.getElementById('metaEpsRow');
+    if (film.type === 'series' && film.episodes?.length > 0) {
+      epSec.style.display = '';
+      metaEpsRow.style.display = '';
+      document.getElementById('metaEpsCount').textContent = film.episodes.length;
+      epGrid.innerHTML = film.episodes.map((ep, i) => `
+        <div class="col-12 col-sm-6">
+          <button class="episode-btn" onclick="navigate('watch',{id:'${film.id}',ep:${i}})">
+            <span class="episode-num">${i+1}</span>
+            <span class="fw-600 text-truncate">${ep.title || t('episode')+' '+(i+1)}</span>
           </button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-};
+        </div>`).join('');
+    } else {
+      epSec.style.display = 'none';
+      metaEpsRow.style.display = 'none';
+    }
 
-window.closeModal = () => { document.getElementById('modal-root').innerHTML=''; };
-
-window.updateTypeField = () => {
-  const type = document.getElementById('f-type')?.value;
-  const sec  = document.getElementById('episodes-section');
-  if (sec) sec.style.display = type==='series'?'block':'none';
-};
-
-function renderEpisodeField(ep, idx) {
-  return `<div id="epf-${idx}" class="grid gap-3 p-4 rounded-xl" style="grid-template-columns:1fr 2fr auto;background:rgba(255,255,255,.03);border:1px solid var(--border)">
-    <div class="space-y-1">
-      <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.3)">${t('epTitle')}</label>
-      <input class="ep-title" type="text" value="${esc(ep.title||'')}" placeholder="${t('episode')} ${idx+1}" />
-    </div>
-    <div class="space-y-1">
-      <label class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,255,255,.3)">${t('epUrl')}</label>
-      <input class="ep-url" type="url" value="${esc(ep.videoUrl||'')}" placeholder="https://..." />
-    </div>
-    <div class="flex items-end pb-1">
-      <button onclick="this.closest('[id^=epf-]').remove()" class="btn p-2 rounded-lg" style="color:rgba(255,60,60,.6)">${svg('trash','w-4 h-4')}</button>
-    </div>
-  </div>`;
-}
-
-window.addEpisodeField = () => {
-  const list = document.getElementById('episodes-list');
-  if (!list) return;
-  const idx = list.children.length;
-  const div = document.createElement('div');
-  div.innerHTML = renderEpisodeField({title:'',videoUrl:''},idx);
-  list.appendChild(div.firstChild);
-};
-
-window.saveFilm = async (editId) => {
-  const gv = id => document.getElementById(id)?.value?.trim()||'';
-  const title       = gv('f-title');
-  const description = gv('f-desc');
-  const thumbnailUrl= gv('f-thumb');
-  const videoUrl    = gv('f-video');
-  const type        = gv('f-type');
-  const year        = parseInt(gv('f-year'))||new Date().getFullYear();
-  const rating      = parseFloat(gv('f-rating'))||0;
-  const genres      = gv('f-genres').split(',').map(g=>g.trim()).filter(Boolean);
-
-  if (!title||!description||!thumbnailUrl||!videoUrl) {
-    showToast(t('fillAll'),'error'); return;
+    // comments
+    loadComments(film.id);
   }
 
-  const episodes = [];
-  document.querySelectorAll('#episodes-list>[id^=epf-]').forEach((el,idx)=>{
-    const ttl = el.querySelector('.ep-title')?.value?.trim();
-    const url = el.querySelector('.ep-url')?.value?.trim();
-    if (ttl) episodes.push({id:String(idx+1),title:ttl,videoUrl:url||''});
-  });
+  // ── WATCH ──
+  function renderWatch() {
+    const film = films.find(f => f.id === pageParams.id);
+    if (!film) return;
 
-  const data = { title, description, thumbnailUrl, videoUrl, type, year, rating, genres, episodes };
+    const epIdx = pageParams.ep || 0;
+    const ep = film.type === 'series' ? film.episodes?.[epIdx] : null;
+    const videoUrl = film.type === 'series' ? ep?.videoUrl : film.videoUrl;
 
-  try {
-    if (editId) {
-      await updateDoc(doc(db,'films',editId), {...data, updatedAt:serverTimestamp()});
-      filmCache.set(editId, {...filmCache.get(editId)||{}, id:editId, ...data});
-      showToast(t('updated'),'success');
+    document.getElementById('watchTitle').textContent = film.title;
+    document.getElementById('watchEpLabel').textContent = ep ? `${t('episode')} ${epIdx+1}: ${ep.title}` : '';
+    document.getElementById('watchBackBtn').onclick = () => navigate('film', { id: film.id });
+
+    const player = document.getElementById('watchPlayer');
+    const embed = getEmbedInfo(videoUrl);
+    if (embed) {
+      player.innerHTML = embed.type === 'iframe'
+        ? `<iframe src="${embed.src}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" style="width:100%;height:100%;border:none"></iframe>`
+        : `<video src="${embed.src}" controls autoplay style="width:100%;height:100%"></video>`;
     } else {
-      const ref = await addDoc(collection(db,'films'), {...data, addedBy:currentUser.uid, createdAt:serverTimestamp()});
-      filmCache.set(ref.id, {id:ref.id, ...data});
-      showToast(t('added'),'success');
+      player.innerHTML = `<div class="d-flex flex-column align-items-center justify-content-center h-100 gap-3" style="color:var(--cv-muted)">
+        <i class="bi bi-camera-video-off fs-1"></i><p>${t('noVideo')}</p></div>`;
     }
-    closeModal();
-  } catch(e) { showToast(t('failed')+': '+e.message,'error'); }
-};
 
-// ============================================================
-// EXPOSE GLOBALS
-// ============================================================
-window.navigate  = navigate;
-window.showToast = showToast;
-window.currentLang = currentLang; // make accessible for nav toggle
+    const epList = document.getElementById('watchEpisodes');
+    const epListEl = document.getElementById('watchEpList');
+    if (film.type === 'series' && film.episodes?.length > 0) {
+      epList.style.display = '';
+      epListEl.innerHTML = film.episodes.map((e, i) => `
+        <button onclick="watchEpisode('${film.id}',${i})"
+          class="flex-shrink-0 p-3 rounded-3 border text-start transition-all"
+          style="min-width:160px;background:${epIdx===i?'rgba(225,29,72,.15)':'rgba(255,255,255,.04)'};border-color:${epIdx===i?'rgba(225,29,72,.4)':'var(--cv-border)'};color:#fff">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${epIdx===i?'rgba(225,29,72,.8)':'var(--cv-muted)'};margin-bottom:.25rem">${t('episode')} ${i+1}</div>
+          <div style="font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.title}</div>
+        </button>`).join('');
+    } else {
+      epList.style.display = 'none';
+    }
+  }
 
-// ============================================================
-// INIT
-// ============================================================
-routeState = parseHash();
-render();
+  function watchEpisode(id, ep) { navigate('watch', { id, ep }); }
+
+  // ── PROFILE ──
+  function renderProfile() {
+    if (!currentUser) { navigate('home'); return; }
+    document.getElementById('profilePhoto').src = currentUser.photoURL || '';
+    document.getElementById('profileName').textContent = currentUser.displayName || '';
+    document.getElementById('profileEmail').textContent = currentUser.email || '';
+    const role = userProfile?.role || 'viewer';
+    const roleEl = document.getElementById('profileRoleBadge');
+    roleEl.textContent = role;
+    roleEl.className = `role-badge ${role}`;
+  }
+
+  // ── MANAGE ──
+  function renderManage() {
+    if (!isDobber()) {
+      document.getElementById('manageGrid').innerHTML = `<div class="col-12"><p class="text-center" style="color:var(--cv-red);font-weight:700">${t('accessDenied')}</p></div>`;
+      return;
+    }
+    const grid = document.getElementById('manageGrid');
+    if (films.length === 0) {
+      grid.innerHTML = `<div class="col-12"><div class="glass rounded-4 p-5 text-center">
+        <p style="color:var(--cv-muted)">${t('noContent')}</p></div></div>`;
+      return;
+    }
+    grid.innerHTML = films.map(f => `
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="manage-card">
+          <img class="manage-thumb" src="${f.thumbnailUrl||''}" alt="" referrerpolicy="no-referrer">
+          <div class="flex-grow-1 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
+                <h5 style="font-weight:700;line-height:1.2;font-size:.95rem" class="mb-0">${f.title}</h5>
+                <span class="film-type-badge flex-shrink-0">${f.type}</span>
+              </div>
+              <p style="color:var(--cv-muted);font-size:.78rem;line-height:1.5;margin-top:.4rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${f.description}</p>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+              <button onclick="openFilmModal('${f.id}')" class="btn-cv-secondary flex-grow-1 py-2" style="font-size:.78rem;padding:.5rem;justify-content:center;gap:.4rem">
+                <i class="bi bi-pencil"></i> ${t('update')}
+              </button>
+              ${isAdmin() ? `<button onclick="deleteFilm('${f.id}')" class="btn-card-icon danger" style="width:38px;height:38px;border-radius:10px" title="Delete">
+                <i class="bi bi-trash3"></i>
+              </button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── ADMIN ──
+  function renderAdmin() {
+    if (!isAdmin()) return;
+    document.getElementById('statFilms').textContent = films.length;
+    document.getElementById('statMovies').textContent = films.filter(f=>f.type==='movie').length;
+    document.getElementById('statSeries').textContent = films.filter(f=>f.type==='series').length;
+
+    // Films table in admin
+    const adminTable = document.getElementById('adminFilmsTable');
+    if (adminTable) {
+      adminTable.innerHTML = films.map(f => `
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img src="${f.thumbnailUrl||''}" style="width:40px;aspect-ratio:2/3;object-fit:cover;border-radius:8px" referrerpolicy="no-referrer">
+              <span style="font-weight:600">${f.title}</span>
+            </div>
+          </td>
+          <td><span class="film-type-badge">${f.type}</span></td>
+          <td style="color:var(--cv-muted)">${f.year||'-'}</td>
+          <td style="color:var(--cv-gold)"><i class="bi bi-star-fill" style="font-size:.7rem"></i> ${f.rating||'-'}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button onclick="openFilmModal('${f.id}')" class="btn-card-icon" title="Edit" style="width:32px;height:32px;border-radius:8px">
+                <i class="bi bi-pencil" style="font-size:.75rem"></i>
+              </button>
+              <button onclick="deleteFilm('${f.id}')" class="btn-card-icon danger" title="Delete" style="width:32px;height:32px;border-radius:8px">
+                <i class="bi bi-trash3" style="font-size:.75rem"></i>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    // users listener
+    onSnapshot(collection(db, 'users'), snap => {
+      allUsers = snap.docs.map(d => d.data());
+      document.getElementById('statUsers').textContent = allUsers.length;
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = allUsers.map(u => `
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img src="${u.photoURL||''}" style="width:36px;height:36px;border-radius:50%;object-fit:cover" referrerpolicy="no-referrer">
+              <span style="font-weight:600">${u.displayName||'—'}</span>
+            </div>
+          </td>
+          <td style="color:var(--cv-muted);font-size:.82rem">${u.email}</td>
+          <td><span class="role-badge ${u.role}">${u.role}</span></td>
+          <td>
+            <select class="cv-input" style="padding:.3rem .6rem;font-size:.78rem;width:auto;border-radius:8px"
+              onchange="changeUserRole('${u.uid}',this.value)"
+              ${u.email === ADMIN_EMAIL ? 'disabled' : ''}>
+              <option value="viewer" ${u.role==='viewer'?'selected':''}>Viewer</option>
+              <option value="dobber" ${u.role==='dobber'?'selected':''}>Editor</option>
+              <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </td>
+        </tr>`).join('');
+    });
+  }
+
+  async function changeUserRole(uid, role) {
+    try {
+      await updateDoc(doc(db, 'users', uid), { role });
+      showToast('Role updated', 'success');
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  // ── DELETE FILM ── (FIXED)
+  async function deleteFilm(id) {
+    if (!isAdmin()) { showToast(t('accessDenied'), 'error'); return; }
+    if (!confirm(t('deleteConfirm'))) return;
+    try {
+      await deleteDoc(doc(db, 'films', id));
+      showToast(t('deleted'), 'success');
+      // If on film detail page, go home
+      if (currentPage === 'film' && pageParams.id === id) navigate('home');
+    } catch(e) {
+      console.error('Delete error:', e);
+      showToast(e.message || 'Delete failed', 'error');
+    }
+  }
+
+  // ── FILM MODAL ──
+  function openFilmModal(idOrNull) {
+    editingFilm = null;
+    thumbBase64 = null;
+    if (idOrNull && typeof idOrNull === 'string') {
+      editingFilm = films.find(f => f.id === idOrNull) || null;
+    } else if (idOrNull && typeof idOrNull === 'object') {
+      editingFilm = idOrNull;
+    }
+
+    const f = editingFilm;
+    document.getElementById('modalTitle').textContent = f ? t('update') : t('addNew');
+
+    // populate form
+    document.getElementById('filmTitle').value = f?.title || '';
+    document.getElementById('filmDesc').value = f?.description || '';
+    document.getElementById('filmThumbnailUrl').value = f?.thumbnailUrl || '';
+    document.getElementById('filmVideoUrl').value = f?.videoUrl || '';
+    document.getElementById('filmYear').value = f?.year || new Date().getFullYear();
+    document.getElementById('filmRating').value = f?.rating || 8.0;
+    document.getElementById('filmGenres').value = (f?.genres||[]).join(', ');
+    document.getElementById('filmDirector').value = f?.director || '';
+    document.getElementById('filmCast').value = (f?.cast||[]).join(', ');
+    document.getElementById('filmLanguage').value = f?.language || '';
+    document.getElementById('filmDuration').value = f?.duration || '';
+    document.getElementById('filmTrailer').value = f?.trailer || '';
+
+    // preview
+    if (f?.thumbnailUrl) {
+      document.getElementById('thumbPreview').src = f.thumbnailUrl;
+      document.getElementById('thumbPreviewWrap').style.display = '';
+    } else {
+      document.getElementById('thumbPreviewWrap').style.display = 'none';
+    }
+
+    setFilmType(f?.type || 'movie');
+    setThumbMode('url');
+
+    // episodes
+    renderEpisodesForm(f?.episodes || []);
+
+    document.getElementById('filmModalBackdrop').classList.add('open');
+  }
+
+  function closeFilmModal() {
+    document.getElementById('filmModalBackdrop').classList.remove('open');
+    editingFilm = null; thumbBase64 = null;
+  }
+
+  function setFilmType(type) {
+    filmType = type;
+    const mb = document.getElementById('typeMovieBtn');
+    const sb = document.getElementById('typeSeriesBtn');
+    const vSec = document.getElementById('filmVideoUrlSection');
+    const eSec = document.getElementById('episodesFormSection');
+    if (type === 'movie') {
+      mb.style.cssText = 'background:rgba(225,29,72,.15);border:1px solid rgba(225,29,72,.4);color:var(--cv-red);font-weight:700;font-size:.85rem;transition:all .2s';
+      sb.style.cssText = 'background:rgba(255,255,255,.05);border:1px solid var(--cv-border);color:var(--cv-muted);font-weight:700;font-size:.85rem;transition:all .2s';
+      vSec.style.display = '';
+      eSec.style.display = 'none';
+    } else {
+      sb.style.cssText = 'background:rgba(225,29,72,.15);border:1px solid rgba(225,29,72,.4);color:var(--cv-red);font-weight:700;font-size:.85rem;transition:all .2s';
+      mb.style.cssText = 'background:rgba(255,255,255,.05);border:1px solid var(--cv-border);color:var(--cv-muted);font-weight:700;font-size:.85rem;transition:all .2s';
+      vSec.style.display = 'none';
+      eSec.style.display = '';
+    }
+  }
+
+  function setThumbMode(mode) {
+    thumbMode = mode;
+    document.getElementById('thumbUrlTab').className = `upload-tab ${mode==='url'?'active':''}`;
+    document.getElementById('thumbUploadTab').className = `upload-tab ${mode==='upload'?'active':''}`;
+    document.getElementById('thumbUrlSection').style.display = mode === 'url' ? '' : 'none';
+    document.getElementById('thumbUploadSection').style.display = mode === 'upload' ? '' : 'none';
+  }
+
+  function previewThumb(url) {
+    if (url.trim()) {
+      document.getElementById('thumbPreview').src = url;
+      document.getElementById('thumbPreviewWrap').style.display = '';
+    } else {
+      document.getElementById('thumbPreviewWrap').style.display = 'none';
+    }
+  }
+
+  function handleThumbUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('Image too large (max 5MB)', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      thumbBase64 = e.target.result;
+      document.getElementById('thumbPreview').src = thumbBase64;
+      document.getElementById('thumbPreviewWrap').style.display = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  let episodeList = [];
+  function renderEpisodesForm(eps) {
+    episodeList = eps.map(e => ({ ...e }));
+    rebuildEpisodeUI();
+  }
+
+  function rebuildEpisodeUI() {
+    const el = document.getElementById('episodesFormList');
+    el.innerHTML = episodeList.map((ep, i) => `
+      <div class="p-4 rounded-3" style="background:rgba(255,255,255,.04);border:1px solid var(--cv-border)">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span style="font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cv-muted)">${t('episode')} ${i+1}</span>
+          <button onclick="removeEpisode(${i})" style="background:none;border:none;color:rgba(225,29,72,.7);cursor:pointer"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="row g-2">
+          <div class="col-12">
+            <input type="text" class="cv-input" placeholder="${t('epTitle')}" value="${ep.title||''}" oninput="episodeList[${i}].title=this.value" style="font-size:.85rem">
+          </div>
+          <div class="col-12">
+            <input type="url" class="cv-input" placeholder="${t('epUrl')}" value="${ep.videoUrl||''}" oninput="episodeList[${i}].videoUrl=this.value" style="font-size:.85rem">
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function addEpisode() {
+    episodeList.push({ id: Date.now().toString(), title: '', videoUrl: '' });
+    rebuildEpisodeUI();
+  }
+
+  function removeEpisode(i) {
+    episodeList.splice(i, 1);
+    rebuildEpisodeUI();
+  }
+
+  // ── SAVE FILM ──
+  async function saveFilm() {
+    const title = document.getElementById('filmTitle').value.trim();
+    const desc = document.getElementById('filmDesc').value.trim();
+    let thumbnail = thumbBase64 || document.getElementById('filmThumbnailUrl').value.trim();
+
+    if (!title || !desc || !thumbnail) {
+      showToast(t('fillAll'), 'error'); return;
+    }
+
+    const genres = document.getElementById('filmGenres').value.split(',').map(g=>g.trim()).filter(Boolean);
+    const cast = document.getElementById('filmCast').value.split(',').map(c=>c.trim()).filter(Boolean);
+    const data = {
+      title,
+      description: desc,
+      thumbnailUrl: thumbnail,
+      type: filmType,
+      year: parseInt(document.getElementById('filmYear').value) || new Date().getFullYear(),
+      rating: parseFloat(document.getElementById('filmRating').value) || 8.0,
+      genres,
+      director: document.getElementById('filmDirector').value.trim(),
+      cast,
+      language: document.getElementById('filmLanguage').value.trim(),
+      duration: parseInt(document.getElementById('filmDuration').value) || null,
+      trailer: document.getElementById('filmTrailer').value.trim(),
+    };
+
+    if (filmType === 'movie') {
+      data.videoUrl = document.getElementById('filmVideoUrl').value.trim();
+      data.episodes = [];
+    } else {
+      data.videoUrl = '';
+      data.episodes = episodeList.filter(e => e.title || e.videoUrl);
+    }
+
+    const btn = document.getElementById('saveFilmBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    try {
+      if (editingFilm?.id) {
+        await updateDoc(doc(db, 'films', editingFilm.id), { ...data, updatedAt: serverTimestamp() });
+        showToast(t('updated'), 'success');
+      } else {
+        await addDoc(collection(db, 'films'), { ...data, createdAt: serverTimestamp(), addedBy: currentUser?.uid || '' });
+        showToast(t('added'), 'success');
+      }
+      closeFilmModal();
+    } catch(e) {
+      console.error(e);
+      showToast(e.message || 'Error saving', 'error');
+    } finally {
+      btn.disabled = false; btn.innerHTML = `<span data-key="save">${t('save')}</span>`;
+    }
+  }
+
+  // ── COMMENTS ──
+  let commentsUnsub = null;
+  function loadComments(filmId) {
+    if (commentsUnsub) commentsUnsub();
+    const q2 = query(collection(db, 'films', filmId, 'comments'), orderBy('createdAt','desc'));
+    commentsUnsub = onSnapshot(q2, snap => {
+      const comments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('commentCount').textContent = comments.length;
+      renderComments(comments, filmId);
+    });
+
+    // comment form visibility
+    const cf = document.getElementById('commentForm');
+    const sc = document.getElementById('signInToComment');
+    if (currentUser) {
+      cf.style.display = ''; sc.style.display = 'none';
+      document.getElementById('commentUserPhoto').src = currentUser.photoURL || '';
+    } else {
+      cf.style.display = 'none'; sc.style.display = '';
+    }
+  }
+
+  function renderComments(comments, filmId) {
+    const list = document.getElementById('commentsList');
+    if (comments.length === 0) {
+      list.innerHTML = `<p style="color:var(--cv-muted);text-align:center;padding:2rem">${t('noContent')}</p>`;
+      return;
+    }
+    list.innerHTML = comments.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar"><img src="${c.userPhoto||''}" alt="" referrerpolicy="no-referrer"></div>
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-name">${c.userName}</span>
+            <span class="comment-time">${timeAgo(c.createdAt)}</span>
+          </div>
+          <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;margin:0">${c.text}</p>
+          ${(currentUser?.uid === c.userId || isAdmin()) ? `
+            <button onclick="deleteComment('${filmId}','${c.id}')" style="background:none;border:none;color:rgba(225,29,72,.5);font-size:.75rem;padding:.25rem 0;cursor:pointer;margin-top:.25rem">
+              <i class="bi bi-trash3"></i> Delete
+            </button>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  async function postComment() {
+    if (!currentUser) return;
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (!text) return;
+    const filmId = pageParams.id;
+    try {
+      await addDoc(collection(db, 'films', filmId, 'comments'), {
+        filmId, userId: currentUser.uid,
+        userName: currentUser.displayName || 'Anonymous',
+        userPhoto: currentUser.photoURL || '',
+        text, createdAt: serverTimestamp()
+      });
+      input.value = '';
+    } catch(e) { showToast(e.message, 'error'); }
+  }
+
+  window.deleteComment = async (filmId, commentId) => {
+    try {
+      await deleteDoc(doc(db, 'films', filmId, 'comments', commentId));
+    } catch(e) { showToast(e.message, 'error'); }
+  };
+
+  // ── SEARCH ──
+  function handleSearch(val) {
+    const sr = document.getElementById('searchResults');
+    const ms = document.getElementById('moviesSection');
+    const ss = document.getElementById('seriesSection');
+    const hero = document.getElementById('heroSection');
+
+    if (!val.trim()) {
+      sr.style.display = 'none';
+      ms.style.display = ''; ss.style.display = '';
+      hero.style.display = 'flex';
+      return;
+    }
+    const results = films.filter(f =>
+      f.title.toLowerCase().includes(val.toLowerCase()) ||
+      f.description.toLowerCase().includes(val.toLowerCase()) ||
+      (f.genres||[]).some(g => g.toLowerCase().includes(val.toLowerCase()))
+    );
+    sr.style.display = '';
+    ms.style.display = 'none'; ss.style.display = 'none';
+    hero.style.display = 'none';
+    document.getElementById('searchGrid').innerHTML = results.length
+      ? results.map(f => filmCardHTML(f)).join('')
+      : `<div class="col-12 text-center py-5" style="color:var(--cv-muted)">${t('noResults')}</div>`;
+  }
+
+  // ── LANG ──
+  function toggleLang() {
+    currentLang = currentLang === 'en' ? 'ku' : 'en';
+    localStorage.setItem('cv_lang', currentLang);
+    document.documentElement.dir = currentLang === 'ku' ? 'rtl' : 'ltr';
+    document.body.classList.toggle('rtl', currentLang === 'ku');
+    document.getElementById('langBtn').textContent = currentLang === 'en' ? 'کوردی' : 'EN';
+    applyTranslations();
+    renderCurrentPage();
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const k = el.dataset.key;
+      if (LANG[currentLang][k]) el.textContent = LANG[currentLang][k];
+    });
+    document.querySelectorAll('[data-key-placeholder]').forEach(el => {
+      const k = el.dataset.keyPlaceholder;
+      if (LANG[currentLang][k]) el.placeholder = LANG[currentLang][k];
+    });
+  }
+
+  // ── MOBILE NAV ──
+  function toggleMobileNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+
+  // ── TOAST ──
+  function showToast(msg, type = 'success') {
+    const c = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = `cv-toast ${type}`;
+    el.innerHTML = `${type==='success'?'<i class="bi bi-check-circle-fill"></i>':type==='error'?'<i class="bi bi-x-circle-fill"></i>':''} ${msg}`;
+    c.appendChild(el);
+    setTimeout(() => { el.style.animation = 'toastOut .3s forwards'; setTimeout(() => el.remove(), 300); }, 3000);
+  }
+  window.showToast = showToast;
+
+  // ── INIT ──
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  document.getElementById('langBtn').textContent = currentLang === 'en' ? 'کوردی' : 'EN';
+  if (currentLang === 'ku') {
+    document.documentElement.dir = 'rtl';
+    document.body.classList.add('rtl');
+  }
+
+  // Check config validity
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') {
+    document.getElementById('configBanner').style.display = '';
+  }
+
+  navigate('home');
 </script>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
