@@ -9,381 +9,202 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Sans+Arabic:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --red:#e11d48;--red2:#9f1239;--gold:#f59e0b;--green:#10b981;--blue:#3b82f6;--purple:#8b5cf6;
-  --dark:#07090f;--dark2:#0d1017;--card:#111620;--card2:#161c28;
-  --glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
-  --text:#f1f5f9;--muted:rgba(255,255,255,.45);--muted2:rgba(255,255,255,.25);
-  --font:'DM Sans','Noto Sans Arabic',sans-serif;
-  --display:'Bebas Neue','Noto Sans Arabic',cursive;
-  --nav:64px; --radius:14px;
+:root {
+  --red: #e11d48; --red2: #9f1239; --gold: #f59e0b; --green: #10b981; --blue: #3b82f6; --purple: #8b5cf6;
+  --dark: #07090f; --dark2: #0d1017; --card: #111620; --card2: #161c28;
+  --glass: rgba(255,255,255,.05); --border: rgba(255,255,255,.08);
+  --text: #f1f5f9; --text-invert: #000; --muted: rgba(255,255,255,.45); --muted2: rgba(255,255,255,.25);
+  --font: 'DM Sans', 'Noto Sans Arabic', sans-serif;
+  --display: 'Bebas Neue', 'Noto Sans Arabic', cursive;
+  --nav: 64px; --radius: 14px; --bg: var(--dark);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
-body.rtl{direction:rtl;font-family:'Noto Sans Arabic','DM Sans',sans-serif}
-a{text-decoration:none;color:inherit}
-img{display:block;max-width:100%}
-button{cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:5px}
-::-webkit-scrollbar-thumb:hover{background:rgba(225,29,72,.4)}
+body.light-mode {
+  --bg: #f8fafc; --dark: #f8fafc; --dark2: #e2e8f0; --card: #ffffff; --card2: #f1f5f9;
+  --glass: rgba(0,0,0,.04); --border: rgba(0,0,0,.1);
+  --text: #0f172a; --text-invert: #fff; --muted: rgba(0,0,0,.55); --muted2: rgba(0,0,0,.35);
+}
 
-/* ── SKELETON LOADER ── */
-.skeleton{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius)}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+*,*::before,*::after {box-sizing:border-box;margin:0;padding:0}
+html {scroll-behavior:smooth}
+body {font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.3s, color 0.3s;}
+body.rtl {direction:rtl;font-family:'Noto Sans Arabic','DM Sans',sans-serif}
+body.rtl .bi-arrow-left, body.rtl .bi-box-arrow-right { transform: scaleX(-1); display: inline-block; }
+a {text-decoration:none;color:inherit}
+img {display:block;max-width:100%}
+button {cursor:pointer;border:none;background:none;color:inherit;font-family:inherit}
 
-/* ── NAV ── */
-#nav{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav);background:rgba(7,9,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-inner{display:flex;align-items:center;gap:1rem;height:100%;padding:0 1.5rem}
-.brand{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
-.brand-icon{width:36px;height:36px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 0 16px rgba(225,29,72,.4);transition:transform .2s}
-.brand-icon:hover{transform:scale(1.1)}
-.brand-name{font-family:var(--display);font-size:1.35rem;letter-spacing:.18em;text-transform:uppercase}
-.nav-links{display:flex;align-items:center;gap:.25rem;margin-left:.5rem}
-.nav-link{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:.35rem .75rem;border-radius:8px;transition:all .2s}
-.nav-link:hover,.nav-link.active{color:#fff;background:rgba(255,255,255,.06)}
-.nav-link.active{color:var(--red)!important}
-.nav-spacer{flex:1}
-.nav-search{position:relative;display:flex;align-items:center}
-.nav-search input{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:50px;color:var(--text);padding:.38rem 1rem .38rem 2.2rem;font-size:.8rem;font-family:var(--font);width:200px;transition:all .3s}
-.nav-search input:focus{outline:none;width:260px;border-color:rgba(225,29,72,.4);background:rgba(255,255,255,.08)}
-.nav-search .icon{position:absolute;left:.75rem;color:var(--muted);font-size:.85rem;pointer-events:none}
-body.rtl .nav-search input{padding:.38rem 2.2rem .38rem 1rem}
-body.rtl .nav-search .icon{left:auto;right:.75rem}
-.nav-btn{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;transition:all .2s;white-space:nowrap}
-.nav-btn.add{color:var(--red);background:rgba(225,29,72,.1);border:1px solid rgba(225,29,72,.25)}
-.nav-btn.add:hover{background:var(--red);color:#fff}
-.nav-btn.lang{color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--border)}
-.nav-btn.lang:hover{background:rgba(255,255,255,.1)}
-.user-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);overflow:hidden;transition:border-color .2s;cursor:pointer;flex-shrink:0}
-.user-avatar:hover{border-color:var(--red)}
-.user-avatar img{width:100%;height:100%;object-fit:cover}
-.sub-badge{font-size:.55rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:50px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;margin-left:.3rem}
+::-webkit-scrollbar {width:6px;height:6px}
+::-webkit-scrollbar-track {background:transparent}
+::-webkit-scrollbar-thumb {background:var(--border);border-radius:6px}
+::-webkit-scrollbar-thumb:hover {background:var(--red)}
 
-/* ── MOBILE NAV ── */
-.mob-nav{position:fixed;inset:0;z-index:1100;background:rgba(7,9,15,.98);backdrop-filter:blur(20px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2rem;padding-top:var(--nav)}
-.mob-nav.open{display:flex}
-.mob-link{font-family:var(--display);font-size:2.2rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);transition:color .2s}
-.mob-link:hover{color:var(--red)}
-.menu-btn{display:none;width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.skeleton {background:linear-gradient(90deg,var(--glass) 25%,var(--border) 50%,var(--glass) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--radius)}
+@keyframes shimmer {0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+#nav {position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav);background:rgba(var(--bg),.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border); transition: background 0.3s;}
+.nav-inner {display:flex;align-items:center;gap:1rem;height:100%;padding:0 1.5rem; max-width: 1280px; margin: 0 auto;}
+.brand {display:flex;align-items:center;gap:.65rem;flex-shrink:0}
+.brand-icon {width:36px;height:36px;border-radius:10px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;box-shadow:0 0 16px rgba(225,29,72,.4);transition:transform .2s}
+.brand-icon:hover {transform:scale(1.1)}
+.brand-name {font-family:var(--display);font-size:1.35rem;letter-spacing:.18em;text-transform:uppercase}
+.nav-links {display:flex;align-items:center;gap:.25rem;margin-left:.5rem}
+body.rtl .nav-links {margin-left:0; margin-right:.5rem;}
+.nav-link {font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:.35rem .75rem;border-radius:8px;transition:all .2s}
+.nav-link:hover, .nav-link.active {color:var(--text);background:var(--glass)}
+.nav-link.active {color:var(--red)!important}
+.nav-spacer {flex:1}
+.nav-search {position:relative;display:flex;align-items:center}
+.nav-search input {background:var(--glass);border:1px solid var(--border);border-radius:50px;color:var(--text);padding:.38rem 1rem .38rem 2.2rem;font-size:.8rem;width:200px;transition:all .3s}
+.nav-search input:focus {outline:none;width:260px;border-color:rgba(225,29,72,.4);background:var(--card)}
+.nav-search .icon {position:absolute;left:.75rem;color:var(--muted);font-size:.85rem;pointer-events:none}
+body.rtl .nav-search input {padding:.38rem 2.2rem .38rem 1rem}
+body.rtl .nav-search .icon {left:auto;right:.75rem}
+.nav-btn {font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;transition:all .2s;white-space:nowrap; border:1px solid var(--border); background:var(--glass)}
+.nav-btn:hover {background:var(--border)}
+.nav-btn.add {color:var(--red);background:rgba(225,29,72,.1);border-color:rgba(225,29,72,.25)}
+.nav-btn.add:hover {background:var(--red);color:#fff}
+.user-avatar {width:36px;height:36px;border-radius:50%;border:2px solid var(--border);overflow:hidden;transition:border-color .2s;cursor:pointer;flex-shrink:0}
+.user-avatar:hover {border-color:var(--red)}
+.user-avatar img {width:100%;height:100%;object-fit:cover}
+
+.mob-nav {position:fixed;inset:0;z-index:1100;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.mob-nav.open {display:flex}
+.mob-link {font-family:var(--display);font-size:2.2rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.mob-link:hover {color:var(--red)}
+.menu-btn {display:none;width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--border)}
 @media(max-width:768px){.menu-btn{display:flex}.nav-links,.nav-search{display:none!important}}
 
-/* ── PAGES ── */
-.page{display:none}
-.page.active{display:block}
-main{padding-top:var(--nav);min-height:80vh}
+.page {display:none; padding-top:var(--nav); min-height:80vh; animation: fadeUp .3s ease forwards;}
+.page.active {display:block}
 
-/* ── HERO ── */
-.hero{position:relative;height:75vh;min-height:520px;display:flex;align-items:flex-end;overflow:hidden}
-.hero-bg{position:absolute;inset:0}
-.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.35;transform:scale(1.04);transition:opacity .8s,transform 8s linear}
-.hero-bg img.loaded{transform:scale(1)}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,9,15,.96) 0%,rgba(7,9,15,.6) 50%,rgba(7,9,15,.1) 100%),linear-gradient(0deg,rgba(7,9,15,1) 0%,transparent 50%)}
-body.rtl .hero-bg::after{background:linear-gradient(270deg,rgba(7,9,15,.96) 0%,rgba(7,9,15,.6) 50%,rgba(7,9,15,.1) 100%),linear-gradient(0deg,rgba(7,9,15,1) 0%,transparent 50%)}
-.hero-content{position:relative;z-index:2;padding:0 1.5rem 3.5rem;max-width:1280px;margin:0 auto;width:100%}
-.hero-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.65rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding:.28rem .85rem;border-radius:50px;background:rgba(225,29,72,.12);border:1px solid rgba(225,29,72,.25);margin-bottom:.85rem}
-.hero-title{font-family:var(--display);font-size:clamp(2.8rem,8vw,6rem);line-height:.95;letter-spacing:.02em;text-transform:uppercase;margin-bottom:.75rem}
-.hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-bottom:.85rem}
-.hero-meta span{font-size:.78rem;font-weight:600;color:var(--muted)}
-.hero-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--muted)}
-.star{color:var(--gold);font-weight:800;font-size:.82rem}
-.hero-desc{color:rgba(255,255,255,.55);max-width:480px;line-height:1.75;font-size:.9rem;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.hero-btns{display:flex;flex-wrap:wrap;gap:.75rem}
+.hero {position:relative;height:75vh;min-height:520px;display:flex;align-items:flex-end;overflow:hidden}
+.hero-bg {position:absolute;inset:0}
+.hero-bg img {width:100%;height:100%;object-fit:cover;opacity:.35;transform:scale(1.04);transition:opacity .8s,transform 8s linear}
+.hero-bg img.loaded {transform:scale(1)}
+.hero-bg::after {content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(7,9,15,.4) 50%,transparent 100%),linear-gradient(0deg,var(--bg) 0%,transparent 50%)}
+body.rtl .hero-bg::after {background:linear-gradient(270deg,var(--bg) 0%,rgba(7,9,15,.4) 50%,transparent 100%),linear-gradient(0deg,var(--bg) 0%,transparent 50%)}
+.hero-content {position:relative;z-index:2;padding:0 1.5rem 3.5rem;max-width:1280px;margin:0 auto;width:100%}
+.hero-badge {display:inline-flex;align-items:center;gap:.4rem;font-size:.65rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--red);padding:.28rem .85rem;border-radius:50px;background:rgba(225,29,72,.12);border:1px solid rgba(225,29,72,.25);margin-bottom:.85rem}
+.hero-title {font-family:var(--display);font-size:clamp(2.8rem,8vw,6rem);line-height:.95;letter-spacing:.02em;text-transform:uppercase;margin-bottom:.75rem}
+.hero-meta {display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin-bottom:.85rem}
+.hero-meta span {font-size:.78rem;font-weight:600;color:var(--muted)}
+.hero-meta .dot {width:3px;height:3px;border-radius:50%;background:var(--muted)}
+.star {color:var(--gold);font-weight:800;font-size:.82rem}
+.hero-desc {color:var(--muted);max-width:480px;line-height:1.75;font-size:.9rem;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns {display:flex;flex-wrap:wrap;gap:.75rem}
 
-/* ── BUTTONS ── */
-.btn-primary-cv{display:inline-flex;align-items:center;gap:.5rem;padding:.72rem 1.8rem;border-radius:50px;background:var(--red);color:#fff;font-weight:700;font-size:.88rem;transition:all .22s;box-shadow:0 6px 20px rgba(225,29,72,.3)}
-.btn-primary-cv:hover{transform:scale(1.04);box-shadow:0 10px 28px rgba(225,29,72,.45);color:#fff}
-.btn-secondary-cv{display:inline-flex;align-items:center;gap:.5rem;padding:.72rem 1.8rem;border-radius:50px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem;border:1px solid rgba(255,255,255,.14);transition:all .22s}
-.btn-secondary-cv:hover{background:rgba(255,255,255,.15);color:#fff}
-.btn-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .2s;border:1px solid var(--border);background:rgba(255,255,255,.05)}
-.btn-icon:hover{background:rgba(255,255,255,.12)}
-.btn-icon.red{background:rgba(225,29,72,.12);color:var(--red);border-color:rgba(225,29,72,.2)}
-.btn-icon.red:hover{background:var(--red);color:#fff}
-.btn-icon.gold{background:rgba(245,158,11,.12);color:var(--gold);border-color:rgba(245,158,11,.2)}
-.btn-icon.gold:hover{background:var(--gold);color:#000}
-.btn-icon.green{background:rgba(16,185,129,.12);color:var(--green);border-color:rgba(16,185,129,.2)}
-.btn-icon.green:hover{background:var(--green);color:#fff}
+.btn-primary-cv {display:inline-flex;align-items:center;gap:.5rem;padding:.72rem 1.8rem;border-radius:50px;background:var(--red);color:#fff;font-weight:700;font-size:.88rem;transition:all .22s;box-shadow:0 6px 20px rgba(225,29,72,.3)}
+.btn-primary-cv:hover {transform:scale(1.04);box-shadow:0 10px 28px rgba(225,29,72,.45);color:#fff}
+.btn-secondary-cv {display:inline-flex;align-items:center;gap:.5rem;padding:.72rem 1.8rem;border-radius:50px;background:var(--glass);color:var(--text);font-weight:700;font-size:.88rem;border:1px solid var(--border);transition:all .22s}
+.btn-secondary-cv:hover {background:var(--border)}
+.btn-icon {width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .2s;border:1px solid var(--border);background:var(--glass)}
+.btn-icon:hover {background:var(--border)}
+.btn-icon.red {background:rgba(225,29,72,.12);color:var(--red);border-color:rgba(225,29,72,.2)}
+.btn-icon.red:hover {background:var(--red);color:#fff}
 
-/* ── SECTION ── */
-.section{padding:2.5rem 0}
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
-.section-title{font-family:var(--display);font-size:1.6rem;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:.65rem}
-.section-bar{width:4px;height:24px;border-radius:4px}
-.section-bar.red{background:var(--red);box-shadow:0 0 12px var(--red)}
-.section-bar.gold{background:var(--gold);box-shadow:0 0 12px var(--gold)}
-.section-bar.blue{background:var(--blue);box-shadow:0 0 12px var(--blue)}
-.see-all{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.3rem .8rem;border-radius:50px;border:1px solid var(--border);transition:all .2s}
-.see-all:hover{color:#fff;border-color:var(--red);background:rgba(225,29,72,.1)}
+.section {padding:2.5rem 0}
+.section-hdr {display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.section-title {font-family:var(--display);font-size:1.6rem;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:.65rem}
+.section-bar {width:4px;height:24px;border-radius:4px}
+.section-bar.red {background:var(--red);box-shadow:0 0 12px var(--red)}
+.section-bar.gold {background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.section-bar.blue {background:var(--blue);box-shadow:0 0 12px var(--blue)}
 
-/* ── FILM GRID ── */
-.film-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:1rem}
-@media(min-width:1200px){.film-grid{grid-template-columns:repeat(7,1fr)}}
+.film-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem}
 @media(max-width:480px){.film-grid{grid-template-columns:repeat(2,1fr);gap:.65rem}}
 
-/* ── FILM CARD ── */
-.film-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:2/3;cursor:pointer;background:var(--card);border:1px solid var(--border);transition:transform .32s cubic-bezier(.17,.67,.52,1.28),border-color .28s,box-shadow .28s}
-.film-card:hover{transform:translateY(-8px) scale(1.02);border-color:rgba(225,29,72,.35);box-shadow:0 20px 40px rgba(0,0,0,.6)}
-.film-card img{width:100%;height:100%;object-fit:cover;transition:transform .55s ease}
-.film-card:hover img{transform:scale(1.06)}
-.film-card .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.15) 55%,transparent 100%);opacity:.8;transition:opacity .28s}
-.film-card:hover .overlay{opacity:1}
-.film-card .body{position:absolute;bottom:0;left:0;right:0;padding:.85rem .75rem .75rem;transform:translateY(4px);transition:transform .28s}
-.film-card:hover .body{transform:translateY(0)}
-.fc-type{font-size:.58rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--red);color:#fff;display:inline-block;margin-bottom:.3rem}
-.fc-type.series{background:#7c3aed}
-.fc-title{font-family:var(--display);font-size:.95rem;line-height:1.1;text-transform:uppercase;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.2rem}
-.fc-meta{font-size:.65rem;color:rgba(255,255,255,.38);margin-bottom:.5rem}
-.fc-actions{display:flex;gap:.35rem;opacity:0;transform:translateY(5px);transition:all .22s}
-.film-card:hover .fc-actions{opacity:1;transform:translateY(0)}
-.fc-watch{flex:1;padding:.42rem .4rem;border-radius:9px;background:#fff;color:#000;font-size:.62rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:.3rem;transition:all .2s}
-.fc-watch:hover{background:var(--red);color:#fff}
-.fc-btn{width:28px;height:28px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:all .2s;flex-shrink:0}
-.fc-btn:hover{background:rgba(255,255,255,.2)}
-.fc-btn.del{background:rgba(225,29,72,.15);color:var(--red);border-color:rgba(225,29,72,.2)}
-.fc-btn.del:hover{background:var(--red);color:#fff}
-.fc-fav{background:rgba(245,158,11,.12);color:var(--gold);border-color:rgba(245,158,11,.2)}
-.fc-fav.active,.fc-fav:hover{background:var(--gold);color:#000}
-.fc-mark{background:rgba(16,185,129,.12);color:var(--green);border-color:rgba(16,185,129,.2)}
-.fc-mark.active,.fc-mark:hover{background:var(--green);color:#fff}
-/* watched ribbon */
-.watched-ribbon{position:absolute;top:.5rem;right:.5rem;width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;z-index:3;box-shadow:0 2px 8px rgba(16,185,129,.5)}
+.film-card {position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:2/3;cursor:pointer;background:var(--card);border:1px solid var(--border);transition:transform .3s,box-shadow .3s}
+.film-card:hover {transform:translateY(-5px);border-color:var(--red);box-shadow:0 15px 30px rgba(0,0,0,.3)}
+.film-card img {width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.film-card:hover img {transform:scale(1.05)}
+.film-card .overlay {position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.1) 60%,transparent 100%);opacity:.8;transition:opacity .3s}
+.film-card:hover .overlay {opacity:1}
+.film-card .body {position:absolute;bottom:0;left:0;right:0;padding:.85rem .75rem;transform:translateY(8px);transition:transform .3s; color:#fff;}
+.film-card:hover .body {transform:translateY(0)}
+.fc-type {font-size:.55rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--red);color:#fff;display:inline-block;margin-bottom:.3rem}
+.fc-type.series {background:var(--purple)}
+.fc-type.dub {background:var(--blue)}
+.fc-title {font-family:var(--display);font-size:1rem;line-height:1.1;text-transform:uppercase;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.2rem}
+.fc-meta {font-size:.65rem;color:rgba(255,255,255,.6);margin-bottom:.5rem}
+.fc-actions {display:flex;gap:.35rem;opacity:0;transform:translateY(5px);transition:all .22s}
+.film-card:hover .fc-actions {opacity:1;transform:translateY(0)}
+.fc-watch {flex:1;padding:.4rem;border-radius:8px;background:#fff;color:#000;font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:.3rem;transition:all .2s}
+.fc-watch:hover {background:var(--red);color:#fff}
+.fc-btn {width:28px;height:28px;border-radius:7px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:all .2s;flex-shrink:0}
+.fc-btn:hover {background:rgba(255,255,255,.3)}
 
-/* ── FILTERS ── */
-.filter-bar{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;align-items:center}
-.filter-pill{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);transition:all .2s}
-.filter-pill:hover{border-color:var(--red);color:var(--red)}
-.filter-pill.active{background:var(--red);border-color:var(--red);color:#fff}
-.filter-pill.type-series.active{background:#7c3aed;border-color:#7c3aed}
-.sort-select{font-size:.72rem;font-weight:700;padding:.35rem .85rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);font-family:var(--font);cursor:pointer}
-.sort-select:focus{outline:none;border-color:var(--red)}
-.sort-select option{background:#111820;color:#fff}
+.filter-bar {display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem;align-items:center}
+.filter-pill {font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .9rem;border-radius:50px;border:1px solid var(--border);color:var(--text);background:var(--glass);transition:all .2s}
+.filter-pill:hover {border-color:var(--red);color:var(--red)}
+.filter-pill.active {background:var(--red);border-color:var(--red);color:#fff}
 
-/* ── INPUT ── */
-.cv-input,.cv-textarea,.cv-select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:.65rem 1rem;font-family:var(--font);font-size:.88rem;transition:border-color .2s,background .2s}
-.cv-input:focus,.cv-textarea:focus,.cv-select:focus{outline:none;border-color:var(--red);background:rgba(255,255,255,.07);box-shadow:0 0 0 3px rgba(225,29,72,.1)}
-.cv-textarea{resize:vertical;min-height:90px}
-.cv-select option{background:#111820;color:#fff}
-.cv-label{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem}
-.form-group{margin-bottom:1rem}
+.cv-input,.cv-textarea,.cv-select {width:100%;background:var(--glass);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:.65rem 1rem;font-family:var(--font);font-size:.88rem;transition:all .2s}
+.cv-input:focus,.cv-textarea:focus,.cv-select:focus {outline:none;border-color:var(--red);background:var(--card);box-shadow:0 0 0 3px rgba(225,29,72,.1)}
+.cv-label {font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem}
 
-/* ── GLASS ── */
-.glass{background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(12px)}
-.glass-heavy{background:rgba(13,16,23,.95);border:1px solid var(--border);backdrop-filter:blur(24px)}
-
-/* ── MODAL ── */
-.modal-backdrop-cv{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
-.modal-backdrop-cv.open{display:flex}
-.modal-box{width:100%;max-width:800px;border-radius:22px;padding:2rem;max-height:92vh;overflow-y:auto;margin:auto}
+.modal-backdrop-cv {position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-backdrop-cv.open {display:flex}
+.modal-box {width:100%;max-width:800px;border-radius:22px;padding:2rem;max-height:92vh;overflow-y:auto;margin:auto; background:var(--card); border:1px solid var(--border);}
 @media(max-width:576px){.modal-box{padding:1.25rem;border-radius:16px}}
-.modal-title{font-family:var(--display);font-size:1.8rem;letter-spacing:.07em;text-transform:uppercase}
-.modal-bar{width:44px;height:3px;background:var(--red);border-radius:3px;margin:.5rem 0 1.5rem}
 
-/* ── TYPE TOGGLE ── */
-.type-toggle{display:flex;gap:.5rem;margin-bottom:1.25rem}
-.type-btn{flex:1;padding:.65rem;border-radius:10px;font-size:.8rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);transition:all .22s;display:flex;align-items:center;justify-content:center;gap:.5rem}
-.type-btn.active.movie{background:rgba(225,29,72,.15);border-color:rgba(225,29,72,.4);color:var(--red)}
-.type-btn.active.series{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#a78bfa}
+.player-wrap {border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:1px solid var(--border);box-shadow:0 32px 64px rgba(0,0,0,.4)}
+.player-wrap iframe,.player-wrap video {width:100%;height:100%;display:block;border:none}
 
-/* ── GENRE PILLS IN MODAL ── */
-.genre-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
-.genre-chip{font-size:.68rem;font-weight:700;padding:.28rem .7rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s}
-.genre-chip.active{background:rgba(225,29,72,.15);border-color:rgba(225,29,72,.4);color:var(--red)}
-
-/* ── SERVER TABS ── */
-.server-tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
-.server-tab{font-size:.72rem;font-weight:700;padding:.38rem .9rem;border-radius:8px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.35rem}
-.server-tab.active{background:rgba(225,29,72,.15);border-color:rgba(225,29,72,.4);color:var(--red)}
-.server-tab.vip{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--gold)}
-.server-tab.vip.active{background:rgba(245,158,11,.2);border-color:var(--gold)}
-
-/* ── DETAIL PAGE ── */
-.detail-hero{position:relative;min-height:420px;display:flex;align-items:flex-end;overflow:hidden}
-.detail-hero .hero-bg img{opacity:.2}
-.detail-poster{width:150px;flex-shrink:0;border-radius:12px;overflow:hidden;border:1px solid var(--border);box-shadow:0 16px 48px rgba(0,0,0,.7)}
-@media(max-width:767px){.detail-poster{width:100px}}
-.detail-info{flex:1}
-.imdb-score{display:inline-flex;align-items:center;gap:.35rem;background:#f5c518;color:#000;font-weight:900;font-size:.8rem;padding:.28rem .7rem;border-radius:6px}
-.detail-stat{text-align:center;padding:0 1rem}
-.detail-stat .val{font-family:var(--display);font-size:1.6rem;color:#fff}
-.detail-stat .lbl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.1rem}
-
-/* ── WATCH PAGE ── */
-.player-wrap{border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:1px solid var(--border);box-shadow:0 32px 64px rgba(0,0,0,.8)}
-.player-wrap iframe,.player-wrap video{width:100%;height:100%;display:block;border:none}
-.ep-pill{flex-shrink:0;min-width:140px;padding:.65rem .9rem;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);text-align:left;transition:all .2s}
-.ep-pill:hover,.ep-pill.active{background:rgba(225,29,72,.12);border-color:rgba(225,29,72,.35);color:#fff}
-.ep-num{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
-.ep-title{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ep-check{font-size:.65rem;color:var(--green);margin-top:.2rem}
-
-/* ── COMMENTS ── */
-.comment-card{display:flex;gap:.85rem}
-.c-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--card2)}
-.c-avatar img{width:100%;height:100%;object-fit:cover}
-.c-body{flex:1}
-.c-name{font-weight:700;font-size:.88rem;display:inline-flex;align-items:center;gap:.4rem}
-.c-sub{font-size:.58rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.c-time{font-size:.68rem;color:var(--muted);margin-left:.5rem;font-weight:400}
-.c-text{color:rgba(255,255,255,.65);font-size:.88rem;line-height:1.65;margin:.3rem 0 0}
-
-/* ── META TABLE ── */
-.meta-table{border-radius:12px;overflow:hidden;border:1px solid var(--border)}
-.meta-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid var(--border);font-size:.84rem}
-.meta-row:last-child{border-bottom:none}
-.meta-label{color:var(--muted);font-size:.78rem}
-.meta-val{font-weight:700}
-
-/* ── USER LISTS (fav/watchlater/watched) ── */
-.list-tab{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.38rem .9rem;border-radius:8px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04);transition:all .2s}
-.list-tab.active{background:rgba(225,29,72,.15);border-color:rgba(225,29,72,.4);color:var(--red)}
-
-/* ── SUBSCRIPTION ── */
-.sub-card{border-radius:18px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
-.sub-card.featured{border-color:var(--gold);background:rgba(245,158,11,.05)}
-.sub-card .header{padding:1.5rem;border-bottom:1px solid var(--border)}
-.sub-card .body{padding:1.5rem}
-.sub-price{font-family:var(--display);font-size:2.8rem;color:#fff}
-.sub-price span{font-size:1rem;color:var(--muted)}
-.sub-feature{display:flex;align-items:center;gap:.5rem;font-size:.85rem;padding:.35rem 0;color:rgba(255,255,255,.7)}
-.sub-feature i{color:var(--green);font-size:.9rem}
-
-/* ── TOAST ── */
-#toasts{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:.4rem;pointer-events:none;align-items:center}
-.toast-cv{padding:.65rem 1.4rem;border-radius:50px;font-weight:700;font-size:.82rem;display:flex;align-items:center;gap:.45rem;white-space:nowrap;pointer-events:auto;animation:toastIn .3s ease}
-.toast-cv.success{background:#059669;color:#fff}
-.toast-cv.error{background:var(--red);color:#fff}
-.toast-cv.info{background:rgba(255,255,255,.1);color:#fff;border:1px solid var(--border);backdrop-filter:blur(12px)}
-.toast-cv.warn{background:var(--gold);color:#000}
-@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── PROFILE ── */
-.profile-avatar-lg{width:100px;height:100px;border-radius:50%;border:3px solid var(--red);overflow:hidden;margin:0 auto}
-.profile-avatar-lg img{width:100%;height:100%;object-fit:cover}
-
-/* ── AD BANNER ── */
-.ad-banner{border-radius:12px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.35rem;color:var(--muted2);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:1.5rem}
-
-/* ── ADMIN ── */
-.stat-card{padding:1.5rem;border-radius:14px;background:var(--card);border:1px solid var(--border)}
-.stat-val{font-family:var(--display);font-size:2.8rem;color:#fff}
-.stat-lbl{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.1rem}
-
-/* ── TABLE ── */
-.cv-table{width:100%;border-collapse:separate;border-spacing:0}
-.cv-table th{font-size:.62rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:.65rem 1rem;border-bottom:1px solid var(--border);white-space:nowrap}
-.cv-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.84rem;vertical-align:middle}
-.cv-table tr:last-child td{border-bottom:none}
-.cv-table tr:hover td{background:rgba(255,255,255,.02)}
-
-/* ── ROLE BADGES ── */
-.role-badge{font-size:.6rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:2px 9px;border-radius:50px}
-.role-badge.admin{background:rgba(245,158,11,.15);color:var(--gold)}
-.role-badge.dobber{background:rgba(225,29,72,.15);color:var(--red)}
-.role-badge.subscriber{background:rgba(139,92,246,.15);color:#a78bfa}
-.role-badge.viewer{background:rgba(255,255,255,.07);color:var(--muted)}
-
-/* ── UPLOAD AREA ── */
-.upload-area{border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s}
-.upload-area:hover{border-color:var(--red);background:rgba(225,29,72,.04)}
-.upload-preview{width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-top:.65rem}
-
-/* ── THUMB TABS ── */
-.thumb-tabs{display:flex;margin-bottom:.65rem}
-.thumb-tab{flex:1;padding:.42rem;text-align:center;font-size:.7rem;font-weight:700;letter-spacing:.09em;border:1px solid var(--border);cursor:pointer;transition:all .2s;color:var(--muted)}
-.thumb-tab:first-child{border-radius:8px 0 0 8px}
-.thumb-tab:last-child{border-radius:0 8px 8px 0}
-.thumb-tab.active{background:var(--red);border-color:var(--red);color:#fff}
-
-/* ── CONFIG BANNER ── */
-#cfgBanner{display:none;background:#92400e;color:#fff;text-align:center;padding:.45rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
-
-/* ── FOOTER ── */
-footer{background:rgba(0,0,0,.5);border-top:1px solid var(--border);padding:3.5rem 0 1.5rem;margin-top:4rem}
-.footer-logo{font-family:var(--display);font-size:1.2rem;letter-spacing:.18em;text-transform:uppercase}
-.footer-link{display:block;font-size:.82rem;color:var(--muted);margin-bottom:.35rem;transition:color .2s}
-.footer-link:hover{color:var(--red)}
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .4s ease forwards}
-.delay-1{animation-delay:.08s;opacity:0}
-.delay-2{animation-delay:.16s;opacity:0}
-.delay-3{animation-delay:.24s;opacity:0}
-
-/* ── MISC ── */
-.spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.08);border-top-color:var(--red);animation:spin .65s linear infinite;margin:0 auto}
-@keyframes spin{to{transform:rotate(360deg)}}
-.divider{height:1px;background:var(--border);margin:1.5rem 0}
-.empty-state{padding:4rem 1rem;text-align:center}
-.empty-icon{width:80px;height:80px;border-radius:22px;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--muted2);margin:0 auto 1.25rem}
+#toasts {position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:.4rem;pointer-events:none;align-items:center}
+.toast-cv {padding:.65rem 1.4rem;border-radius:50px;font-weight:700;font-size:.82rem;display:flex;align-items:center;gap:.45rem;white-space:nowrap;pointer-events:auto;animation:toastIn .3s ease; color:#fff;}
+.toast-cv.success {background:var(--green)}
+.toast-cv.error {background:var(--red)}
+@keyframes toastIn {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp {from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- ── CONFIG BANNER ── -->
-<div id="cfgBanner">Firebase Configuration Required</div>
-
-<!-- ── TOASTS ── -->
+<div id="cfgBanner" style="display:none;background:var(--gold);color:#000;text-align:center;padding:.45rem;font-weight:bold;font-size:.8rem;">Firebase Config Required</div>
 <div id="toasts"></div>
 
-<!-- ── MOBILE NAV ── -->
 <div class="mob-nav" id="mobNav">
-  <a class="mob-link" onclick="navigate('home');closeMobNav()">Home</a>
-  <a class="mob-link" id="mobMyList" onclick="navigate('mylist');closeMobNav()" style="display:none">My List</a>
-  <a class="mob-link" id="mobManage" onclick="navigate('manage');closeMobNav()" style="display:none">Manage</a>
-  <a class="mob-link" id="mobAdmin" style="color:rgba(245,158,11,.7)" onclick="navigate('admin');closeMobNav()" style="display:none">Admin</a>
-  <a class="mob-link" onclick="navigate('profile');closeMobNav()">Profile</a>
+  <button class="menu-btn" onclick="toggleMobNav()" style="position:absolute;top:1rem;right:1rem;display:flex"><i class="bi bi-x-lg"></i></button>
+  <a class="mob-link" onclick="navigate('home')">Home</a>
+  <a class="mob-link" id="mobMyList" onclick="navigate('mylist')" style="display:none">My List</a>
+  <a class="mob-link" id="mobManage" onclick="navigate('manage')" style="display:none">Manage</a>
+  <a class="mob-link" id="mobAdmin" style="color:var(--gold)" onclick="navigate('admin')" style="display:none">Admin</a>
+  <a class="mob-link" onclick="navigate('profile')">Profile</a>
 </div>
 
-<!-- ── NAVBAR ── -->
 <nav id="nav">
-  <div class="nav-inner" style="max-width:1280px;margin:0 auto;padding:0 1.5rem">
+  <div class="nav-inner">
     <div class="brand" onclick="navigate('home')" style="cursor:pointer">
-      <div class="brand-icon"><i class="bi bi-film" style="color:#fff"></i></div>
+      <div class="brand-icon"><i class="bi bi-film"></i></div>
       <span class="brand-name d-none d-sm-block">CineVerse</span>
     </div>
-    <div class="nav-links">
+    <div class="nav-links d-none d-md-flex">
       <button class="nav-link active" id="nl-home" onclick="navigate('home')">Home</button>
       <button class="nav-link" id="nl-mylist" onclick="navigate('mylist')" style="display:none">My List</button>
       <button class="nav-link" id="nl-manage" onclick="navigate('manage')" style="display:none">Manage</button>
       <button class="nav-link" id="nl-admin" style="display:none;color:var(--gold)!important" onclick="navigate('admin')">Admin</button>
     </div>
     <div class="nav-spacer"></div>
-    <!-- Search -->
     <div class="nav-search d-none d-lg-flex">
       <i class="bi bi-search icon"></i>
       <input type="text" id="searchInput" placeholder="Search films..." oninput="onSearch(this.value)">
     </div>
-    <!-- Add btn -->
-    <button class="nav-btn add d-none d-sm-flex" id="navAddBtn" onclick="openModal(null)" style="display:none!important">
-      <i class="bi bi-plus-lg"></i> Add New
-    </button>
-    <!-- Lang -->
+    <button class="nav-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="bi bi-moon-stars" id="themeIcon"></i></button>
     <button class="nav-btn lang" id="langBtn" onclick="toggleLang()">کوردی</button>
-    <!-- User -->
     <div id="userArea"></div>
-    <!-- Hamburger -->
-    <button class="menu-btn" onclick="toggleMobNav()"><i class="bi bi-list" style="font-size:1.2rem"></i></button>
+    <button class="menu-btn" onclick="toggleMobNav()"><i class="bi bi-list"></i></button>
   </div>
 </nav>
 
-<!-- ══════════════════ MAIN ══════════════════ -->
 <main>
-  <!-- Global Loader -->
   <div id="loader" style="height:80vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem">
-    <div class="spinner"></div>
-    <p style="color:var(--muted);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase">Loading...</p>
+    <div class="spinner-border text-danger" role="status"></div>
   </div>
 
-  <!-- ── HOME ── -->
   <div class="page" id="pg-home">
-    <!-- Hero -->
     <div class="hero" id="heroEl" style="display:none">
-      <div class="hero-bg"><img id="heroBgImg" src="" alt="" referrerpolicy="no-referrer"></div>
+      <div class="hero-bg"><img id="heroBgImg" src="" alt=""></div>
       <div class="hero-content">
         <div style="max-width:520px">
           <div class="hero-badge"><i class="bi bi-star-fill"></i> <span id="heroBadge">Featured</span></div>
@@ -391,1387 +212,316 @@ footer{background:rgba(0,0,0,.5);border-top:1px solid var(--border);padding:3.5r
             <span class="star"><i class="bi bi-star-fill"></i> <b id="heroRat"></b></span>
             <span class="dot"></span><span id="heroYr"></span>
             <span class="dot"></span><span id="heroTp" style="text-transform:uppercase"></span>
-            <span class="dot"></span><span id="heroGen" style="color:var(--muted)"></span>
           </div>
           <h1 class="hero-title" id="heroTitle"></h1>
           <p class="hero-desc" id="heroDesc"></p>
           <div class="hero-btns">
             <button class="btn-primary-cv" id="heroWatchBtn"><i class="bi bi-play-fill"></i> <span data-k="watchNow">Watch Now</span></button>
             <button class="btn-secondary-cv" id="heroInfoBtn"><i class="bi bi-info-circle"></i> <span data-k="details">Details</span></button>
-            <button class="btn-secondary-cv" id="heroFavBtn" style="display:none;border-color:rgba(245,158,11,.3);color:var(--gold)"><i class="bi bi-bookmark-plus"></i></button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Skeleton hero placeholder (shown while loading) -->
-    <div id="heroSkel" class="skeleton" style="height:75vh;min-height:520px;display:none"></div>
-
-    <!-- Filter Bar -->
     <div style="max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem 0">
       <div class="filter-bar" id="filterBar">
         <button class="filter-pill active" data-filter="all" onclick="setFilter('all',this)">All</button>
         <button class="filter-pill" data-filter="movie" onclick="setFilter('movie',this)">Movies</button>
-        <button class="filter-pill type-series" data-filter="series" onclick="setFilter('series',this)">Series</button>
+        <button class="filter-pill" data-filter="series" onclick="setFilter('series',this)">Series</button>
         <div style="width:1px;height:24px;background:var(--border);margin:0 .25rem"></div>
-        <!-- Genre filters built dynamically -->
         <div id="genreFilters" style="display:flex;flex-wrap:wrap;gap:.4rem"></div>
-        <div style="margin-left:auto">
-          <select class="sort-select" id="sortSelect" onchange="renderHome()">
-            <option value="newest">Newest First</option>
-            <option value="rating">Top Rated</option>
-            <option value="title">A-Z</option>
-            <option value="year">By Year</option>
-          </select>
-        </div>
       </div>
     </div>
 
-    <!-- Search results -->
-    <div id="searchResultsSection" style="display:none;max-width:1280px;margin:0 auto;padding:1.5rem">
-      <div class="section-hdr">
-        <div class="section-title"><span class="section-bar red"></span> Search Results <span id="searchCount" style="font-size:1rem;color:var(--muted);margin-left:.5rem"></span></div>
-      </div>
-      <div class="film-grid" id="searchGrid"></div>
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" id="emptyState" style="display:none">
-      <div class="empty-icon"><i class="bi bi-film"></i></div>
-      <h3 style="font-family:var(--display);font-size:1.8rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem" data-k="noContent">Nothing here yet</h3>
-      <p style="color:var(--muted);margin-bottom:1.25rem" data-k="addFirst">Add your first film to get started</p>
-      <button class="btn-primary-cv" id="emptyAddBtn" onclick="openModal(null)" style="display:none"><i class="bi bi-plus-lg"></i> Add Film</button>
-    </div>
-
-    <!-- Main content -->
     <div id="homeContent" style="max-width:1280px;margin:0 auto;padding:0 1.5rem">
-      <!-- Movies section -->
+      <div class="section" id="dubbedSection" style="display:none">
+        <div class="section-hdr"><div class="section-title"><span class="section-bar blue"></span> <span data-k="latestDubbed">Latest Dubbed</span></div></div>
+        <div class="film-grid" id="dubbedGrid"></div>
+      </div>
+      <div class="section" id="subbedSection" style="display:none">
+        <div class="section-hdr"><div class="section-title"><span class="section-bar gold"></span> <span data-k="latestSubbed">Latest Subbed</span></div></div>
+        <div class="film-grid" id="subbedGrid"></div>
+      </div>
       <div class="section" id="moviesSection" style="display:none">
-        <div class="section-hdr">
-          <div class="section-title"><span class="section-bar red"></span> <span data-k="latestMovies">Latest Movies</span></div>
-          <button class="nav-btn add" id="addMovieBtn" onclick="openModal(null)" style="display:none"><i class="bi bi-plus-lg"></i></button>
-        </div>
+        <div class="section-hdr"><div class="section-title"><span class="section-bar red"></span> <span data-k="latestMovies">Latest Movies</span></div></div>
         <div class="film-grid" id="moviesGrid"></div>
       </div>
-
-      <!-- Ad -->
-      <div class="ad-banner" style="min-height:80px;margin:1rem 0"><i class="bi bi-layout-text-window fs-5"></i><span>Your Ad Here — 728×90</span></div>
-
-      <!-- Series section -->
       <div class="section" id="seriesSection" style="display:none">
-        <div class="section-hdr">
-          <div class="section-title"><span class="section-bar" style="background:#7c3aed;box-shadow:0 0 12px #7c3aed"></span> <span data-k="latestSeries">Latest Series</span></div>
-          <button class="nav-btn add" id="addSeriesBtn" onclick="openModal(null)" style="display:none"><i class="bi bi-plus-lg"></i></button>
-        </div>
+        <div class="section-hdr"><div class="section-title"><span class="section-bar" style="background:var(--purple)"></span> <span data-k="latestSeries">Latest Series</span></div></div>
         <div class="film-grid" id="seriesGrid"></div>
       </div>
-
-      <div style="padding-bottom:3rem"></div>
     </div>
   </div>
 
-  <!-- ── FILM DETAIL ── -->
   <div class="page" id="pg-film">
-    <div class="detail-hero" id="detailHeroEl">
-      <div class="hero-bg"><img id="detailBgImg" src="" alt="" referrerpolicy="no-referrer"></div>
-      <div class="hero-content" style="padding-bottom:2.5rem">
-        <div class="d-flex gap-4 align-items-end">
-          <div class="detail-poster"><img id="detailPosterImg" src="" alt="" style="width:100%;aspect-ratio:2/3;object-fit:cover"></div>
-          <div class="detail-info">
-            <div class="d-flex flex-wrap gap-2 mb-2 align-items-center">
-              <span id="detailTypeBadge" class="fc-type"></span>
-              <div class="imdb-score"><i class="bi bi-star-fill"></i> <span id="detailRat"></span></div>
-              <span id="detailYr" style="color:var(--muted);font-size:.85rem"></span>
-              <span id="detailDur" style="color:var(--muted);font-size:.85rem"></span>
-            </div>
-            <h1 class="hero-title" id="detailTitle" style="font-size:clamp(1.8rem,5vw,3.8rem)"></h1>
-            <div class="d-flex flex-wrap gap-2 mb-3" id="detailGenres"></div>
-            <div class="hero-meta mb-3">
-              <span id="detailLang" style="color:var(--muted)"></span>
-              <span class="dot" id="detailDotDir"></span>
-              <span id="detailDir" style="color:var(--muted)"></span>
-            </div>
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn-primary-cv" id="detailWatchBtn"><i class="bi bi-play-fill"></i> <span data-k="watchNow">Watch Now</span></button>
-              <button class="btn-secondary-cv" onclick="navigate('home')"><i class="bi bi-arrow-left"></i> <span data-k="back">Back</span></button>
-              <button class="btn-icon gold" id="detailFavBtn" title="Add to Favourites" onclick="toggleFav()"><i class="bi bi-bookmark"></i></button>
-              <button class="btn-icon green" id="detailWLBtn" title="Watch Later" onclick="toggleWatchLater()"><i class="bi bi-clock"></i></button>
-              <button class="btn-icon" id="detailWatchedBtn" title="Mark Watched" onclick="toggleWatched()"><i class="bi bi-check2-circle"></i></button>
-              <button class="btn-icon red" id="detailEditBtn" onclick="" style="display:none"><i class="bi bi-pencil"></i></button>
-            </div>
-          </div>
+    <div style="max-width:1000px;margin:0 auto;padding:2rem 1.5rem">
+      <button class="btn-secondary-cv mb-4" onclick="navigate('home')"><i class="bi bi-arrow-left"></i> <span data-k="back">Back</span></button>
+      <div class="d-flex flex-column flex-md-row gap-4">
+        <img id="detailPosterImg" style="width:200px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5);object-fit:cover">
+        <div>
+          <span id="detailTypeBadge" class="fc-type mb-2"></span>
+          <h1 style="font-family:var(--display);font-size:3rem;text-transform:uppercase" id="detailTitle"></h1>
+          <p style="color:var(--muted)" id="detailDesc"></p>
+          <button class="btn-primary-cv mt-3" id="detailWatchBtn"><i class="bi bi-play-fill"></i> <span data-k="watchNow">Watch Now</span></button>
         </div>
       </div>
-    </div>
-
-    <div style="max-width:1280px;margin:0 auto;padding:2rem 1.5rem">
-      <div class="row g-5">
-        <div class="col-lg-8">
-          <!-- Synopsis -->
-          <section class="mb-4">
-            <h4 class="cv-label mb-2" data-k="synopsis">Synopsis</h4>
-            <p id="detailDesc" style="color:rgba(255,255,255,.65);line-height:1.8;font-size:.93rem"></p>
-          </section>
-          <!-- Cast -->
-          <section class="mb-4" id="castSection" style="display:none">
-            <h4 class="cv-label mb-2">Cast</h4>
-            <p id="detailCast" style="color:rgba(255,255,255,.55);font-size:.88rem"></p>
-          </section>
-          <!-- Episodes -->
-          <section class="mb-4" id="epsSection" style="display:none">
-            <h4 class="cv-label mb-3" data-k="episodes">Episodes</h4>
-            <div class="row g-2" id="epsGrid"></div>
-          </section>
-          <!-- Comments -->
-          <section id="commentsSection">
-            <h4 class="cv-label mb-3"><span data-k="comments">Comments</span> (<span id="commentCnt">0</span>)</h4>
-            <div id="commentFormArea"></div>
-            <div id="commentsList" class="d-flex flex-column gap-3"></div>
-          </section>
-        </div>
-        <div class="col-lg-4">
-          <div class="meta-table mb-4 glass-heavy">
-            <div class="meta-row"><span class="meta-label" data-k="releaseYear">Year</span><span class="meta-val" id="metaYear"></span></div>
-            <div class="meta-row"><span class="meta-label" data-k="type">Type</span><span class="meta-val text-uppercase" id="metaType"></span></div>
-            <div class="meta-row"><span class="meta-label" data-k="rating">Rating</span><span class="meta-val" style="color:var(--gold)" id="metaRating"></span></div>
-            <div class="meta-row" id="metaEpRow" style="display:none"><span class="meta-label">Episodes</span><span class="meta-val" id="metaEps"></span></div>
-            <div class="meta-row" id="metaDurRow" style="display:none"><span class="meta-label">Duration</span><span class="meta-val" id="metaDur"></span></div>
-            <div class="meta-row" id="metaLangRow" style="display:none"><span class="meta-label">Language</span><span class="meta-val" id="metaLang"></span></div>
-            <div class="meta-row" id="metaDirRow" style="display:none"><span class="meta-label">Director</span><span class="meta-val" id="metaDir"></span></div>
-          </div>
-          <!-- User actions -->
-          <div class="glass-heavy p-3 rounded-3 mb-4" id="userActionsPanel" style="display:none">
-            <p class="cv-label mb-2">Your Activity</p>
-            <div class="d-flex gap-2 flex-wrap">
-              <button class="btn-icon gold flex-fill" id="panelFavBtn" onclick="toggleFav()" title="Favourite"><i class="bi bi-bookmark"></i> Favourite</button>
-              <button class="btn-icon green flex-fill" id="panelWLBtn" onclick="toggleWatchLater()" title="Watch Later"><i class="bi bi-clock"></i> Later</button>
-              <button class="btn-icon flex-fill" id="panelWatchedBtn" onclick="toggleWatched()" title="Mark Watched"><i class="bi bi-check2"></i> Watched</button>
-            </div>
-          </div>
-          <div class="ad-banner" style="min-height:220px"><i class="bi bi-layout-sidebar fs-4"></i><span>Ad — 300×250</span></div>
-        </div>
+      <div id="epsSection" class="mt-5" style="display:none">
+        <h4 class="cv-label" data-k="episodes">Episodes</h4>
+        <div class="row g-2" id="epsGrid"></div>
       </div>
     </div>
   </div>
 
-  <!-- ── WATCH PAGE ── -->
   <div class="page" id="pg-watch">
     <div style="max-width:1200px;margin:0 auto;padding:1.5rem">
-      <!-- Top bar -->
-      <div class="d-flex justify-content-between align-items-center mb-3 gap-2">
-        <button class="btn-secondary-cv" id="watchBackBtn" style="padding:.5rem 1.1rem;font-size:.82rem">
-          <i class="bi bi-arrow-left"></i> <span data-k="backToDetails">Back</span>
-        </button>
-        <div class="text-end">
-          <div style="font-family:var(--display);font-size:1.1rem;letter-spacing:.07em;text-transform:uppercase" id="watchTitle"></div>
-          <div style="font-size:.78rem;color:var(--red);font-weight:700" id="watchEpLabel"></div>
-        </div>
-      </div>
-
-      <!-- Server tabs -->
-      <div id="serverTabsEl" class="server-tabs" style="display:none"></div>
-
-      <!-- Player -->
+      <button class="btn-secondary-cv mb-3" id="watchBackBtn"><i class="bi bi-arrow-left"></i> <span data-k="back">Back</span></button>
+      <h2 style="font-family:var(--display);text-transform:uppercase;margin-bottom:1rem" id="watchTitle"></h2>
+      <div class="d-flex gap-2 mb-2" id="serverTabsEl"></div>
       <div class="player-wrap mb-4" id="playerEl"></div>
-
-      <!-- Mark watched episode -->
-      <div id="markEpBtns" class="d-flex gap-2 mb-4" style="display:none!important"></div>
-
-      <!-- Episode list -->
-      <div id="watchEpsSection" style="display:none">
-        <h4 class="cv-label mb-2" data-k="episodes">Episodes</h4>
-        <div class="d-flex gap-2 overflow-auto pb-2" id="watchEpList" style="scrollbar-width:thin"></div>
-      </div>
-
-      <div class="ad-banner mt-4" style="min-height:80px"><i class="bi bi-layout-text-window fs-4"></i><span>Ad — 728×90</span></div>
     </div>
   </div>
 
-  <!-- ── MY LIST PAGE ── -->
-  <div class="page" id="pg-mylist">
-    <div style="max-width:1280px;margin:0 auto;padding:2rem 1.5rem">
-      <h1 style="font-family:var(--display);font-size:2.2rem;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1.5rem">My List</h1>
-      <div class="d-flex gap-2 flex-wrap mb-4">
-        <button class="list-tab active" onclick="setListTab('fav',this)"><i class="bi bi-bookmark-fill"></i> Favourites</button>
-        <button class="list-tab" onclick="setListTab('later',this)"><i class="bi bi-clock-fill"></i> Watch Later</button>
-        <button class="list-tab" onclick="setListTab('watched',this)"><i class="bi bi-check-circle-fill"></i> Watched</button>
-      </div>
-      <div class="film-grid" id="myListGrid"></div>
-      <div class="empty-state" id="myListEmpty" style="display:none">
-        <div class="empty-icon"><i class="bi bi-bookmark"></i></div>
-        <p style="color:var(--muted)">Nothing here yet. Start adding films!</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── PROFILE PAGE ── -->
   <div class="page" id="pg-profile">
-    <div style="max-width:560px;margin:0 auto;padding:3rem 1.5rem 5rem">
-      <div class="text-center mb-4">
-        <div class="profile-avatar-lg mb-3"><img id="profPhoto" src="" alt="" referrerpolicy="no-referrer"></div>
-        <h2 style="font-family:var(--display);font-size:2rem;letter-spacing:.07em;text-transform:uppercase" id="profName"></h2>
-        <p style="color:var(--muted)" id="profEmail"></p>
-        <div class="d-flex gap-2 justify-content-center mt-2">
-          <span class="role-badge" id="profRole"></span>
-          <span id="profSubBadge" style="display:none" class="sub-badge">⭐ Subscriber</span>
-        </div>
-      </div>
-      <!-- Stats -->
-      <div class="row g-3 mb-4">
-        <div class="col-4"><div class="stat-card text-center"><div class="stat-val" id="profFavCnt">0</div><div class="stat-lbl">Favourites</div></div></div>
-        <div class="col-4"><div class="stat-card text-center"><div class="stat-val" id="profWLCnt">0</div><div class="stat-lbl">Watch Later</div></div></div>
-        <div class="col-4"><div class="stat-card text-center"><div class="stat-val" id="profWatchedCnt">0</div><div class="stat-lbl">Watched</div></div></div>
-      </div>
+    <div style="max-width:560px;margin:0 auto;padding:3rem 1.5rem;text-align:center">
+      <img id="profPhoto" style="width:100px;height:100px;border-radius:50%;object-fit:cover;margin:0 auto 1rem;border:3px solid var(--red)">
+      <h2 style="font-family:var(--display);font-size:2rem" id="profName"></h2>
+      <p style="color:var(--muted);margin-bottom:2rem" id="profEmail"></p>
       <div class="d-flex flex-column gap-3">
-        <button class="btn-secondary-cv justify-content-center" onclick="navigate('mylist')"><i class="bi bi-collection-fill"></i> My List</button>
+        <button class="btn-primary-cv justify-content-center" onclick="editProfile()"><i class="bi bi-pencil"></i> <span data-k="editProfile">Edit Profile</span></button>
         <button class="btn-secondary-cv justify-content-center" onclick="signOut()"><i class="bi bi-box-arrow-right"></i> <span data-k="signOut">Sign Out</span></button>
       </div>
     </div>
   </div>
 
-  <!-- ── MANAGE PAGE ── -->
   <div class="page" id="pg-manage">
     <div style="max-width:1280px;margin:0 auto;padding:2rem 1.5rem">
-      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-        <div>
-          <h1 style="font-family:var(--display);font-size:2.2rem;letter-spacing:.07em;text-transform:uppercase" data-k="contentMgmt">Content Management</h1>
-          <p style="color:var(--muted);font-size:.85rem">Add, edit or remove content from the platform.</p>
-        </div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="font-family:var(--display);font-size:2.2rem;text-transform:uppercase" data-k="contentMgmt">Content Mgmt</h1>
         <button class="btn-primary-cv" onclick="openModal(null)"><i class="bi bi-plus-lg"></i> Add New</button>
       </div>
       <div class="row g-3" id="manageGrid"></div>
     </div>
   </div>
-
-  <!-- ── ADMIN PAGE ── -->
-  <div class="page" id="pg-admin">
-    <div style="max-width:1280px;margin:0 auto;padding:2rem 1.5rem">
-      <div class="d-flex align-items-center gap-3 mb-4">
-        <i class="bi bi-shield-check" style="font-size:2rem;color:var(--gold)"></i>
-        <h1 style="font-family:var(--display);font-size:2.2rem;letter-spacing:.07em;text-transform:uppercase">Admin Panel</h1>
-      </div>
-      <!-- Stats -->
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-val" id="stFilms">0</div><div class="stat-lbl">Total Films</div></div></div>
-        <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-val" id="stUsers">0</div><div class="stat-lbl">Users</div></div></div>
-        <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-val" id="stMovies">0</div><div class="stat-lbl">Movies</div></div></div>
-        <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-val" id="stSeries">0</div><div class="stat-lbl">Series</div></div></div>
-      </div>
-      <!-- Users table -->
-      <div class="glass-heavy rounded-3 overflow-hidden mb-4">
-        <div class="p-3 border-bottom" style="border-color:var(--border)!important">
-          <h4 style="font-family:var(--display);font-size:1.3rem;letter-spacing:.07em;text-transform:uppercase">Manage Users</h4>
-        </div>
-        <div class="table-responsive"><table class="cv-table"><thead><tr>
-          <th>User</th><th>Email</th><th>Role</th><th>Subscriber</th><th>Action</th>
-        </tr></thead><tbody id="usersBody"></tbody></table></div>
-      </div>
-      <!-- Films table -->
-      <div class="glass-heavy rounded-3 overflow-hidden">
-        <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-color:var(--border)!important">
-          <h4 style="font-family:var(--display);font-size:1.3rem;letter-spacing:.07em;text-transform:uppercase">All Films</h4>
-          <button class="btn-primary-cv" style="padding:.45rem 1rem;font-size:.78rem" onclick="openModal(null)"><i class="bi bi-plus-lg"></i></button>
-        </div>
-        <div class="table-responsive"><table class="cv-table"><thead><tr>
-          <th>Film</th><th>Type</th><th>Year</th><th>Rating</th><th>Actions</th>
-        </tr></thead><tbody id="adminFilmsBody"></tbody></table></div>
-      </div>
-    </div>
-  </div>
 </main>
 
-<!-- ══════════ FILM MODAL ══════════ -->
 <div class="modal-backdrop-cv" id="filmModal">
-  <div class="modal-box glass-heavy">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-start mb-1">
+  <div class="modal-box">
+    <div class="d-flex justify-content-between mb-3">
       <h2 class="modal-title" id="modalHeading">Add Film</h2>
-      <button onclick="closeModal()" class="btn-icon" style="flex-shrink:0"><i class="bi bi-x-lg"></i></button>
+      <button onclick="closeModal()" class="btn-icon"><i class="bi bi-x-lg"></i></button>
     </div>
-    <div class="modal-bar"></div>
-
-    <!-- Type Toggle -->
-    <div class="type-toggle">
-      <button class="type-btn active movie" id="tBtnMovie" onclick="setType('movie')"><i class="bi bi-film"></i> Movie</button>
-      <button class="type-btn series" id="tBtnSeries" onclick="setType('series')"><i class="bi bi-tv"></i> Series / Show</button>
-    </div>
-
     <div class="row g-3">
-      <!-- Title -->
       <div class="col-12">
-        <label class="cv-label" data-k="titleRequired">Title *</label>
-        <input type="text" class="cv-input" id="fTitle" placeholder="Enter title...">
+        <label class="cv-label">Type</label>
+        <select class="cv-select" id="fType" onchange="document.getElementById('videoUrlSection').style.display=this.value==='movie'?'':'none'; document.getElementById('epsFormSection').style.display=this.value==='series'?'':'none'">
+          <option value="movie">Movie</option>
+          <option value="series">Series</option>
+        </select>
       </div>
-      <!-- Description -->
       <div class="col-12">
-        <label class="cv-label" data-k="descRequired">Description *</label>
-        <textarea class="cv-textarea" id="fDesc" rows="3" placeholder="Enter description..."></textarea>
+        <label class="cv-label">Audio / Subtitle Format</label>
+        <select class="cv-select" id="fAudio">
+          <option value="none">Original</option>
+          <option value="dub">Dubbed (دۆبلاژکراو)</option>
+          <option value="sub">Subbed (ژێرنووسکراو)</option>
+        </select>
       </div>
-      <!-- Thumbnail -->
-      <div class="col-12">
-        <label class="cv-label" data-k="thumbRequired">Thumbnail *</label>
-        <div class="thumb-tabs">
-          <div class="thumb-tab active" id="ttUrl" onclick="setThumbTab('url')">🔗 URL</div>
-          <div class="thumb-tab" id="ttUpload" onclick="setThumbTab('upload')">📁 Upload</div>
-        </div>
-        <div id="thumbUrlDiv"><input type="url" class="cv-input" id="fThumbUrl" placeholder="https://..." oninput="previewThumb(this.value)"></div>
-        <div id="thumbUpDiv" style="display:none">
-          <div class="upload-area" onclick="document.getElementById('thumbFile').click()">
-            <i class="bi bi-cloud-upload" style="font-size:1.6rem;color:var(--muted)"></i>
-            <p style="color:var(--muted);font-size:.82rem;margin:.3rem 0 0">Click to upload (PNG, JPG, WEBP — max 5MB)</p>
-            <input type="file" id="thumbFile" accept="image/*" style="display:none" onchange="handleThumbFile(this)">
-          </div>
-        </div>
-        <div id="thumbPreviewWrap" style="display:none"><img id="thumbPreviewImg" src="" class="upload-preview" alt=""></div>
-      </div>
-      <!-- Video URL (movie only) -->
-      <div class="col-12" id="videoUrlSection">
-        <label class="cv-label">Primary Video URL</label>
-        <input type="url" class="cv-input" id="fVideoUrl" placeholder="YouTube, Vimeo, Streamtape, .mp4, .m3u8...">
-        <div class="d-flex flex-wrap gap-1 mt-1">
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">YouTube</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">Vimeo</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">Streamtape</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">Doodstream</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">Vidmoly</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">Mixdrop</span>
-          <span style="font-size:.65rem;color:var(--muted2);padding:2px 8px;border-radius:50px;border:1px solid var(--border)">.mp4 / .m3u8</span>
-        </div>
-      </div>
-      <!-- Extra servers (movie only) -->
-      <div class="col-12" id="extraServersSection">
-        <label class="cv-label">Extra Servers (optional)</label>
-        <div id="extraServersList" class="d-flex flex-column gap-2"></div>
-        <button onclick="addExtraServer()" style="color:var(--red);font-size:.78rem;font-weight:700;padding:.3rem 0;display:flex;align-items:center;gap:.3rem;margin-top:.4rem">
-          <i class="bi bi-plus-lg"></i> Add Server
-        </button>
-      </div>
-      <!-- VIP server -->
-      <div class="col-12" id="vipServerSection">
-        <label class="cv-label" style="color:var(--gold)">⭐ VIP/Subscriber-Only Server (no ads)</label>
-        <input type="url" class="cv-input" id="fVipUrl" placeholder="VIP server URL (subscribers only)..." style="border-color:rgba(245,158,11,.25)">
-      </div>
-
-      <!-- Year, Rating, Duration -->
-      <div class="col-4">
-        <label class="cv-label" data-k="yearLabel">Year</label>
-        <input type="number" class="cv-input" id="fYear" min="1900" max="2030">
-      </div>
-      <div class="col-4">
-        <label class="cv-label">Rating</label>
-        <input type="number" class="cv-input" id="fRating" step="0.1" min="0" max="10" placeholder="8.0">
-      </div>
-      <div class="col-4">
-        <label class="cv-label">Duration (min)</label>
-        <input type="number" class="cv-input" id="fDuration" placeholder="120">
-      </div>
-      <!-- Language, Director -->
-      <div class="col-6">
-        <label class="cv-label">Language</label>
-        <input type="text" class="cv-input" id="fLanguage" placeholder="English, Kurdish...">
-      </div>
-      <div class="col-6">
-        <label class="cv-label">Director</label>
-        <input type="text" class="cv-input" id="fDirector" placeholder="Director name">
-      </div>
-      <!-- Cast -->
-      <div class="col-12">
-        <label class="cv-label">Cast</label>
-        <input type="text" class="cv-input" id="fCast" placeholder="Actor 1, Actor 2...">
-      </div>
-      <!-- Trailer -->
-      <div class="col-12">
-        <label class="cv-label">Trailer URL (optional)</label>
-        <input type="url" class="cv-input" id="fTrailer" placeholder="YouTube trailer URL">
-      </div>
-      <!-- Genres -->
-      <div class="col-12">
-        <label class="cv-label">Genres</label>
-        <div class="genre-grid" id="genreChips"></div>
-        <input type="text" class="cv-input mt-2" id="fGenreCustom" placeholder="Or type custom genres, comma-separated">
+      <div class="col-12"><input type="text" class="cv-input" id="fTitle" placeholder="Title *"></div>
+      <div class="col-12"><textarea class="cv-textarea" id="fDesc" placeholder="Description *"></textarea></div>
+      <div class="col-12"><input type="url" class="cv-input" id="fThumbUrl" placeholder="Thumbnail URL *"></div>
+      <div class="col-12" id="videoUrlSection"><input type="url" class="cv-input" id="fVideoUrl" placeholder="Main Video URL (Drive, YouTube, etc.)"></div>
+      <div id="epsFormSection" style="display:none" class="col-12">
+        <button onclick="addEpisode()" class="btn-secondary-cv btn-sm"><i class="bi bi-plus"></i> Add Ep</button>
+        <div id="epsFormList" class="mt-2 d-flex flex-column gap-2"></div>
       </div>
     </div>
-
-    <!-- Episodes (series) -->
-    <div id="epsFormSection" style="display:none">
-      <div class="divider"></div>
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="cv-label mb-0" data-k="episodes">Episodes</h4>
-        <button onclick="addEpisode()" style="color:var(--red);font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:.3rem"><i class="bi bi-plus-lg"></i> Add Episode</button>
-      </div>
-      <div id="epsFormList" class="d-flex flex-column gap-2"></div>
-    </div>
-
-    <!-- Actions -->
-    <div class="divider"></div>
-    <div class="d-flex justify-content-end gap-2">
-      <button onclick="closeModal()" class="btn-secondary-cv" style="padding:.6rem 1.4rem;font-size:.84rem" data-k="cancel">Cancel</button>
-      <button onclick="saveFilm()" id="saveBtn" class="btn-primary-cv" style="padding:.6rem 1.8rem;font-size:.84rem" data-k="save">Save</button>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button onclick="closeModal()" class="btn-secondary-cv" data-k="cancel">Cancel</button>
+      <button onclick="saveFilm()" id="saveBtn" class="btn-primary-cv" data-k="save">Save</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════ FOOTER ══════════ -->
-<footer>
-  <div style="max-width:1280px;margin:0 auto;padding:0 1.5rem">
-    <div class="row g-4 mb-4">
-      <div class="col-12 col-md-4">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <div class="brand-icon" style="width:32px;height:32px;border-radius:8px"><i class="bi bi-film" style="color:#fff;font-size:.9rem"></i></div>
-          <span class="footer-logo">CineVerse</span>
-        </div>
-        <p style="color:var(--muted);font-size:.82rem;line-height:1.7">Your professional cinematic destination. Watch movies and series in high quality.</p>
-      </div>
-      <div class="col-6 col-md-2">
-        <p style="font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Navigate</p>
-        <a class="footer-link" onclick="navigate('home')">Home</a>
-        <a class="footer-link" href="#">Movies</a>
-        <a class="footer-link" href="#">Series</a>
-      </div>
-      <div class="col-6 col-md-2">
-        <p style="font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Legal</p>
-        <a class="footer-link" href="#">Privacy Policy</a>
-        <a class="footer-link" href="#">Terms of Service</a>
-        <a class="footer-link" href="#">DMCA</a>
-      </div>
-      <div class="col-12 col-md-4">
-        <p style="font-size:.65rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Newsletter</p>
-        <div class="d-flex gap-2">
-          <input type="email" class="cv-input flex-grow-1" placeholder="your@email.com" style="border-radius:50px;padding:.45rem 1rem;font-size:.82rem">
-          <button class="btn-primary-cv" style="padding:.45rem 1rem;border-radius:50px;flex-shrink:0"><i class="bi bi-send-fill"></i></button>
-        </div>
-      </div>
-    </div>
-    <div class="text-center pt-3" style="border-top:1px solid var(--border);color:var(--muted2);font-size:.75rem">
-      &copy; <span id="footerYear"></span> CineVerse. All rights reserved.
-    </div>
-  </div>
-</footer>
-
-<!-- ══════════ FIREBASE ══════════ -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
-import { getAuth,GoogleAuthProvider,signInWithPopup,signOut as fbOut,onAuthStateChanged }
-  from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js';
-import { getFirestore,collection,doc,getDoc,setDoc,addDoc,updateDoc,deleteDoc,
-  onSnapshot,query,orderBy,limit,serverTimestamp,arrayUnion,arrayRemove,getDocs }
-  from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js';
+import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
 
-/* ── CONFIG ── */
-const FB = {
-  apiKey:"AIzaSyCOq-h8IPakpUSi22rMHSgNSrrPtafjMWc",
-  authDomain:"cineverse-61fab.firebaseapp.com",
-  projectId:"cineverse-61fab",
-  storageBucket:"cineverse-61fab.firebasestorage.app",
-  messagingSenderId:"937731122165",
-  appId:"1:937731122165:web:3567d97dd45e74e169b6bc"
-};
-const ADMIN_EMAIL = 'abdulrahmanawl90@gmail.com';
-const GENRES = ['Action','Adventure','Animation','Comedy','Crime','Documentary','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Thriller','War','Western','Biography','Family','Musical','Sport','Kurdish','Arabic','English'];
-
+// ** Replace with actual Firebase Config **
+const FB = { apiKey:"AIzaSy...", authDomain:"demo.firebaseapp.com", projectId:"demo", storageBucket:"demo.appspot.com", messagingSenderId:"123", appId:"1:123:web:abc" };
 const app = initializeApp(FB);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-/* ── STATE ── */
-let user=null, prof=null, films=[], allUsers=[];
-let page='home', params={};
+let user=null, prof=null, films=[], page='home', params={};
 let lang = localStorage.getItem('cv_lang')||'en';
-let editingFilm=null, filmType='movie', thumbMode='url', thumbBase64=null;
-let extraServers=[], epList=[];
-let selectedGenres=[], filterType='all', filterGenre='all';
-let userFavs=[], userLater=[], userWatched=[], userEpWatched={};
-let listTab='fav';
+let theme = localStorage.getItem('cv_theme')||'dark';
+let editingFilm=null, epList=[];
 
-/* ── TRANSLATIONS ── */
-const T={en:{watchNow:'Watch Now',details:'Details',back:'Back',backToDetails:'Back',synopsis:'Synopsis',
-episodes:'Episodes',comments:'Comments',addComment:'Add a comment...',post:'Post',
-signIn:'Sign In',signOut:'Sign Out',noContent:'Nothing here yet',addFirst:'Add your first film',
-contentMgmt:'Content Management',addNew:'Add New',deleteConfirm:'Delete this film permanently?',
-updated:'Updated!',added:'Added!',deleted:'Deleted!',fillAll:'Fill all required fields',
-titleRequired:'Title *',descRequired:'Description *',thumbRequired:'Thumbnail *',videoRequired:'Video URL',
-yearLabel:'Year',rating:'Rating',type:'Type',releaseYear:'Year',
-latestMovies:'Latest Movies',latestSeries:'Latest Series',cancel:'Cancel',save:'Save',
-update:'Update',addEpisode:'Add Episode',noVideo:'No video available',accessDenied:'Access Denied',
-featured:'Featured',searchPlaceholder:'Search films...',noResults:'No results found',
-signInToComment:'Sign in to leave a comment',
-},
-ku:{watchNow:'ئێستا ببینە',details:'وردەکاری',back:'گەڕانەوە',backToDetails:'گەڕانەوە',synopsis:'کورتەبیر',
-episodes:'ئێپیزۆدەکان',comments:'کۆمێنتەکان',addComment:'کۆمێنتێک بنووسە...',post:'بنێرە',
-signIn:'داخلبوون',signOut:'چوونەدەرەوە',noContent:'هیچ ناوەڕۆکێک نییە',addFirst:'فیلمێک زیاد بکە',
-contentMgmt:'بەڕێوەبردنی ناوەڕۆک',addNew:'زیادکردنی نوێ',deleteConfirm:'دڵنیایت لە سڕینەوە؟',
-updated:'نوێکراوەتەوە!',added:'زیادکرا!',deleted:'سڕایەوە!',fillAll:'خانەکان پڕ بکەرەوە',
-titleRequired:'ناونیشان *',descRequired:'وەسف *',thumbRequired:'وێنە *',videoRequired:'بەستەری ڤیدیۆ',
-yearLabel:'ساڵ',rating:'هەڵسەنگاندن',type:'جۆر',releaseYear:'ساڵ',
-latestMovies:'دواتازەترین فیلمەکان',latestSeries:'دواتازەترین زنجیرەکان',cancel:'پاشگەز',save:'پاشەکەوت',
-update:'نوێکردنەوە',addEpisode:'زیادکردنی ئێپیزۆد',noVideo:'ڤیدیۆیەک نییە',accessDenied:'مۆڵەت نییە',
-featured:'تایبەت',searchPlaceholder:'گەڕان...',noResults:'ئەنجامێک نەدۆزرایەوە',
-signInToComment:'بۆ کۆمێنت داخل بوو',
-}};
-const t=k=>T[lang][k]||k;
+const T = {
+  en: { watchNow:'Watch Now', details:'Details', back:'Back', signIn:'Sign In', signOut:'Sign Out', editProfile:'Edit Profile', latestMovies:'Latest Movies', latestSeries:'Latest Series', latestDubbed:'Latest Dubbed', latestSubbed:'Latest Subbed', cancel:'Cancel', save:'Save', episodes:'Episodes' },
+  ku: { watchNow:'ئێستا ببینە', details:'وردەکاری', back:'گەڕانەوە', signIn:'داخلبوون', signOut:'چوونەدەرەوە', editProfile:'گۆڕینی پرۆفایل', latestMovies:'نوێترین فیلمەکان', latestSeries:'نوێترین زنجیرەکان', latestDubbed:'نوێترین دۆبلاژکراو', latestSubbed:'نوێترین ژێرنووسکراو', cancel:'پاشگەز', save:'پاشەکەوت', episodes:'ئێپیزۆدەکان' }
+};
+const t = k => T[lang][k]||k;
 
-/* ── ROLES ── */
-const isAdmin=()=>user?.email===ADMIN_EMAIL||prof?.role==='admin';
-const isDobber=()=>isAdmin()||['admin','dobber'].includes(prof?.role||'');
-const isSubscriber=()=>isAdmin()||prof?.subscriber===true||prof?.role==='subscriber';
+window.navigate = (pg, p={}) => { page=pg; params=p; document.querySelectorAll('.page').forEach(e=>e.classList.remove('active')); document.getElementById(`pg-${pg}`).classList.add('active'); window.scrollTo(0,0); renderCurrentPage(); };
+window.toggleMobNav = () => document.getElementById('mobNav').classList.toggle('open');
+window.openModal = id => {
+  editingFilm = films.find(f=>f.id===id)||null;
+  document.getElementById('fTitle').value = editingFilm?.title||'';
+  document.getElementById('fDesc').value = editingFilm?.description||'';
+  document.getElementById('fThumbUrl').value = editingFilm?.thumbnailUrl||'';
+  document.getElementById('fType').value = editingFilm?.type||'movie';
+  document.getElementById('fAudio').value = editingFilm?.audioTrack||'none';
+  document.getElementById('fVideoUrl').value = editingFilm?.videoUrl||'';
+  epList = [...(editingFilm?.episodes||[])];
+  document.getElementById('fType').dispatchEvent(new Event('change'));
+  renderEpForm();
+  document.getElementById('filmModal').classList.add('open');
+};
+window.closeModal = () => document.getElementById('filmModal').classList.remove('open');
+window.addEpisode = () => { epList.push({title:'', videoUrl:''}); renderEpForm(); };
+const renderEpForm = () => { document.getElementById('epsFormList').innerHTML = epList.map((e,i)=>`<div class="d-flex gap-2"><input class="cv-input" placeholder="Ep ${i+1} Title" value="${e.title}" oninput="epList[${i}].title=this.value"><input class="cv-input" placeholder="URL" value="${e.videoUrl}" oninput="epList[${i}].videoUrl=this.value"></div>`).join(''); };
 
-/* ── EMBED ENGINE ── (supports 15+ hosts) */
-const embed=url=>{
-  if(!url?.trim())return null;
-  const u=url.trim();
-  // YouTube
-  const yt=u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if(yt)return{t:'iframe',s:`https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`,n:'YouTube'};
-  // Vimeo
-  const vm=u.match(/vimeo\.com\/(\d+)/);
-  if(vm)return{t:'iframe',s:`https://player.vimeo.com/video/${vm[1]}?autoplay=1`,n:'Vimeo'};
-  // Dailymotion
-  const dm=u.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
-  if(dm)return{t:'iframe',s:`https://www.dailymotion.com/embed/video/${dm[1]}?autoplay=1`,n:'Dailymotion'};
-  // Streamtape
-  const st=u.match(/streamtape\.(?:com|net|to)\/(?:v|e|play)\/([a-zA-Z0-9_-]+)/);
-  if(st)return{t:'iframe',s:`https://streamtape.com/e/${st[1]}/`,n:'Streamtape'};
-  // Doodstream
-  const dd=u.match(/dood(?:stream)?\.(?:com|watch|to|la|li|pm|re|sh|yt|ws|wf|cx)\/(?:e|d|f|p)\/([a-zA-Z0-9]+)/);
-  if(dd)return{t:'iframe',s:`https://dood.li/e/${dd[1]}`,n:'Doodstream'};
-  // Mixdrop
-  const mx=u.match(/mixdrop\.(?:co|to|bz|ch|gl|sx|ag)\/(?:e|f)\/([a-zA-Z0-9]+)/);
-  if(mx)return{t:'iframe',s:`https://mixdrop.ag/e/${mx[1]}`,n:'Mixdrop'};
-  // Vidmoly
-  const vml=u.match(/vidmoly\.(?:to|me|com)\/(?:embed-)?([a-zA-Z0-9]+)/);
-  if(vml)return{t:'iframe',s:`https://vidmoly.to/embed-${vml[1]}.html`,n:'Vidmoly'};
-  // Upstream
-  const up=u.match(/upstream\.to\/(?:embed-)?([a-zA-Z0-9]+)/);
-  if(up)return{t:'iframe',s:`https://upstream.to/embed-${up[1]}.html`,n:'Upstream'};
-  // Filemoon
-  const fm=u.match(/filemoon\.(?:sx|to|in|cc)\/e\/([a-zA-Z0-9]+)/);
-  if(fm)return{t:'iframe',s:`https://filemoon.sx/e/${fm[1]}/`,n:'Filemoon'};
-  // Streamwish
-  const sw=u.match(/streamwish\.(?:to|com|site)\/(?:e\/)?([a-zA-Z0-9]+)/);
-  if(sw)return{t:'iframe',s:`https://streamwish.to/e/${sw[1]}`,n:'Streamwish'};
-  // Google Drive
-  const gd=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
-  if(gd)return{t:'iframe',s:`https://drive.google.com/file/d/${gd[1]}/preview`,n:'Google Drive'};
-  // Terabox
-  if(/terabox\.com|1024tera\.com|teraboxapp\.com/i.test(u))return{t:'ext',s:u,n:'Terabox'};
-  // ok.ru
-  if(/ok\.ru|odnoklassniki/i.test(u))return{t:'ext',s:u,n:'OK.ru'};
-  // Direct MP4/WEBM
-  if(/\.(mp4|webm|ogg)(\?|$)/i.test(u))return{t:'video',s:u,n:'Direct Video'};
-  // M3U8 HLS
-  if(/\.m3u8(\?|$)/i.test(u))return{t:'hls',s:u,n:'HLS Stream'};
-  // Fallback iframe
-  return{t:'iframe',s:u,n:'External Player'};
+// Enhanced Google Drive Embed Engine
+const embed = url => {
+  if(!url) return null;
+  const u = url.trim();
+  const yt = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if(yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1`;
+  const gd = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
+  if(gd) return `https://drive.google.com/file/d/${gd[1]}/preview`; 
+  return u; // fallback
 };
 
-/* ── RENDER PLAYER ── */
-const renderPlayer=(url,el)=>{
-  const e=embed(url);
-  if(!e){el.innerHTML=`<div class="d-flex flex-column align-items-center justify-content-center h-100 gap-3" style="color:var(--muted);background:#07090f"><i class="bi bi-camera-video-off" style="font-size:3rem"></i><p>${t('noVideo')}</p></div>`;return;}
-  if(e.t==='iframe'){el.innerHTML=`<iframe src="${e.s}" allowfullscreen allow="autoplay;fullscreen;picture-in-picture;encrypted-media" referrerpolicy="no-referrer" style="width:100%;height:100%;border:none"></iframe>`;}
-  else if(e.t==='video'){el.innerHTML=`<video src="${e.s}" controls autoplay style="width:100%;height:100%;background:#000"></video>`;}
-  else if(e.t==='hls'){
-    el.innerHTML=`<video id="hlsVid" controls autoplay style="width:100%;height:100%;background:#000"></video>`;
-    const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/hls.js@latest';
-    s.onload=()=>{const v=document.getElementById('hlsVid');if(typeof Hls!=='undefined'&&Hls.isSupported()){const h=new Hls();h.loadSource(e.s);h.attachMedia(v);h.on(Hls.Events.MANIFEST_PARSED,()=>v.play());}else if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=e.s;v.play();}};
-    document.head.appendChild(s);
-  } else {
-    el.innerHTML=`<div class="d-flex flex-column align-items-center justify-content-center h-100 gap-4 p-4 text-center" style="background:#07090f">
-      <div style="width:72px;height:72px;border-radius:50%;background:rgba(225,29,72,.1);border:2px solid rgba(225,29,72,.25);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--red)"><i class="bi bi-box-arrow-up-right"></i></div>
-      <div><p style="font-weight:700;margin-bottom:.4rem">${e.n} cannot be embedded</p>
-      <p style="color:var(--muted);font-size:.82rem;max-width:340px">This video host blocks embedding. Open it in a new tab.</p></div>
-      <a href="${e.s}" target="_blank" rel="noopener" class="btn-primary-cv"><i class="bi bi-box-arrow-up-right"></i> Open ${e.n}</a></div>`;
+const renderCurrentPage = () => {
+  if(page==='home') renderHome();
+  if(page==='film') renderFilm();
+  if(page==='watch') renderWatch();
+  if(page==='profile') renderProfile();
+  if(page==='manage') renderManage();
+  applyLang();
+};
+
+const renderHome = () => {
+  const m=films.filter(f=>f.type==='movie'), s=films.filter(f=>f.type==='series');
+  const d=films.filter(f=>f.audioTrack==='dub'), sub=films.filter(f=>f.audioTrack==='sub');
+  
+  const draw = (id, arr) => {
+    const el = document.getElementById(id); const g = document.getElementById(id.replace('Section','Grid'));
+    if(arr.length) { el.style.display=''; g.innerHTML = arr.map(f=>`<div class="film-card" onclick="navigate('film',{id:'${f.id}'})"><img src="${f.thumbnailUrl}"><div class="overlay"></div><div class="body"><span class="fc-type">${f.type}</span><div class="fc-title">${f.title}</div><button class="fc-watch"><i class="bi bi-play-fill"></i> ${t('watchNow')}</button></div></div>`).join(''); }
+    else el.style.display='none';
+  };
+  draw('dubbedSection', d); draw('subbedSection', sub); draw('moviesSection', m); draw('seriesSection', s);
+  
+  if(films[0]) {
+    document.getElementById('heroEl').style.display='flex';
+    document.getElementById('heroBgImg').src = films[0].thumbnailUrl;
+    document.getElementById('heroTitle').textContent = films[0].title;
+    document.getElementById('heroDesc').textContent = films[0].description;
+    document.getElementById('heroWatchBtn').onclick = () => navigate('watch', {id:films[0].id});
+    document.getElementById('heroInfoBtn').onclick = () => navigate('film', {id:films[0].id});
   }
 };
 
-/* ── UTILS ── */
-const timeAgo=ts=>{if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);const s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return lang==='ku'?'ئێستا':'just now';if(s<3600)return lang==='ku'?`${Math.floor(s/60)}خ`:`${Math.floor(s/60)}m ago`;if(s<86400)return lang==='ku'?`${Math.floor(s/3600)}س`:`${Math.floor(s/3600)}h ago`;return lang==='ku'?`${Math.floor(s/86400)}ر`:`${Math.floor(s/86400)}d ago`;};
-const toast=(msg,type='success')=>{const c=document.getElementById('toasts');const el=document.createElement('div');el.className=`toast-cv ${type}`;el.innerHTML=`${type==='success'?'<i class="bi bi-check-circle-fill"></i>':type==='error'?'<i class="bi bi-x-circle-fill"></i>':type==='warn'?'<i class="bi bi-exclamation-triangle-fill"></i>':''} ${msg}`;c.appendChild(el);setTimeout(()=>{el.style.animation='none';el.style.opacity='0';el.style.transition='opacity .25s';setTimeout(()=>el.remove(),250)},3200);};
-const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const renderFilm = () => {
+  const f = films.find(x=>x.id===params.id); if(!f) return;
+  document.getElementById('detailPosterImg').src = f.thumbnailUrl;
+  document.getElementById('detailTitle').textContent = f.title;
+  document.getElementById('detailDesc').textContent = f.description;
+  document.getElementById('detailTypeBadge').textContent = f.audioTrack==='dub'?'Dubbed':f.audioTrack==='sub'?'Subbed':f.type;
+  document.getElementById('detailWatchBtn').onclick = () => navigate('watch',{id:f.id});
+  
+  const eps = document.getElementById('epsSection');
+  if(f.type==='series' && f.episodes?.length) {
+    eps.style.display='';
+    document.getElementById('epsGrid').innerHTML = f.episodes.map((e,i)=>`<div class="col-12 col-md-6"><button class="btn-secondary-cv w-100 justify-content-start" onclick="navigate('watch',{id:'${f.id}',ep:${i}})">Ep ${i+1}: ${e.title}</button></div>`).join('');
+  } else eps.style.display='none';
+};
 
-/* ── EXPOSE GLOBALS ── */
-Object.assign(window,{navigate,signIn,signOut,openModal,closeModal,saveFilm,deleteFilm,
-  toggleLang,toggleMobNav,closeMobNav,setType,setThumbTab,previewThumb,handleThumbFile,
-  addEpisode,removeEpisode,addExtraServer,removeExtraServer,postComment,deleteComment,
-  changeUserRole,toggleUserSub,watchEp,setFilter,setListTab,toggleFav,toggleWatchLater,
-  toggleWatched,markEpWatched,onSearch});
+const renderWatch = () => {
+  const f = films.find(x=>x.id===params.id); if(!f) return;
+  const ep = f.type==='series'?f.episodes?.[params.ep||0]:null;
+  document.getElementById('watchTitle').textContent = f.title + (ep ? ` - Ep ${(params.ep||0)+1}` : '');
+  document.getElementById('watchBackBtn').onclick = () => navigate('film',{id:f.id});
+  const url = embed(ep?ep.videoUrl:f.videoUrl);
+  document.getElementById('playerEl').innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+};
 
-/* ── AUTH ── */
-async function signIn(){
-  try{await signInWithPopup(auth,provider);toast(t('signIn'),'success');}
-  catch(e){
-    if(e.code==='auth/unauthorized-domain')showAuthHelp();
-    else toast(e.message,'error');
+const renderProfile = () => {
+  if(!user) return navigate('home');
+  document.getElementById('profPhoto').src = user.photoURL||'https://via.placeholder.com/100';
+  document.getElementById('profName').textContent = user.displayName||'User';
+  document.getElementById('profEmail').textContent = user.email;
+};
+
+const renderManage = () => {
+  document.getElementById('manageGrid').innerHTML = films.map(f=>`<div class="col-12 col-md-4"><div class="glass p-3 rounded-3 d-flex gap-3"><img src="${f.thumbnailUrl}" style="width:60px;height:90px;object-fit:cover;border-radius:8px"><div><h6 style="margin:0">${f.title}</h6><div class="d-flex gap-2 mt-2"><button onclick="openModal('${f.id}')" class="btn-icon"><i class="bi bi-pencil"></i></button><button onclick="deleteDoc(doc(db,'films','${f.id}'))" class="btn-icon red"><i class="bi bi-trash"></i></button></div></div></div></div>`).join('');
+};
+
+window.saveFilm = async () => {
+  const data = {
+    title: document.getElementById('fTitle').value,
+    description: document.getElementById('fDesc').value,
+    thumbnailUrl: document.getElementById('fThumbUrl').value,
+    type: document.getElementById('fType').value,
+    audioTrack: document.getElementById('fAudio').value,
+    videoUrl: document.getElementById('fVideoUrl').value,
+    episodes: epList
+  };
+  if(editingFilm) await updateDoc(doc(db,'films',editingFilm.id), data);
+  else await addDoc(collection(db,'films'), data);
+  closeModal();
+};
+
+window.editProfile = async () => {
+  const newName = prompt(lang==='ku'?'ناوی نوێ:':'Enter new name:', user.displayName||'');
+  const newPhoto = prompt(lang==='ku'?'وێنەی نوێ (URL):':'Enter new photo URL:', user.photoURL||'');
+  if(newName !== null || newPhoto !== null) {
+    await updateProfile(auth.currentUser, { displayName: newName||user.displayName, photoURL: newPhoto||user.photoURL });
+    await updateDoc(doc(db, 'users', user.uid), { displayName: newName||user.displayName, photoURL: newPhoto||user.photoURL });
+    window.location.reload();
   }
-}
-async function signOut(){await fbOut(auth);navigate('home');toast(t('signOut'),'info');}
+};
 
-function showAuthHelp(){
-  const dom=window.location.hostname;
-  const m=document.createElement('div');
-  m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:1rem';
-  m.innerHTML=`<div style="max-width:520px;width:100%;background:#0d1017;border:1px solid rgba(225,29,72,.3);border-radius:22px;padding:2rem">
-    <h3 style="font-family:var(--display);font-size:1.6rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem">🔒 Firebase Auth Error</h3>
-    <p style="color:rgba(255,255,255,.65);font-size:.88rem;line-height:1.7;margin-bottom:1rem">Your domain <code style="background:rgba(225,29,72,.12);color:var(--red);padding:2px 8px;border-radius:5px">${dom}</code> is not whitelisted in Firebase.</p>
-    <ol style="color:rgba(255,255,255,.6);font-size:.85rem;line-height:2;padding-left:1.25rem;margin-bottom:1.25rem">
-      <li>Go to <a href="https://console.firebase.google.com/project/cineverse-61fab/authentication/settings" target="_blank" style="color:#60a5fa">Firebase Console → Auth → Settings</a></li>
-      <li>Click <b style="color:#fff">Authorized domains → Add domain</b></li>
-      <li>Add: <code style="background:rgba(255,255,255,.08);padding:2px 8px;border-radius:5px;color:#4ade80">${dom}</code></li>
-    </ol>
-    <div class="d-flex gap-2">
-      <a href="https://console.firebase.google.com/project/cineverse-61fab/authentication/settings" target="_blank" class="btn-primary-cv" style="flex:1;justify-content:center;font-size:.84rem;text-decoration:none"><i class="bi bi-box-arrow-up-right"></i> Open Console</a>
-      <button onclick="this.closest('div[style]').remove()" class="btn-secondary-cv" style="padding:.7rem 1.2rem;font-size:.84rem">Close</button>
-    </div></div>`;
-  document.body.appendChild(m);
-}
+window.signIn = () => signInWithPopup(auth, provider);
+window.signOut = () => fbOut(auth).then(()=>navigate('home'));
 
-onAuthStateChanged(auth,async u=>{
-  user=u;
-  if(u){
-    const ref=doc(db,'users',u.uid);
-    const snap=await getDoc(ref);
-    if(snap.exists()){
-      prof=snap.data();
-      if(u.email===ADMIN_EMAIL&&prof.role!=='admin'){await updateDoc(ref,{role:'admin'});prof.role='admin';}
-    } else {
-      prof={uid:u.uid,email:u.email||'',displayName:u.displayName||'',photoURL:u.photoURL||'',
-        role:u.email===ADMIN_EMAIL?'admin':'viewer',subscriber:false,createdAt:serverTimestamp()};
-      await setDoc(ref,prof);
-    }
-    // Load user lists
-    await loadUserLists();
-  } else {prof=null;userFavs=[];userLater=[];userWatched=[];userEpWatched={};}
-  renderUserArea();
-  updateNavVis();
-  if(page==='profile')renderProfile();
-  if(page==='mylist')renderMyList();
-  if(page==='film')renderDetailUserActions();
+window.toggleLang = () => {
+  lang = lang==='en'?'ku':'en'; localStorage.setItem('cv_lang',lang);
+  document.documentElement.dir = lang==='ku'?'rtl':'ltr';
+  document.body.classList.toggle('rtl', lang==='ku');
+  document.getElementById('langBtn').textContent = lang==='en'?'کوردی':'EN';
+  applyLang(); renderCurrentPage();
+};
+const applyLang = () => document.querySelectorAll('[data-k]').forEach(e=>e.textContent=t(e.dataset.k));
+
+window.toggleTheme = () => {
+  theme = theme==='dark'?'light':'dark'; localStorage.setItem('cv_theme',theme);
+  document.body.classList.toggle('light-mode', theme==='light');
+  document.getElementById('themeIcon').className = theme==='dark'?'bi bi-moon-stars':'bi bi-brightness-high';
+};
+
+onAuthStateChanged(auth, u => {
+  user = u;
+  document.getElementById('userArea').innerHTML = u ? `<img src="${u.photoURL}" class="user-avatar" onclick="navigate('profile')">` : `<button class="btn-primary-cv" onclick="signIn()">${t('signIn')}</button>`;
+  document.getElementById('nl-manage').style.display = u ? '' : 'none';
+  if(u) setDoc(doc(db,'users',u.uid), {email:u.email, displayName:u.displayName, photoURL:u.photoURL}, {merge:true});
 });
 
-async function loadUserLists(){
-  if(!user)return;
-  const ref=doc(db,'users',user.uid);
-  const snap=await getDoc(ref);
-  if(snap.exists()){
-    const d=snap.data();
-    userFavs=d.favs||[];userLater=d.later||[];userWatched=d.watched||[];userEpWatched=d.epWatched||{};
-  }
-}
-
-function renderUserArea(){
-  const el=document.getElementById('userArea');
-  if(user){
-    el.innerHTML=`<div class="user-avatar" onclick="navigate('profile')"><img src="${user.photoURL||''}" alt="" referrerpolicy="no-referrer"></div>`;
-  } else {
-    el.innerHTML=`<button class="btn-primary-cv" onclick="signIn()" style="padding:.38rem 1rem;font-size:.78rem"><i class="bi bi-google"></i> ${t('signIn')}</button>`;
-  }
-}
-
-function updateNavVis(){
-  const d=isDobber(),a=isAdmin();
-  const show=(id,v)=>{const e=document.getElementById(id);if(e)e.style.cssText=v?'':'display:none!important'};
-  show('nl-manage',d);show('nl-admin',a);show('nl-mylist',!!user);show('navAddBtn',d);
-  show('mobManage',d);show('mobAdmin',a);show('mobMyList',!!user);
-  const ab=document.getElementById('addMovieBtn');if(ab)ab.style.cssText=d?'':'display:none!important';
-  const as=document.getElementById('addSeriesBtn');if(as)as.style.cssText=d?'':'display:none!important';
-  const ha=document.getElementById('emptyAddBtn');if(ha)ha.style.display=d?'':'none';
-  const deb=document.getElementById('detailEditBtn');if(deb)deb.style.display=d?'':'none';
-  const uap=document.getElementById('userActionsPanel');if(uap)uap.style.display=user?'':'none';
-}
-
-/* ── FILMS LISTENER ── */
-const fq=query(collection(db,'films'),orderBy('createdAt','desc'),limit(300));
-onSnapshot(fq,snap=>{
-  films=snap.docs.map(d=>({id:d.id,...d.data()}));
+onSnapshot(collection(db, 'films'), snap => {
+  films = snap.docs.map(d=>({id:d.id, ...d.data()}));
   document.getElementById('loader').style.display='none';
-  buildGenreFilters();
   renderCurrentPage();
-  updateNavVis();
-},err=>console.error(err));
+});
 
-/* ── NAVIGATION ── */
-function navigate(pg,p={}){
-  page=pg;params=p;
-  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-  const el=document.getElementById(`pg-${pg}`);
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-  const nl=document.getElementById(`nl-${pg}`);
-  if(nl)nl.classList.add('active');
-  else document.getElementById('nl-home')?.classList.add('active');
-  closeMobNav();
-  window.scrollTo(0,0);
-  renderCurrentPage();
-  applyLang();
-}
-
-function renderCurrentPage(){
-  switch(page){
-    case'home':renderHome();break;
-    case'film':renderDetail();break;
-    case'watch':renderWatch();break;
-    case'profile':renderProfile();break;
-    case'manage':renderManage();break;
-    case'admin':renderAdmin();break;
-    case'mylist':renderMyList();break;
-  }
-}
-
-/* ── HOME ── */
-function buildGenreFilters(){
-  const genres=new Set();
-  films.forEach(f=>(f.genres||[]).forEach(g=>genres.add(g)));
-  const el=document.getElementById('genreFilters');
-  el.innerHTML=[...genres].slice(0,12).map(g=>`<button class="filter-pill${filterGenre===g?' active':''}" onclick="setGenreFilter('${g}',this)">${g}</button>`).join('');
-}
-
-function setFilter(val,btn){
-  filterType=val;
-  document.querySelectorAll('#filterBar .filter-pill[data-filter]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderHome();
-}
-window.setGenreFilter=(g,btn)=>{
-  filterGenre=filterGenre===g?'all':g;
-  document.querySelectorAll('#genreFilters .filter-pill').forEach(b=>b.classList.remove('active'));
-  if(filterGenre!=='all')btn.classList.add('active');
-  renderHome();
-};
-
-function sortFilms(arr){
-  const s=document.getElementById('sortSelect')?.value||'newest';
-  const a=[...arr];
-  if(s==='rating')a.sort((x,y)=>(y.rating||0)-(x.rating||0));
-  else if(s==='title')a.sort((x,y)=>x.title.localeCompare(y.title));
-  else if(s==='year')a.sort((x,y)=>(y.year||0)-(x.year||0));
-  return a;
-}
-
-function filterFilms(){
-  let f=[...films];
-  if(filterType!=='all')f=f.filter(x=>x.type===filterType);
-  if(filterGenre!=='all')f=f.filter(x=>(x.genres||[]).includes(filterGenre));
-  return sortFilms(f);
-}
-
-function renderHome(){
-  const visible=filterFilms();
-  const movies=visible.filter(f=>f.type==='movie');
-  const series=visible.filter(f=>f.type==='series');
-  const featured=films[0];// always feature newest regardless of filter
-
-  // hide search
-  document.getElementById('searchResultsSection').style.display='none';
-  document.getElementById('searchInput').value='';
-
-  if(films.length===0){
-    document.getElementById('heroEl').style.display='none';
-    document.getElementById('emptyState').style.display='';
-    document.getElementById('moviesSection').style.display='none';
-    document.getElementById('seriesSection').style.display='none';
-    return;
-  }
-  document.getElementById('emptyState').style.display='none';
-
-  // Hero
-  if(featured){
-    document.getElementById('heroEl').style.display='flex';
-    const img=document.getElementById('heroBgImg');
-    img.src=featured.thumbnailUrl||'';
-    img.onload=()=>img.classList.add('loaded');
-    document.getElementById('heroTitle').textContent=featured.title;
-    document.getElementById('heroDesc').textContent=featured.description;
-    document.getElementById('heroRat').textContent=featured.rating||'';
-    document.getElementById('heroYr').textContent=featured.year||'';
-    document.getElementById('heroTp').textContent=featured.type||'';
-    document.getElementById('heroGen').textContent=(featured.genres||[]).slice(0,2).join(' · ');
-    document.getElementById('heroWatchBtn').onclick=()=>navigate('watch',{id:featured.id});
-    document.getElementById('heroInfoBtn').onclick=()=>navigate('film',{id:featured.id});
-    const fb=document.getElementById('heroFavBtn');
-    if(user){fb.style.display='';fb.onclick=()=>toggleFavById(featured.id);}else fb.style.display='none';
-  }
-
-  // Movies
-  const ms=document.getElementById('moviesSection'),mg=document.getElementById('moviesGrid');
-  if(movies.length>0&&(filterType==='all'||filterType==='movie')){ms.style.display='';mg.innerHTML=movies.map(f=>filmCardHTML(f)).join('');}
-  else ms.style.display='none';
-
-  // Series
-  const ss=document.getElementById('seriesSection'),sg=document.getElementById('seriesGrid');
-  if(series.length>0&&(filterType==='all'||filterType==='series')){ss.style.display='';sg.innerHTML=series.map(f=>filmCardHTML(f)).join('');}
-  else ss.style.display='none';
-
-  updateNavVis();
-}
-
-function filmCardHTML(f){
-  const fav=userFavs.includes(f.id);
-  const watched=userWatched.includes(f.id);
-  const adm=isAdmin(),dob=isDobber();
-  return`<div class="film-card" onclick="navigate('film',{id:'${f.id}'})">
-    ${watched?`<div class="watched-ribbon"><i class="bi bi-check"></i></div>`:''}
-    <img src="${esc(f.thumbnailUrl)}" alt="${esc(f.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 300%22%3E%3Crect fill=%22%230d1017%22 width=%22200%22 height=%22300%22/%3E%3C/svg%3E'">
-    <div class="overlay"></div>
-    <div class="body">
-      <span class="fc-type${f.type==='series'?' series':''}">${f.type}</span>
-      <div class="fc-title">${esc(f.title)}</div>
-      <div class="fc-meta">${f.year||''} · ⭐ ${f.rating||''}${f.genres?.length?` · ${f.genres[0]}`:''}${watched?' · <span style="color:var(--green)">✓ Watched</span>':''}</div>
-      <div class="fc-actions">
-        <button class="fc-watch" onclick="event.stopPropagation();navigate('watch',{id:'${f.id}'})"><i class="bi bi-play-fill"></i>${t('watchNow')}</button>
-        ${user?`<button class="fc-btn fc-fav${fav?' active':''}" onclick="event.stopPropagation();toggleFavById('${f.id}')" title="Favourite"><i class="bi bi-bookmark${fav?'-fill':''}"></i></button>`:''}
-        ${dob?`<button class="fc-btn" onclick="event.stopPropagation();openModal('${f.id}')" title="Edit"><i class="bi bi-pencil"></i></button>`:''}
-        ${adm?`<button class="fc-btn del" onclick="event.stopPropagation();deleteFilm('${f.id}')" title="Delete"><i class="bi bi-trash3"></i></button>`:''}
-      </div>
-    </div>
-  </div>`;
-}
-
-/* ── SEARCH ── */
-function onSearch(val){
-  const ss=document.getElementById('searchResultsSection');
-  const ms=document.getElementById('moviesSection'),ssec=document.getElementById('seriesSection');
-  const hero=document.getElementById('heroEl');
-  if(!val.trim()){ss.style.display='none';ms.style.display='';ssec.style.display='';hero.style.display='flex';return;}
-  const r=films.filter(f=>f.title.toLowerCase().includes(val.toLowerCase())||f.description.toLowerCase().includes(val.toLowerCase())||(f.genres||[]).some(g=>g.toLowerCase().includes(val.toLowerCase())));
-  ss.style.display='';ms.style.display='none';ssec.style.display='none';hero.style.display='none';
-  document.getElementById('searchCount').textContent=`(${r.length})`;
-  document.getElementById('searchGrid').innerHTML=r.length?r.map(f=>filmCardHTML(f)).join(''):`<div class="col-12 text-center py-5" style="color:var(--muted)">${t('noResults')}</div>`;
-}
-
-/* ── FILM DETAIL ── */
-let commUnsub=null;
-function renderDetail(){
-  const f=films.find(x=>x.id===params.id);
-  if(!f)return;
-  // BG
-  const bg=document.getElementById('detailBgImg');bg.src=f.thumbnailUrl||'';
-  document.getElementById('detailPosterImg').src=f.thumbnailUrl||'';
-  document.getElementById('detailTitle').textContent=f.title;
-  document.getElementById('detailDesc').textContent=f.description;
-  const tb=document.getElementById('detailTypeBadge');tb.textContent=f.type;tb.className=`fc-type${f.type==='series'?' series':''}`;
-  document.getElementById('detailRat').textContent=f.rating||'N/A';
-  document.getElementById('detailYr').textContent=f.year||'';
-  document.getElementById('detailDur').textContent=f.duration?`${f.duration} min`:'';
-  // Genres
-  document.getElementById('detailGenres').innerHTML=(f.genres||[]).map(g=>`<span style="font-size:.7rem;padding:.2rem .65rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.04)">${g}</span>`).join('');
-  // Meta
-  document.getElementById('metaYear').textContent=f.year||'—';
-  document.getElementById('metaType').textContent=f.type;
-  document.getElementById('metaRating').textContent=`${f.rating||'—'}/10 ⭐`;
-  const epR=document.getElementById('metaEpRow'),durR=document.getElementById('metaDurRow'),langR=document.getElementById('metaLangRow'),dirR=document.getElementById('metaDirRow');
-  if(f.type==='series'&&f.episodes?.length){epR.style.display='';document.getElementById('metaEps').textContent=f.episodes.length;}else epR.style.display='none';
-  if(f.duration){durR.style.display='';document.getElementById('metaDur').textContent=`${f.duration} min`;}else durR.style.display='none';
-  if(f.language){langR.style.display='';document.getElementById('metaLang').textContent=f.language;}else langR.style.display='none';
-  if(f.director){dirR.style.display='';document.getElementById('metaDir').textContent=f.director;}else dirR.style.display='none';
-  // Director/Lang in header
-  document.getElementById('detailLang').textContent=f.language||'';
-  const dotDir=document.getElementById('detailDotDir');
-  if(f.director){dotDir.style.display='';document.getElementById('detailDir').textContent=f.director;}else dotDir.style.display='none';
-  // Cast
-  if(f.cast?.length){document.getElementById('castSection').style.display='';document.getElementById('detailCast').textContent=(f.cast||[]).join(', ');}else document.getElementById('castSection').style.display='none';
-  // Watch btn
-  document.getElementById('detailWatchBtn').onclick=()=>navigate('watch',{id:f.id});
-  document.getElementById('detailEditBtn').onclick=()=>openModal(f.id);
-  // Episodes
-  const epSec=document.getElementById('epsSection'),epGrid=document.getElementById('epsGrid');
-  if(f.type==='series'&&f.episodes?.length){
-    epSec.style.display='';
-    epGrid.innerHTML=f.episodes.map((ep,i)=>{
-      const watched=userEpWatched[f.id]?.includes(ep.id);
-      return`<div class="col-12 col-sm-6"><button class="episode-btn w-100" onclick="navigate('watch',{id:'${f.id}',ep:${i}})">
-        <span class="episode-num">${i+1}</span>
-        <div class="text-start flex-grow-1 overflow-hidden">
-          <div style="font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(ep.title||`Episode ${i+1}`)}</div>
-          ${watched?`<div style="font-size:.65rem;color:var(--green);margin-top:.1rem"><i class="bi bi-check-circle-fill"></i> Watched</div>`:''}
-        </div>
-      </button></div>`;
-    }).join('');
-  } else epSec.style.display='none';
-  // Comments
-  loadComments(f.id);
-  // User actions
-  renderDetailUserActions();
-  updateNavVis();
-}
-
-function renderDetailUserActions(){
-  const f=films.find(x=>x.id===params.id);
-  if(!f||!user)return;
-  const fav=userFavs.includes(f.id);
-  const later=userLater.includes(f.id);
-  const watched=userWatched.includes(f.id);
-  const dfb=document.getElementById('detailFavBtn');
-  const dwlb=document.getElementById('detailWLBtn');
-  const dwb=document.getElementById('detailWatchedBtn');
-  if(dfb){dfb.style.background=fav?'var(--gold)':'';dfb.style.color=fav?'#000':'';}
-  if(dwlb){dwlb.style.background=later?'var(--green)':'';dwlb.style.color=later?'#fff':'';}
-  if(dwb){dwb.style.background=watched?'rgba(16,185,129,.2)':'';dwb.style.color=watched?'var(--green)':'';}
-  // Panel buttons
-  const pfb=document.getElementById('panelFavBtn');const pwlb=document.getElementById('panelWLBtn');const pwb=document.getElementById('panelWatchedBtn');
-  if(pfb)pfb.innerHTML=`<i class="bi bi-bookmark${fav?'-fill':''}"></i> ${fav?'Saved':'Favourite'}`;
-  if(pwlb)pwlb.innerHTML=`<i class="bi bi-clock${later?'-fill':''}"></i> ${later?'Added':'Watch Later'}`;
-  if(pwb)pwb.innerHTML=`<i class="bi bi-check2-circle"></i> ${watched?'Watched ✓':'Mark Watched'}`;
-}
-
-/* ── USER LISTS ── */
-async function saveUserData(){
-  if(!user)return;
-  try{await updateDoc(doc(db,'users',user.uid),{favs:userFavs,later:userLater,watched:userWatched,epWatched:userEpWatched});}
-  catch(e){console.error(e);}
-}
-function toggleFav(){const f=films.find(x=>x.id===params.id);if(f)toggleFavById(f.id);}
-async function toggleFavById(id){
-  if(!user){toast('Sign in to save favourites','warn');return;}
-  if(userFavs.includes(id)){userFavs=userFavs.filter(x=>x!==id);toast('Removed from Favourites','info');}
-  else{userFavs.push(id);toast('Added to Favourites ⭐','success');}
-  await saveUserData();renderDetailUserActions();renderCurrentPage();
-}
-function toggleWatchLater(){
-  if(!user){toast('Sign in first','warn');return;}
-  const id=params.id;if(!id)return;
-  if(userLater.includes(id)){userLater=userLater.filter(x=>x!==id);toast('Removed from Watch Later','info');}
-  else{userLater.push(id);toast('Added to Watch Later 🕐','success');}
-  saveUserData();renderDetailUserActions();
-}
-function toggleWatched(){
-  if(!user){toast('Sign in first','warn');return;}
-  const id=params.id;if(!id)return;
-  if(userWatched.includes(id)){userWatched=userWatched.filter(x=>x!==id);toast('Removed from Watched','info');}
-  else{userWatched.push(id);toast('Marked as Watched ✓','success');}
-  saveUserData();renderDetailUserActions();
-}
-async function markEpWatched(filmId,epId){
-  if(!user){toast('Sign in first','warn');return;}
-  if(!userEpWatched[filmId])userEpWatched[filmId]=[];
-  if(userEpWatched[filmId].includes(epId)){userEpWatched[filmId]=userEpWatched[filmId].filter(x=>x!==epId);}
-  else userEpWatched[filmId].push(epId);
-  await saveUserData();renderWatch();
-}
-
-function setListTab(tab,btn){
-  listTab=tab;
-  document.querySelectorAll('.list-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderMyList();
-}
-function renderMyList(){
-  let ids=[];
-  if(listTab==='fav')ids=userFavs;
-  else if(listTab==='later')ids=userLater;
-  else ids=userWatched;
-  const myFilms=ids.map(id=>films.find(f=>f.id===id)).filter(Boolean);
-  const g=document.getElementById('myListGrid');
-  const e=document.getElementById('myListEmpty');
-  if(myFilms.length===0){g.innerHTML='';e.style.display='';}
-  else{e.style.display='none';g.innerHTML=myFilms.map(f=>filmCardHTML(f)).join('');}
-}
-
-/* ── WATCH PAGE ── */
-function renderWatch(){
-  const f=films.find(x=>x.id===params.id);if(!f)return;
-  const epIdx=params.ep||0;
-  const ep=f.type==='series'?f.episodes?.[epIdx]:null;
-  const videoUrl=f.type==='series'?ep?.videoUrl:f.videoUrl;
-
-  document.getElementById('watchTitle').textContent=f.title;
-  document.getElementById('watchEpLabel').textContent=ep?`${t('episodes').slice(0,-1)} ${epIdx+1}: ${ep.title||''}` :'';
-  document.getElementById('watchBackBtn').onclick=()=>navigate('film',{id:f.id});
-
-  // Build server tabs
-  const servers=[];
-  // Primary
-  const pUrl=ep?.videoUrl||f.videoUrl;
-  if(pUrl)servers.push({name:'Server 1',url:pUrl,vip:false});
-  // Extra servers
-  (ep?.servers||f.servers||[]).forEach((s,i)=>servers.push({name:s.name||`Server ${i+2}`,url:s.url,vip:false}));
-  // VIP
-  const vipUrl=ep?.vipUrl||f.vipUrl;
-  if(vipUrl)servers.push({name:'⭐ VIP (No Ads)',url:vipUrl,vip:true});
-
-  const tabsEl=document.getElementById('serverTabsEl');
-  if(servers.length>1){
-    tabsEl.style.display='flex';
-    let activeIdx=params.srv||0;
-    tabsEl.innerHTML=servers.map((s,i)=>`<button class="server-tab${s.vip?' vip':''}${i===activeIdx?' active':''}" onclick="switchServer(${i})">${s.name}${s.vip&&!isSubscriber()?` <span style="font-size:.6rem;opacity:.5">(Sub only)</span>`:''}</button>`).join('');
-    // render player for active server
-    const sv=servers[activeIdx];
-    if(sv.vip&&!isSubscriber()){showSubRequired();}
-    else{renderPlayer(sv.url,document.getElementById('playerEl'));}
-    window._servers=servers;window._activeIdx=activeIdx;
-  } else {
-    tabsEl.style.display='none';
-    renderPlayer(pUrl,document.getElementById('playerEl'));
-  }
-  window.switchServer=(idx)=>{
-    const sv=window._servers?.[idx];if(!sv)return;
-    if(sv.vip&&!isSubscriber()){showSubRequired();return;}
-    window._activeIdx=idx;
-    document.querySelectorAll('.server-tab').forEach((b,i)=>b.classList.toggle('active',i===idx));
-    renderPlayer(sv.url,document.getElementById('playerEl'));
-  };
-
-  // Episode list
-  const wepSec=document.getElementById('watchEpsSection');
-  const wepList=document.getElementById('watchEpList');
-  if(f.type==='series'&&f.episodes?.length){
-    wepSec.style.display='';
-    wepList.innerHTML=f.episodes.map((e,i)=>{
-      const ew=userEpWatched[f.id]?.includes(e.id);
-      return`<button class="ep-pill${i===epIdx?' active':''}" onclick="watchEp('${f.id}',${i})">
-        <div class="ep-num">Ep ${i+1}</div>
-        <div class="ep-title">${esc(e.title||`Episode ${i+1}`)}</div>
-        ${ew?`<div class="ep-check"><i class="bi bi-check-circle-fill"></i> Watched</div>`:''}
-      </button>`;
-    }).join('');
-  } else wepSec.style.display='none';
-
-  // Mark ep watched btn
-  const meb=document.getElementById('markEpBtns');
-  if(ep&&user){
-    const ew=userEpWatched[f.id]?.includes(ep.id);
-    meb.style.cssText='';
-    meb.innerHTML=`<button class="btn-icon${ew?' green':''}" onclick="markEpWatched('${f.id}','${ep.id}')" style="width:auto;padding:.45rem 1rem;font-size:.8rem;gap:.4rem;border-radius:50px">
-      <i class="bi bi-check2-circle"></i> ${ew?'Marked Watched':'Mark Episode Watched'}
-    </button>`;
-  } else meb.style.cssText='display:none!important';
-}
-
-function watchEp(filmId,idx){navigate('watch',{id:filmId,ep:idx});}
-
-function showSubRequired(){
-  document.getElementById('playerEl').innerHTML=`<div class="d-flex flex-column align-items-center justify-content-center h-100 gap-4 p-4 text-center" style="background:#07090f">
-    <div style="font-size:3rem">⭐</div>
-    <div><p style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">Subscribers Only</p>
-    <p style="color:var(--muted);font-size:.85rem;max-width:300px">This server is ad-free and available only for subscribers.</p></div>
-    <button onclick="navigate('profile')" class="btn-primary-cv" style="background:var(--gold);box-shadow:0 6px 20px rgba(245,158,11,.3)"><i class="bi bi-star-fill"></i> Get Subscription</button>
-  </div>`;
-}
-
-/* ── COMMENTS ── */
-function loadComments(filmId){
-  if(commUnsub)commUnsub();
-  const cfa=document.getElementById('commentFormArea');
-  const stc=document.getElementById('signInToComment');
-  if(user){
-    const isSub=isSubscriber();
-    cfa.innerHTML=`<div class="d-flex gap-3 mb-4">
-      <div class="c-avatar flex-shrink-0"><img src="${user.photoURL||''}" alt="" referrerpolicy="no-referrer"></div>
-      <div class="flex-grow-1">
-        <textarea class="cv-textarea mb-2" id="commentInput" placeholder="${t('addComment')}" rows="2"></textarea>
-        <div class="d-flex justify-content-end">
-          <button onclick="postComment()" class="btn-primary-cv" style="padding:.5rem 1.2rem;font-size:.82rem"><i class="bi bi-send"></i> ${t('post')}</button>
-        </div>
-      </div>
-    </div>`;
-  } else {
-    cfa.innerHTML=`<div class="glass p-4 rounded-3 text-center mb-4">
-      <p style="color:var(--muted);margin-bottom:.75rem">${t('signInToComment')}</p>
-      <button onclick="signIn()" class="btn-primary-cv" style="padding:.5rem 1.2rem;font-size:.82rem"><i class="bi bi-google"></i> ${t('signIn')}</button>
-    </div>`;
-  }
-  commUnsub=onSnapshot(query(collection(db,'films',filmId,'comments'),orderBy('createdAt','desc')),snap=>{
-    const comments=snap.docs.map(d=>({id:d.id,...d.data()}));
-    document.getElementById('commentCnt').textContent=comments.length;
-    renderComments(comments,filmId);
-  });
-}
-
-function renderComments(comments,filmId){
-  const el=document.getElementById('commentsList');
-  if(!comments.length){el.innerHTML=`<p style="color:var(--muted);text-align:center;padding:2rem 0">No comments yet. Be the first!</p>`;return;}
-  el.innerHTML=comments.map(c=>{
-    const canDel=user&&(user.uid===c.userId||isAdmin());
-    const isSub=c.userSubscriber;
-    return`<div class="comment-card">
-      <div class="c-avatar"><img src="${esc(c.userPhoto||'')}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'"></div>
-      <div class="c-body">
-        <div class="c-name">${esc(c.userName||'User')}${isSub?`<span class="c-sub">⭐ Subscriber</span>`:''}<span class="c-time">${timeAgo(c.createdAt)}</span></div>
-        <p class="c-text">${esc(c.text)}</p>
-        ${canDel?`<button onclick="deleteComment('${filmId}','${c.id}')" style="font-size:.72rem;color:rgba(225,29,72,.5);padding:.2rem 0;margin-top:.25rem"><i class="bi bi-trash3"></i> Delete</button>`:''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function postComment(){
-  if(!user)return;
-  const inp=document.getElementById('commentInput');
-  const text=inp.value.trim();if(!text)return;
-  const filmId=params.id;
-  try{
-    await addDoc(collection(db,'films',filmId,'comments'),{
-      filmId,userId:user.uid,userName:user.displayName||'User',
-      userPhoto:user.photoURL||'',text,
-      userSubscriber:isSubscriber(),
-      createdAt:serverTimestamp()
-    });
-    inp.value='';
-  }catch(e){toast(e.message,'error');}
-}
-
-async function deleteComment(filmId,cid){
-  try{await deleteDoc(doc(db,'films',filmId,'comments',cid));}
-  catch(e){toast(e.message,'error');}
-}
-
-/* ── MANAGE ── */
-function renderManage(){
-  if(!isDobber()){document.getElementById('manageGrid').innerHTML=`<div class="col-12 text-center py-5" style="color:var(--red);font-weight:700">${t('accessDenied')}</div>`;return;}
-  const g=document.getElementById('manageGrid');
-  if(!films.length){g.innerHTML=`<div class="col-12"><div class="glass rounded-3 p-5 text-center"><p style="color:var(--muted)">${t('noContent')}</p></div></div>`;return;}
-  g.innerHTML=films.map(f=>`<div class="col-12 col-md-6 col-xl-4">
-    <div class="glass-heavy rounded-3 p-3 d-flex gap-3">
-      <img src="${esc(f.thumbnailUrl)}" style="width:72px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;flex-shrink:0" referrerpolicy="no-referrer">
-      <div class="flex-grow-1 d-flex flex-column justify-content-between overflow-hidden">
-        <div>
-          <div class="d-flex align-items-start justify-content-between gap-2 mb-1">
-            <span style="font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f.title)}</span>
-            <span class="fc-type${f.type==='series'?' series':''}" style="flex-shrink:0">${f.type}</span>
-          </div>
-          <p style="color:var(--muted);font-size:.75rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(f.description)}</p>
-        </div>
-        <div class="d-flex gap-2 mt-2">
-          <button onclick="openModal('${f.id}')" class="btn-secondary-cv flex-grow-1 justify-content-center" style="padding:.45rem;font-size:.76rem"><i class="bi bi-pencil"></i> ${t('update')}</button>
-          ${isAdmin()?`<button onclick="deleteFilm('${f.id}')" class="btn-icon red" title="Delete"><i class="bi bi-trash3"></i></button>`:''}
-        </div>
-      </div>
-    </div>
-  </div>`).join('');
-}
-
-/* ── ADMIN ── */
-let usersUnsub=null;
-function renderAdmin(){
-  if(!isAdmin())return;
-  document.getElementById('stFilms').textContent=films.length;
-  document.getElementById('stMovies').textContent=films.filter(f=>f.type==='movie').length;
-  document.getElementById('stSeries').textContent=films.filter(f=>f.type==='series').length;
-  // Films table
-  document.getElementById('adminFilmsBody').innerHTML=films.map(f=>`<tr>
-    <td><div class="d-flex align-items-center gap-2"><img src="${esc(f.thumbnailUrl)}" style="width:36px;aspect-ratio:2/3;object-fit:cover;border-radius:6px" referrerpolicy="no-referrer"><span style="font-weight:600;font-size:.84rem">${esc(f.title)}</span></div></td>
-    <td><span class="fc-type${f.type==='series'?' series':''}">${f.type}</span></td>
-    <td style="color:var(--muted)">${f.year||'—'}</td>
-    <td style="color:var(--gold)">⭐ ${f.rating||'—'}</td>
-    <td><div class="d-flex gap-1">
-      <button onclick="openModal('${f.id}')" class="btn-icon" style="width:30px;height:30px;border-radius:7px"><i class="bi bi-pencil" style="font-size:.72rem"></i></button>
-      <button onclick="deleteFilm('${f.id}')" class="btn-icon red" style="width:30px;height:30px;border-radius:7px"><i class="bi bi-trash3" style="font-size:.72rem"></i></button>
-    </div></td>
-  </tr>`).join('');
-  // Users
-  if(usersUnsub)usersUnsub();
-  usersUnsub=onSnapshot(collection(db,'users'),snap=>{
-    allUsers=snap.docs.map(d=>d.data());
-    document.getElementById('stUsers').textContent=allUsers.length;
-    document.getElementById('usersBody').innerHTML=allUsers.map(u=>`<tr>
-      <td><div class="d-flex align-items-center gap-2"><img src="${esc(u.photoURL||'')}" style="width:32px;height:32px;border-radius:50%;object-fit:cover" referrerpolicy="no-referrer"><span style="font-weight:600">${esc(u.displayName||'—')}</span></div></td>
-      <td style="color:var(--muted);font-size:.8rem">${esc(u.email||'')}</td>
-      <td><span class="role-badge ${u.role}">${u.role}</span></td>
-      <td>
-        <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.8rem">
-          <input type="checkbox" ${u.subscriber?'checked':''} onchange="toggleUserSub('${u.uid}',this.checked)" ${u.email===ADMIN_EMAIL?'disabled':''}>
-          <span style="color:var(--gold)">⭐ Subscriber</span>
-        </label>
-      </td>
-      <td>
-        <select class="cv-input" style="padding:.28rem .6rem;font-size:.76rem;width:auto;border-radius:7px" onchange="changeUserRole('${u.uid}',this.value)" ${u.email===ADMIN_EMAIL?'disabled':''}>
-          <option value="viewer" ${u.role==='viewer'?'selected':''}>Viewer</option>
-          <option value="dobber" ${u.role==='dobber'?'selected':''}>Editor</option>
-          <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-        </select>
-      </td>
-    </tr>`).join('');
-  });
-}
-async function changeUserRole(uid,role){try{await updateDoc(doc(db,'users',uid),{role});toast('Role updated','success');}catch(e){toast(e.message,'error');}}
-async function toggleUserSub(uid,val){try{await updateDoc(doc(db,'users',uid),{subscriber:val});toast(val?'Subscriber granted ⭐':'Subscriber removed','info');}catch(e){toast(e.message,'error');}}
-
-/* ── PROFILE ── */
-function renderProfile(){
-  if(!user){navigate('home');return;}
-  document.getElementById('profPhoto').src=user.photoURL||'';
-  document.getElementById('profName').textContent=user.displayName||'';
-  document.getElementById('profEmail').textContent=user.email||'';
-  const r=prof?.role||'viewer';
-  const rb=document.getElementById('profRole');rb.textContent=r;rb.className=`role-badge ${r}`;
-  const sb=document.getElementById('profSubBadge');sb.style.display=isSubscriber()?'':'none';
-  document.getElementById('profFavCnt').textContent=userFavs.length;
-  document.getElementById('profWLCnt').textContent=userLater.length;
-  document.getElementById('profWatchedCnt').textContent=userWatched.length;
-}
-
-/* ── DELETE FILM ── */
-async function deleteFilm(id){
-  if(!isAdmin()){toast(t('accessDenied'),'error');return;}
-  if(!confirm(t('deleteConfirm')))return;
-  try{await deleteDoc(doc(db,'films',id));toast(t('deleted'),'success');if(page==='film'&&params.id===id)navigate('home');}
-  catch(e){console.error(e);toast(e.message||'Delete failed','error');}
-}
-
-/* ── FILM MODAL ── */
-function openModal(idOrNull){
-  editingFilm=null;thumbBase64=null;extraServers=[];epList=[];selectedGenres=[];
-  if(idOrNull){editingFilm=films.find(f=>f.id===idOrNull)||null;}
-  const f=editingFilm;
-  document.getElementById('modalHeading').textContent=f?t('update'):t('addNew');
-  document.getElementById('fTitle').value=f?.title||'';
-  document.getElementById('fDesc').value=f?.description||'';
-  document.getElementById('fThumbUrl').value=f?.thumbnailUrl||'';
-  document.getElementById('fVideoUrl').value=f?.videoUrl||'';
-  document.getElementById('fVipUrl').value=f?.vipUrl||'';
-  document.getElementById('fYear').value=f?.year||new Date().getFullYear();
-  document.getElementById('fRating').value=f?.rating||'';
-  document.getElementById('fDuration').value=f?.duration||'';
-  document.getElementById('fLanguage').value=f?.language||'';
-  document.getElementById('fDirector').value=f?.director||'';
-  document.getElementById('fCast').value=(f?.cast||[]).join(', ');
-  document.getElementById('fTrailer').value=f?.trailer||'';
-  document.getElementById('fGenreCustom').value='';
-  selectedGenres=[...(f?.genres||[])];
-  // Extra servers
-  extraServers=[...(f?.servers||[])];
-  rebuildExtraServers();
-  // Thumb preview
-  if(f?.thumbnailUrl){document.getElementById('thumbPreviewImg').src=f.thumbnailUrl;document.getElementById('thumbPreviewWrap').style.display='';}
-  else document.getElementById('thumbPreviewWrap').style.display='none';
-  // Type & episodes
-  setType(f?.type||'movie');
-  epList=[...(f?.episodes||[]).map(e=>({...e}))];
-  rebuildEpForm();
-  // Genres
-  buildGenreChips();
-  setThumbTab('url');
-  document.getElementById('filmModal').classList.add('open');
-}
-
-function closeModal(){document.getElementById('filmModal').classList.remove('open');editingFilm=null;}
-
-function setType(type){
-  filmType=type;
-  const mb=document.getElementById('tBtnMovie'),sb=document.getElementById('tBtnSeries');
-  mb.className=`type-btn${type==='movie'?' active movie':''}`;
-  sb.className=`type-btn${type==='series'?' active series':''}`;
-  document.getElementById('videoUrlSection').style.display=type==='movie'?'':'none';
-  document.getElementById('extraServersSection').style.display=type==='movie'?'':'none';
-  document.getElementById('vipServerSection').style.display=type==='movie'?'':'none';
-  document.getElementById('epsFormSection').style.display=type==='series'?'':'none';
-}
-
-function setThumbTab(mode){
-  thumbMode=mode;
-  document.getElementById('ttUrl').className=`thumb-tab${mode==='url'?' active':''}`;
-  document.getElementById('ttUpload').className=`thumb-tab${mode==='upload'?' active':''}`;
-  document.getElementById('thumbUrlDiv').style.display=mode==='url'?'':'none';
-  document.getElementById('thumbUpDiv').style.display=mode==='upload'?'':'none';
-}
-
-function previewThumb(url){
-  if(url.trim()){document.getElementById('thumbPreviewImg').src=url;document.getElementById('thumbPreviewWrap').style.display='';}
-  else document.getElementById('thumbPreviewWrap').style.display='none';
-}
-
-function handleThumbFile(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>5*1024*1024){toast('Image too large (max 5MB)','error');return;}
-  const r=new FileReader();r.onload=e=>{thumbBase64=e.target.result;document.getElementById('thumbPreviewImg').src=thumbBase64;document.getElementById('thumbPreviewWrap').style.display='';};r.readAsDataURL(file);
-}
-
-function buildGenreChips(){
-  const el=document.getElementById('genreChips');
-  el.innerHTML=GENRES.map(g=>`<div class="genre-chip${selectedGenres.includes(g)?' active':''}" onclick="toggleGenre('${g}',this)">${g}</div>`).join('');
-}
-window.toggleGenre=(g,el)=>{
-  if(selectedGenres.includes(g)){selectedGenres=selectedGenres.filter(x=>x!==g);el.classList.remove('active');}
-  else{selectedGenres.push(g);el.classList.add('active');}
-};
-
-function addExtraServer(){extraServers.push({name:'',url:''});rebuildExtraServers();}
-function removeExtraServer(i){extraServers.splice(i,1);rebuildExtraServers();}
-function rebuildExtraServers(){
-  document.getElementById('extraServersList').innerHTML=extraServers.map((s,i)=>`<div class="d-flex gap-2">
-    <input class="cv-input" style="flex:.4" placeholder="Server name" value="${esc(s.name)}" oninput="extraServers[${i}].name=this.value">
-    <input class="cv-input" style="flex:1" type="url" placeholder="URL" value="${esc(s.url)}" oninput="extraServers[${i}].url=this.value">
-    <button onclick="removeExtraServer(${i})" class="btn-icon red" style="flex-shrink:0"><i class="bi bi-x"></i></button>
-  </div>`).join('');
-}
-
-function addEpisode(){epList.push({id:Date.now().toString(),title:'',videoUrl:'',servers:[],vipUrl:''});rebuildEpForm();}
-function removeEpisode(i){epList.splice(i,1);rebuildEpForm();}
-function rebuildEpForm(){
-  document.getElementById('epsFormList').innerHTML=epList.map((ep,i)=>`<div class="p-3 rounded-2" style="background:rgba(255,255,255,.04);border:1px solid var(--border)">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <span style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Episode ${i+1}</span>
-      <button onclick="removeEpisode(${i})" class="btn-icon red" style="width:26px;height:26px;border-radius:7px"><i class="bi bi-x" style="font-size:.8rem"></i></button>
-    </div>
-    <div class="row g-2">
-      <div class="col-12"><input class="cv-input" placeholder="Episode title" value="${esc(ep.title)}" oninput="epList[${i}].title=this.value" style="font-size:.85rem"></div>
-      <div class="col-12"><input class="cv-input" type="url" placeholder="Video URL (YouTube, Streamtape, .mp4...)" value="${esc(ep.videoUrl)}" oninput="epList[${i}].videoUrl=this.value" style="font-size:.85rem"></div>
-      <div class="col-12"><input class="cv-input" type="url" placeholder="⭐ VIP URL (subscribers only)" value="${esc(ep.vipUrl||'')}" oninput="epList[${i}].vipUrl=this.value" style="font-size:.85rem;border-color:rgba(245,158,11,.2)"></div>
-    </div>
-  </div>`).join('');
-}
-
-/* ── SAVE FILM ── */
-async function saveFilm(){
-  const title=document.getElementById('fTitle').value.trim();
-  const desc=document.getElementById('fDesc').value.trim();
-  const thumb=thumbBase64||document.getElementById('fThumbUrl').value.trim();
-  if(!title||!desc||!thumb){toast(t('fillAll'),'error');return;}
-  // Combine genres
-  const customGenres=document.getElementById('fGenreCustom').value.split(',').map(g=>g.trim()).filter(Boolean);
-  const genres=[...new Set([...selectedGenres,...customGenres])];
-  const cast=document.getElementById('fCast').value.split(',').map(c=>c.trim()).filter(Boolean);
-  const data={
-    title,description:desc,thumbnailUrl:thumb,type:filmType,
-    year:parseInt(document.getElementById('fYear').value)||new Date().getFullYear(),
-    rating:parseFloat(document.getElementById('fRating').value)||null,
-    duration:parseInt(document.getElementById('fDuration').value)||null,
-    language:document.getElementById('fLanguage').value.trim(),
-    director:document.getElementById('fDirector').value.trim(),
-    cast,genres,
-    trailer:document.getElementById('fTrailer').value.trim(),
-  };
-  if(filmType==='movie'){
-    data.videoUrl=document.getElementById('fVideoUrl').value.trim();
-    data.vipUrl=document.getElementById('fVipUrl').value.trim();
-    data.servers=extraServers.filter(s=>s.url);
-    data.episodes=[];
-  } else {
-    data.videoUrl='';data.vipUrl='';data.servers=[];
-    data.episodes=epList.filter(e=>e.title||e.videoUrl);
-  }
-  const btn=document.getElementById('saveBtn');btn.disabled=true;btn.innerHTML='<i class="bi bi-hourglass-split"></i> Saving...';
-  try{
-    if(editingFilm?.id){await updateDoc(doc(db,'films',editingFilm.id),{...data,updatedAt:serverTimestamp()});toast(t('updated'),'success');}
-    else{await addDoc(collection(db,'films'),{...data,createdAt:serverTimestamp(),addedBy:user?.uid||''});toast(t('added'),'success');}
-    closeModal();
-  }catch(e){console.error(e);toast(e.message||'Error saving','error');}
-  finally{btn.disabled=false;btn.innerHTML=t('save');}
-}
-
-/* ── LANG ── */
-function toggleLang(){
-  lang=lang==='en'?'ku':'en';
-  localStorage.setItem('cv_lang',lang);
-  document.documentElement.dir=lang==='ku'?'rtl':'ltr';
-  document.body.classList.toggle('rtl',lang==='ku');
-  document.getElementById('langBtn').textContent=lang==='en'?'کوردی':'EN';
-  applyLang();renderCurrentPage();
-}
-function applyLang(){
-  document.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k;if(T[lang][k])el.textContent=T[lang][k];});
-  const si=document.getElementById('searchInput');if(si)si.placeholder=t('searchPlaceholder');
-}
-
-/* ── MOBILE NAV ── */
-function toggleMobNav(){document.getElementById('mobNav').classList.toggle('open');}
-function closeMobNav(){document.getElementById('mobNav').classList.remove('open');}
-
-/* ── INIT ── */
-document.getElementById('footerYear').textContent=new Date().getFullYear();
-if(lang==='ku'){document.documentElement.dir='rtl';document.body.classList.add('rtl');}
-document.getElementById('langBtn').textContent=lang==='en'?'کوردی':'EN';
-navigate('home');
+// Init
+if(lang==='ku') { document.documentElement.dir='rtl'; document.body.classList.add('rtl'); }
+document.getElementById('langBtn').textContent = lang==='en'?'کوردی':'EN';
+if(theme==='light') document.body.classList.add('light-mode');
+document.getElementById('themeIcon').className = theme==='dark'?'bi bi-moon-stars':'bi bi-brightness-high';
+applyLang();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
